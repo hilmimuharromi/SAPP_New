@@ -14,7 +14,6 @@ import {
   Select,
   Button,
   DatePicker,
-  Table,
   message,
   Badge,
   List,
@@ -63,7 +62,6 @@ function RekamDokumenPiutang() {
   ];
   const [selisih, setSelisih] = useState("");
   const [nilai, setNilai] = useState(0);
-  const [keyEditPungutan, setKeyEditPungutan] = useState(0);
   const [data_pungutan, setData_pungutan] = useState([
     {
       akun: "Bea Masuk",
@@ -81,18 +79,6 @@ function RekamDokumenPiutang() {
       key: "1",
     },
   ]);
-  const columns_keterangan = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Value",
-      dataIndex: "value",
-      key: "value",
-    },
-  ];
   const db_dokumen_asal = [
     {
       dokumen_asal: "SPTNP/000001/05/06/2001",
@@ -129,6 +115,10 @@ function RekamDokumenPiutang() {
   const [petugas, setPetugas] = useState("");
   const [form] = Form.useForm();
   let [editValuePungutan, setEditValuePungutan] = useState(0);
+  const [keyEditPungutan, setKeyEditPungutan] = useState(0);
+  let [editValueKeterangan, setEditValueKeterangan] = useState(0);
+  const [keyEditKeterangan, setKeyEditKeterangan] = useState(0);
+
   const handleTarik = () => {
     let dokumen_asal = `${surat}/${nomor}/${tanggal_dokumen}`;
     for (let i = 0; i < db_dokumen_asal.length; i++) {
@@ -142,16 +132,18 @@ function RekamDokumenPiutang() {
           ppjk: db_dokumen_asal[i].ppjk,
           petugas: db_dokumen_asal[i].petugas,
         });
+        message.success("Data ditemukan!");
+      } else {
+        message.error("Data Tidak ditemukan!");
       }
-      // message.error("Data Tidak di Temukan!");
       // return false;
       // STOP
     }
   };
 
-  const handleSurat = (e) => {
-    setSurat(e.target.value);
-  };
+  // const handleSurat = (e) => {
+  //   setSurat(e.target.value);
+  // };
 
   let history = useHistory();
   const handleNavigate = () => {
@@ -241,7 +233,7 @@ function RekamDokumenPiutang() {
   const EditPungutan = (item) => {
     function saveEdit() {
       for (let i = 0; i < data_pungutan.length; i++) {
-        if (data_pungutan[i].key == item.key) {
+        if (data_pungutan[i].key === item.key) {
           console.log("masuk");
           data_pungutan[i].nilai = editValuePungutan;
         }
@@ -300,6 +292,75 @@ function RekamDokumenPiutang() {
           defaultValue={editValuePungutan}
           value={editValuePungutan}
         />
+      );
+    }
+  };
+
+  // edit keterangan
+
+  const FormEditKeterangan = (item) => {
+    console.log(keyEditKeterangan, "=====key======");
+    if (keyEditKeterangan !== item.key) {
+      return item.value;
+    } else {
+      //   setEditValuePungutan(item.nilai);
+      return (
+        <Input
+          onChange={(e) => setEditValueKeterangan(e.target.value)}
+          onPointerLeave={(e) => setEditValueKeterangan(e.target.value)}
+          defaultValue={editValueKeterangan}
+          value={editValueKeterangan}
+        />
+      );
+    }
+  };
+
+  const EditKeterangan = (item) => {
+    function saveEdit() {
+      for (let i = 0; i < data_keterangan.length; i++) {
+        if (data_keterangan[i].key === item.key) {
+          console.log("masuk");
+          data_keterangan[i].value = editValueKeterangan;
+        }
+      }
+      setKeyEditKeterangan(0);
+    }
+
+    function deleteKeterangan() {
+      let newData = data_keterangan.filter((data) => {
+        return data.key !== item.key;
+      });
+      console.log("masuk delete");
+      setData_keterangan(newData);
+    }
+
+    function klikEdit() {
+      setKeyEditKeterangan(item.key);
+      setEditValueKeterangan(item.value);
+    }
+    if (keyEditKeterangan !== item.key) {
+      return (
+        <>
+          <Button
+            icon={<EditFilled />}
+            onClick={() => klikEdit()}
+            style={{ marginRight: "5px" }}
+          ></Button>
+          <Button
+            type="Warning"
+            icon={<DeleteFilled />}
+            onClick={() => deleteKeterangan()}
+          ></Button>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Button onClick={() => saveEdit()} style={{ marginRight: "5px" }}>
+            Save
+          </Button>
+          <Button onClick={() => setKeyEditPungutan(0)}>Cancel</Button>
+        </>
       );
     }
   };
@@ -706,14 +767,39 @@ function RekamDokumenPiutang() {
                 </Row>
                 <Row justify="space-between">
                   <Col span={24}>
-                    <Table
+                    <List
+                      size="small"
+                      // bordered
+                      itemLayout="horizontal"
                       dataSource={data_keterangan}
-                      pagination={false}
-                      showHeader={false}
-                      columns={columns_keterangan}
-                      size={"small"}
-                      bordered
-                      style={{ marginTop: 8 }}
+                      renderItem={(item) => (
+                        <List.Item
+                          style={{
+                            border: "1px solid",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginTop: "5px",
+                          }}
+                        >
+                          <td
+                            style={{
+                              minWidth: "150px",
+                              maxWidth: "550px",
+                            }}
+                          >
+                            {item.name}
+                          </td>
+                          <td
+                            style={{
+                              minWidth: "200px",
+                              maxWidth: "550px",
+                            }}
+                          >
+                            {FormEditKeterangan(item)}
+                          </td>
+                          <td>{EditKeterangan(item)}</td>
+                        </List.Item>
+                      )}
                     />
                   </Col>
                 </Row>
