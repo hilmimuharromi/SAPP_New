@@ -6,16 +6,12 @@ import {
   useState,
   Modal,
   Row,
-  Col,
 } from "../../libraries/dependencies";
 import Menu from "../../menu/index";
-import TotalSurat from "./TotalSurat";
-import CardTotalSurat from "./CardTotalSurat";
 
 export default function Header() {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
-  const [togleChart, setTogleChart] = useState(false);
   function handleLihat(record) {
     setContent(record);
     setModal(true);
@@ -186,14 +182,6 @@ export default function Header() {
       penerbit: "011100",
     },
   ];
-
-  function ChartMode() {
-    if (togleChart) {
-      return <TotalSurat />;
-    } else {
-      return <CardTotalSurat />;
-    }
-  }
   return (
     <Card className="card-layout">
       <Menu />
