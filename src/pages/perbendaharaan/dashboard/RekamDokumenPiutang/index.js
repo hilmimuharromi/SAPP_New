@@ -211,6 +211,7 @@ function RekamDokumenPiutang() {
     setNomor("");
     setTanggal_dokumen("");
     form.resetFields();
+    message.success("Data Berhasil di Kirim!")
   };
 
   const EditPungutan = (item) => {
