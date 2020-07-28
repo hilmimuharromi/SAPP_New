@@ -132,13 +132,10 @@ function RekamDokumenPiutang() {
           ppjk: db_dokumen_asal[i].ppjk,
           petugas: db_dokumen_asal[i].petugas,
         });
-        message.success("Data ditemukan!");
-      } else {
-        message.error("Data Tidak ditemukan!");
+        return message.success("Data ditemukan!");
       }
-      // return false;
-      // STOP
     }
+    return message.error("Data Tidak ditemukan!");
   };
 
   // const handleSurat = (e) => {
