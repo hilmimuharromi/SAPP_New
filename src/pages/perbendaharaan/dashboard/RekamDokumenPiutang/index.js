@@ -21,6 +21,7 @@ import {
   EditFilled,
   moment,
 } from "../../libraries/dependencies";
+import { convertToRupiah } from '../../libraries/functions';
 
 const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
@@ -46,13 +47,15 @@ function RekamDokumenPiutang() {
       alamat_perusahaan: "Jalan Alamat PT Testing Indonesia",
       ppjk: "-",
       petugas: "198989504523538987 - Andhika Kusuma",
+      pungutan: [],
+      keterangan: [],
       key: "1",
     },
     {
-      dokumen_asal: "SPP/000002/05/06/2020",
       kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
       kantor_monitor: "050905 - KPPBC TMP AA",
       tanggal_jatuh_tempo: "06/06/2006",
+      dokumen_asal: "SPP/000002/05/06/2020",
       // surat: "S000002",
       // nomor: "000002",
       // tanggal: "2020-02-08", // MM/DD/YYYY
@@ -60,13 +63,15 @@ function RekamDokumenPiutang() {
       alamat_perusahaan: "Jalan Alamat Cileungsi Bogor",
       ppjk: "-",
       petugas: "198989504523538987 - Salman Isar",
+      pungutan: [],
+      keterangan: [],
       key: "2",
     },
     {
-      dokumen_asal: "CK1-PENUNDAAN/000003/05/06/2020",
       kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
       kantor_monitor: "050905 - KPPBC TMP AA",
       tanggal_jatuh_tempo: "06/06/2006",
+      dokumen_asal: "CK1-PENUNDAAN/000003/05/06/2020",
       // surat: "S000002",
       // nomor: "000002",
       // tanggal: "2020-02-08", // MM/DD/YYYY
@@ -74,6 +79,21 @@ function RekamDokumenPiutang() {
       alamat_perusahaan: "Jalan Raya Kenangan",
       ppjk: "-",
       petugas: "198989504523538999 - Duloh Ahmed",
+      pungutan: [
+        {
+          akun: "Cukai-HT",
+          nilai: 10000000,
+          selisih: "kurang bayar",
+          key: 1,
+        },
+        {
+          akun: "Cukai-MMEA",
+          nilai: 20000000,
+          selisih: "lebih bayar",
+          key: 1,
+        }
+      ],
+      keterangan: [],
       key: "3",
     },
   ];
@@ -172,6 +192,11 @@ function RekamDokumenPiutang() {
           ppjk: db_dokumen_asal[i].ppjk,
           petugas: db_dokumen_asal[i].petugas,
         });
+        if (db_dokumen_asal[i].pungutan.length > 0) {
+          let arrData = [];
+          db_dokumen_asal[i].pungutan.map((item) => (arrData.push(item)))
+          setData_pungutan(arrData);
+        }
         return message.success("Data ditemukan!");
       }
     }
@@ -268,7 +293,7 @@ function RekamDokumenPiutang() {
 
   const FormEditPungutan = (item) => {
     if (keyEditPungutan !== item.key) {
-      return item.nilai;
+      return convertToRupiah(item.nilai);
     } else {
       //   setEditValuePungutan(item.nilai);
       return (
@@ -663,11 +688,11 @@ function RekamDokumenPiutang() {
                       onChange={handleAkun}
                       size={"small"}
                     >
-                      {surat === "CK1 PENUNDAAN" || surat === "CK1A BERKALA" ? (
+                      {surat === "CK1-PENUNDAAN" || surat === "CK1A-BERKALA" ? (
                         <>
-                          <Option value="Cukai HT">Cukai HT</Option>
-                          <Option value="Cukai MMEA">Cukai MMEA</Option>
-                          <Option value="Cukai EA">Cukai EA</Option>
+                          <Option value="Cukai-HT">Cukai HT</Option>
+                          <Option value="Cukai-MMEA">Cukai MMEA</Option>
+                          <Option value="Cukai-EA">Cukai EA</Option>
                         </>
                       ) : (
                           options_akun.map((item) => (
