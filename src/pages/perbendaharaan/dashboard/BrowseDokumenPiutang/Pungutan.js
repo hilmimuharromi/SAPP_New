@@ -1,4 +1,5 @@
 import { React, Card, Table } from "../../libraries/dependencies";
+import { convertToRupiah } from "../../libraries/functions";
 
 export default function Pungutan() {
   const dataAwal = [
@@ -8,11 +9,11 @@ export default function Pungutan() {
     },
     {
       judul: "Bea Keluar",
-      nilai: null,
+      nilai: 1000,
     },
     {
       judul: "BM AD",
-      nilai: null,
+      nilai: 20000,
     },
     {
       judul: "BM ADs",
@@ -28,11 +29,11 @@ export default function Pungutan() {
     },
     {
       judul: "CTEM",
-      nilai: null,
+      nilai: 2222,
     },
     {
       judul: "CMEA",
-      nilai: null,
+      nilai: 3223232,
     },
     {
       judul: "CEA",
@@ -44,7 +45,7 @@ export default function Pungutan() {
     },
     {
       judul: "BUNGA",
-      nilai: null,
+      nilai: 2323232,
     },
     {
       judul: "PPN",
@@ -64,8 +65,16 @@ export default function Pungutan() {
     },
   ];
 
-  const newData = dataAwal.filter((data) => {
+  const filterData = dataAwal.filter((data) => {
     return data.nilai !== null;
+  });
+
+  // const newData = filterData.map((data) => {
+  //   data.nilai = convertToRupiah(data.nilai);
+  // });
+
+  filterData.map((data) => {
+    return (data.nilai = convertToRupiah(data.nilai));
   });
 
   const column = [
@@ -80,13 +89,14 @@ export default function Pungutan() {
       key: "nilai",
     },
   ];
+
   return (
-    <Card className="card-layout">
+    <Card className="card-layout-pungutan">
       <h2>Pungutan</h2>
       <Table
         size={"small"}
         pagination={false}
-        dataSource={newData}
+        dataSource={filterData}
         showHeader={false}
         columns={column}
       />

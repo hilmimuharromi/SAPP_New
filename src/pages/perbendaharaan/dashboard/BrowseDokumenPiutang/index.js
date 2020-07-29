@@ -16,7 +16,7 @@ import TotalSurat from "./TotalSurat";
 import CardTotalSurat from "./CardTotalSurat";
 
 export default function BrowseDokumenPiutang() {
-  const [togleChart, setTogleChart] = useState(false);
+  const [togleChart, setTogleChart] = useState(true);
 
   function ChartMode() {
     if (togleChart) {
@@ -46,18 +46,20 @@ export default function BrowseDokumenPiutang() {
         </Col>
       </Row>
       <Row justify="space-between" style={{ marginTop: "10px" }}>
-        <Col span={11} style={{ marginRight: "5px" }}>
+        <Col span={16}>
           <Detail />
         </Col>
-        <Col span={11}>
+        <Col span={7}>
           <Pungutan />
         </Col>
       </Row>
       <Row justify="space-between" style={{ marginTop: "10px" }}>
-        <Col span={11}>
+        <Col span={16}>
           <MutasiDokumen />
         </Col>
-        <Col span={11}>
+      </Row>
+      <Row justify="space-between" style={{ marginTop: "10px" }}>
+        <Col span={16}>
           <History />
         </Col>
       </Row>
