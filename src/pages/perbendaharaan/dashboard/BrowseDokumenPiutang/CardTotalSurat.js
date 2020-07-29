@@ -38,6 +38,7 @@ export default function CardTotalSurat() {
             style={{
               margin: "7px",
               width: "190px",
+              height: "120px",
               backgroundColor: "#001529",
               border: "none",
             }}

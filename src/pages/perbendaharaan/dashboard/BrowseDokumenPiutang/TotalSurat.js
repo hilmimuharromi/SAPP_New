@@ -21,7 +21,7 @@ export default function TotalSurat() {
     ],
     datasets: [
       {
-        // label: "Total Surat",
+        label: "Total Surat",
         // fill: true,
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
@@ -42,7 +42,7 @@ export default function TotalSurat() {
         ],
         lineTension: 1.9,
         // backgroundColor: "rgba(75,192,192,0.4)",
-        // borderColor: "blue",
+        borderColor: "blue",
         borderCapStyle: "butt",
         // borderDash: [],
         // borderDashOffset: 0.0,
@@ -63,11 +63,36 @@ export default function TotalSurat() {
         data: [65, 59, 80, 81, 56, 55, 77, 80, 90, 56, 55, 77, 80, 90, 70],
       },
     ],
+    options: {
+      title: {
+        display: true,
+        text: "Custom Chart Title",
+      },
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+            },
+            gridLines: {
+              offsetGridLines: true,
+            },
+          },
+        ],
+        xAxes: [
+          {
+            gridLines: {
+              offsetGridLines: true,
+            },
+          },
+        ],
+      },
+    },
   };
 
   return (
     <>
-      <Bar data={data} width={100} height={20} />
+      <Bar data={data} width={100} height={30} />
     </>
   );
 }

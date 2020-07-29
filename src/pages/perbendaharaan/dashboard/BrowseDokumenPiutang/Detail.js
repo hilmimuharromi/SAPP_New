@@ -88,13 +88,13 @@ export default function Detail() {
       </Modal>
       <List
         size="small"
-        bordered
+        // bordered
         itemLayout="horizontal"
         dataSource={data}
         renderItem={(item) => (
           <List.Item
+            className="list-detail"
             style={{
-              border: "1px solid",
               display: "flex",
               justifyContent: "flex-start",
             }}

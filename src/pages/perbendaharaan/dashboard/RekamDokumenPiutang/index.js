@@ -19,7 +19,7 @@ import {
   List,
   DeleteFilled,
   EditFilled,
-  moment
+  moment,
 } from "../../libraries/dependencies";
 
 const { Header, Sider, Content } = Layout;
@@ -71,7 +71,7 @@ function RekamDokumenPiutang() {
     {
       kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
       kantor_monitor: "050905 - KPPBC TMP AA",
-      tanggal_jatuh_tempo: "06/06/2006",
+      tanggal_jatuh_tempo: "05/06/2020",
       dokumen_asal: "SPTNP/000001/05/06/2001",
       // surat: "S000001",
       // nomor: "000001",
@@ -84,6 +84,9 @@ function RekamDokumenPiutang() {
     },
     {
       dokumen_asal: "SPP/000002/05/06/2020",
+      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
+      kantor_monitor: "050905 - KPPBC TMP AA",
+      tanggal_jatuh_tempo: "06/06/2006",
       // surat: "S000002",
       // nomor: "000002",
       // tanggal: "2020-02-08", // MM/DD/YYYY
@@ -92,6 +95,20 @@ function RekamDokumenPiutang() {
       ppjk: "-",
       petugas: "198989504523538987 - Salman Isar",
       key: "2",
+    },
+    {
+      dokumen_asal: "CK1-PENUNDAAN/000003/05/06/2020",
+      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
+      kantor_monitor: "050905 - KPPBC TMP AA",
+      tanggal_jatuh_tempo: "06/06/2006",
+      // surat: "S000002",
+      // nomor: "000002",
+      // tanggal: "2020-02-08", // MM/DD/YYYY
+      perusahaan: "12345678912345 - PT Aman Import",
+      alamat_perusahaan: "Jalan Raya Kenangan",
+      ppjk: "-",
+      petugas: "198989504523538999 - Duloh Ahmed",
+      key: "3",
     },
   ];
   const [kantor_penerbit, setKantor_penerbit] = useState("");
@@ -117,7 +134,10 @@ function RekamDokumenPiutang() {
         form.setFieldsValue({
           kantor_penerbit: db_dokumen_asal[i].kantor_penerbit,
           kantor_monitor: db_dokumen_asal[i].kantor_monitor,
-          tanggal_jatuh_tempo: moment(db_dokumen_asal[i].tanggal_jatuh_tempo, "DD/MM/YYYY"),
+          tanggal_jatuh_tempo: moment(
+            db_dokumen_asal[i].tanggal_jatuh_tempo,
+            "DD/MM/YYYY"
+          ),
           perusahaan: db_dokumen_asal[i].perusahaan,
           alamat_perusahaan: db_dokumen_asal[i].alamat_perusahaan,
           ppjk: db_dokumen_asal[i].ppjk,
@@ -404,7 +424,7 @@ function RekamDokumenPiutang() {
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
-                      borderBottom: "1px solid #eaeaea",
+                      // borderBottom: "1px solid #eaeaea",
                     }}
                   >
                     <Input
@@ -420,7 +440,7 @@ function RekamDokumenPiutang() {
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
-                      borderBottom: "1px solid #eaeaea",
+                      // borderBottom: "1px solid #eaeaea",
                     }}
                   >
                     <Input
@@ -436,7 +456,7 @@ function RekamDokumenPiutang() {
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
-                      borderBottom: "1px solid #eaeaea",
+                      // borderBottom: "1px solid #eaeaea",
                     }}
                   >
                     <DatePicker
@@ -453,7 +473,7 @@ function RekamDokumenPiutang() {
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
-                      borderBottom: "1px solid #eaeaea",
+                      // borderBottom: "1px solid #eaeaea",
                     }}
                   >
                     <Input.Group compact>
@@ -465,19 +485,19 @@ function RekamDokumenPiutang() {
                           onChange={(val) => setSurat(val)}
                           size={"small"}
                         >
-                          <Option value="PIB BERKALA">PIB BERKALA</Option>
-                          <Option value="PIB VOORITSLAG">PIB VOORITSLAG</Option>
-                          <Option value="RUSH HANDLING">RUSH HANDLING</Option>
+                          <Option value="PIB-BERKALA">PIB BERKALA</Option>
+                          <Option value="PIB-VOORITSLAG">PIB VOORITSLAG</Option>
+                          <Option value="RUSH-HANDLING">RUSH HANDLING</Option>
                           <Option value="SPTNP">SPTNP</Option>
                           <Option value="SPKTNP">SPKTNP</Option>
                           <Option value="SPP">SPP</Option>
                           <Option value="SPSA">SPSA</Option>
                           <Option value="SPPBMCP">SPPBMCP</Option>
-                          <Option value="PEB PENUNDAAN">PEB PENUNDAAN</Option>
+                          <Option value="PEB-PENUNDAAN">PEB PENUNDAAN</Option>
                           <Option value="SPPBK">SPPBK</Option>
                           <Option value="SPKPBK">SPKPBK</Option>
-                          <Option value="CK1 PENUNDAAN">CK1 PENUNDAAN</Option>
-                          <Option value="CK1A BERKALA">CK1A BERKALA</Option>
+                          <Option value="CK1-PENUNDAAN">CK1 PENUNDAAN</Option>
+                          <Option value="CK1A-BERKALA">CK1A BERKALA</Option>
                           <Option value="CK5">CK5</Option>
                           <Option value="STCK1">STCK1</Option>
                           <Option value="SPPBP">SPPBP</Option>
@@ -530,7 +550,7 @@ function RekamDokumenPiutang() {
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
-                      borderBottom: "1px solid #eaeaea",
+                      // borderBottom: "1px solid #eaeaea",
                     }}
                   >
                     <Input
@@ -546,7 +566,7 @@ function RekamDokumenPiutang() {
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
-                      borderBottom: "1px solid #eaeaea",
+                      // borderBottom: "1px solid #eaeaea",
                     }}
                   >
                     <Input
@@ -562,7 +582,7 @@ function RekamDokumenPiutang() {
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
-                      borderBottom: "1px solid #eaeaea",
+                      // borderBottom: "1px solid #eaeaea",
                     }}
                   >
                     <Input
@@ -607,16 +627,18 @@ function RekamDokumenPiutang() {
                           <Option value="Cukai EA">Cukai EA</Option>
                         </>
                       ) : (
-                          options_akun.map((item) => (
-                            <Option key={item.key} value={item.value}>
-                              {item.name}
-                            </Option>
-                          ))
-                        )}
+                        options_akun.map((item) => (
+                          <Option key={item.key} value={item.value}>
+                            {item.name}
+                          </Option>
+                        ))
+                      )}
                     </Select>
                   </Col>
                   <Col span={6} style={{ display: "flex" }}>
-                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>Selisih :</h4>
+                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>
+                      Selisih :
+                    </h4>
                     <Select
                       value={selisih.length === 0 ? null : selisih}
                       style={{ width: "60%" }}
@@ -628,7 +650,9 @@ function RekamDokumenPiutang() {
                     </Select>
                   </Col>
                   <Col span={6} style={{ display: "flex" }}>
-                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>Nilai :</h4>
+                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>
+                      Nilai :
+                    </h4>
                     <Input
                       style={{ width: "60%", height: "24px" }}
                       value={nilai}
@@ -658,30 +682,31 @@ function RekamDokumenPiutang() {
                           style={{
                             display: "flex",
                             justifyContent: "space-between",
-                            marginTop: 8
+                            marginTop: 8,
                           }}
                         >
-                          <td
+                          <div
                             style={{
                               minWidth: "150px",
                               maxWidth: "550px",
                             }}
                           >
                             {item.akun}
-                          </td>
-                          <td
+                          </div>
+                          <div
                             style={{
                               minWidth: "200px",
                               maxWidth: "550px",
+                              fontWeight: "bold",
                               backgroundColor:
                                 item.selisih === "lebih bayar"
-                                  ? "green"
-                                  : "#fff",
+                                  ? "#52c41a"
+                                  : "#faad14",
                             }}
                           >
                             {FormEditPungutan(item)}
-                          </td>
-                          <td>{EditPungutan(item)}</td>
+                          </div>
+                          <div>{EditPungutan(item)}</div>
                         </List.Item>
                       )}
                     />
@@ -695,7 +720,9 @@ function RekamDokumenPiutang() {
                 <Badge status="warning" text="Kurang Bayar" />
               </Col>
             </Row>
-            <h1 style={{ fontWeight: "bold", fontSize: 24, marginTop: 14 }}>Keterangan</h1>
+            <h1 style={{ fontWeight: "bold", fontSize: 24, marginTop: 14 }}>
+              Keterangan
+            </h1>
             <Row>
               <Col span={16}>
                 <Row style={{ marginBottom: 8 }}>
@@ -743,23 +770,23 @@ function RekamDokumenPiutang() {
                             justifyContent: "space-between",
                           }}
                         >
-                          <td
+                          <div
                             style={{
                               minWidth: "150px",
                               maxWidth: "550px",
                             }}
                           >
                             {item.name}
-                          </td>
-                          <td
+                          </div>
+                          <div
                             style={{
                               minWidth: "200px",
                               maxWidth: "550px",
                             }}
                           >
                             {FormEditKeterangan(item)}
-                          </td>
-                          <td>{EditKeterangan(item)}</td>
+                          </div>
+                          <div>{EditKeterangan(item)}</div>
                         </List.Item>
                       )}
                     />
