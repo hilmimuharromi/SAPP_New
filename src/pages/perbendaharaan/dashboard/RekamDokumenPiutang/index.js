@@ -21,14 +21,95 @@ import {
   EditFilled,
   moment,
 } from "../../libraries/dependencies";
+import { convertToRupiah } from '../../libraries/functions';
 
 const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { Option } = Select;
 
 function RekamDokumenPiutang() {
+  // Sid - Headear
+  // ==============================================
   const [collapsed, setCollapsed] = useState(false);
   const [akun, setAkun] = useState("");
+  // Form Perekaman
+  // ==============================================
+  const db_dokumen_asal = [
+    {
+      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
+      kantor_monitor: "050905 - KPPBC TMP AA",
+      tanggal_jatuh_tempo: "05/06/2020",
+      dokumen_asal: "SPTNP/000001/05/06/2001",
+      // surat: "S000001",
+      // nomor: "000001",
+      // tanggal: "2019-02-07", // MM/DD/YYYY
+      perusahaan: "12345678912345 - PT TESTING INDONESIA",
+      alamat_perusahaan: "Jalan Alamat PT Testing Indonesia",
+      ppjk: "-",
+      petugas: "198989504523538987 - Andhika Kusuma",
+      pungutan: [],
+      keterangan: [],
+      key: "1",
+    },
+    {
+      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
+      kantor_monitor: "050905 - KPPBC TMP AA",
+      tanggal_jatuh_tempo: "06/06/2006",
+      dokumen_asal: "SPP/000002/05/06/2020",
+      // surat: "S000002",
+      // nomor: "000002",
+      // tanggal: "2020-02-08", // MM/DD/YYYY
+      perusahaan: "12345678912345 - PT SINAR MULYA SENTOSA",
+      alamat_perusahaan: "Jalan Alamat Cileungsi Bogor",
+      ppjk: "-",
+      petugas: "198989504523538987 - Salman Isar",
+      pungutan: [],
+      keterangan: [],
+      key: "2",
+    },
+    {
+      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
+      kantor_monitor: "050905 - KPPBC TMP AA",
+      tanggal_jatuh_tempo: "06/06/2006",
+      dokumen_asal: "CK1-PENUNDAAN/000003/05/06/2020",
+      // surat: "S000002",
+      // nomor: "000002",
+      // tanggal: "2020-02-08", // MM/DD/YYYY
+      perusahaan: "12345678912345 - PT Aman Import",
+      alamat_perusahaan: "Jalan Raya Kenangan",
+      ppjk: "-",
+      petugas: "198989504523538999 - Duloh Ahmed",
+      pungutan: [
+        {
+          akun: "Cukai-HT",
+          nilai: 10000000,
+          selisih: "kurang bayar",
+          key: 1,
+        },
+        {
+          akun: "Cukai-MMEA",
+          nilai: 20000000,
+          selisih: "lebih bayar",
+          key: 1,
+        }
+      ],
+      keterangan: [],
+      key: "3",
+    },
+  ];
+  const [kantor_penerbit, setKantor_penerbit] = useState("");
+  const [kantor_monitor, setKantor_monitor] = useState("");
+  const [tanggal_jatuh_tempo, setTanggal_jatuh_tempo] = useState("");
+  const [surat, setSurat] = useState("");
+  const [nomor, setNomor] = useState("");
+  const [tanggal_dokumen, setTanggal_dokumen] = useState("");
+  const [perusahaan, setPerusahaan] = useState("");
+  const [alamat_perusahaan, setAlamat_Perusahaan] = useState("");
+  const [ppjk, setPpjk] = useState("");
+  const [petugas, setPetugas] = useState("");
+  const [form] = Form.useForm();
+  // Pungutan
+  // ==============================================
   const options_akun = [
     {
       name: "Bea Masuk",
@@ -64,68 +145,36 @@ function RekamDokumenPiutang() {
   const [selisih, setSelisih] = useState("");
   const [nilai, setNilai] = useState(0);
   const [data_pungutan, setData_pungutan] = useState([]);
-  const [name, setName] = useState("");
-  const [value, setValue] = useState("");
-  const [data_keterangan, setData_keterangan] = useState([]);
-  const db_dokumen_asal = [
-    {
-      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
-      kantor_monitor: "050905 - KPPBC TMP AA",
-      tanggal_jatuh_tempo: "05/06/2020",
-      dokumen_asal: "SPTNP/000001/05/06/2001",
-      // surat: "S000001",
-      // nomor: "000001",
-      // tanggal: "2019-02-07", // MM/DD/YYYY
-      perusahaan: "12345678912345 - PT TESTING INDONESIA",
-      alamat_perusahaan: "Jalan Alamat PT Testing Indonesia",
-      ppjk: "-",
-      petugas: "198989504523538987 - Andhika Kusuma",
-      key: "1",
-    },
-    {
-      dokumen_asal: "SPP/000002/05/06/2020",
-      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
-      kantor_monitor: "050905 - KPPBC TMP AA",
-      tanggal_jatuh_tempo: "06/06/2006",
-      // surat: "S000002",
-      // nomor: "000002",
-      // tanggal: "2020-02-08", // MM/DD/YYYY
-      perusahaan: "12345678912345 - PT SINAR MULYA SENTOSA",
-      alamat_perusahaan: "Jalan Alamat Cileungsi Bogor",
-      ppjk: "-",
-      petugas: "198989504523538987 - Salman Isar",
-      key: "2",
-    },
-    {
-      dokumen_asal: "CK1-PENUNDAAN/000003/05/06/2020",
-      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
-      kantor_monitor: "050905 - KPPBC TMP AA",
-      tanggal_jatuh_tempo: "06/06/2006",
-      // surat: "S000002",
-      // nomor: "000002",
-      // tanggal: "2020-02-08", // MM/DD/YYYY
-      perusahaan: "12345678912345 - PT Aman Import",
-      alamat_perusahaan: "Jalan Raya Kenangan",
-      ppjk: "-",
-      petugas: "198989504523538999 - Duloh Ahmed",
-      key: "3",
-    },
-  ];
-  const [kantor_penerbit, setKantor_penerbit] = useState("");
-  const [kantor_monitor, setKantor_monitor] = useState("");
-  const [tanggal_jatuh_tempo, setTanggal_jatuh_tempo] = useState("");
-  const [surat, setSurat] = useState("");
-  const [nomor, setNomor] = useState("");
-  const [tanggal_dokumen, setTanggal_dokumen] = useState("");
-  const [perusahaan, setPerusahaan] = useState("");
-  const [alamat_perusahaan, setAlamat_Perusahaan] = useState("");
-  const [ppjk, setPpjk] = useState("");
-  const [petugas, setPetugas] = useState("");
-  const [form] = Form.useForm();
   let [editValuePungutan, setEditValuePungutan] = useState(0);
   const [keyEditPungutan, setKeyEditPungutan] = useState(0);
+  // Keterangan
+  // ==============================================
+  const [keterangan, setKeterangan] = useState("");
+  const [deskripsi, setDeskripsi] = useState("");
+  const [data_keterangan, setData_keterangan] = useState([]);
   let [editValueKeterangan, setEditValueKeterangan] = useState(0);
   const [keyEditKeterangan, setKeyEditKeterangan] = useState(0);
+
+  // Function - Sid - Headear
+  // ==============================================
+  let history = useHistory();
+  const handleNavigate = () => {
+    history.push("/");
+  };
+
+  const toggle = () => {
+    setCollapsed(!collapsed);
+  };
+
+  // Function - Form Perekaman
+  // ==============================================
+  const handleTanggalJatuhTMP = (date, dateString) => {
+    setTanggal_jatuh_tempo(dateString);
+  };
+
+  const handleTanggalDokumen = (date, dateString) => {
+    setTanggal_dokumen(dateString);
+  };
 
   const handleTarik = () => {
     let dokumen_asal = `${surat}/${nomor}/${tanggal_dokumen}`;
@@ -143,82 +192,28 @@ function RekamDokumenPiutang() {
           ppjk: db_dokumen_asal[i].ppjk,
           petugas: db_dokumen_asal[i].petugas,
         });
+        if (db_dokumen_asal[i].pungutan.length > 0) {
+          let arrData = [];
+          db_dokumen_asal[i].pungutan.map((item) => (arrData.push(item)))
+          setData_pungutan(arrData);
+        }
         return message.success("Data ditemukan!");
       }
     }
     return message.error("Data Tidak ditemukan!");
   };
 
-  let history = useHistory();
-  const handleNavigate = () => {
-    history.push("/");
-  };
-
-  const toggle = () => {
-    setCollapsed(!collapsed);
-  };
-
-  const handleAkun = (val) => {
-    setAkun(val);
-  };
-
-  const handleSelisih = (val) => {
-    setSelisih(val);
-  };
-
-  const handleNilai = (e) => {
-    setNilai(e.target.value);
-  };
-
-  const handleSubmitPungutan = () => {
-    let ObjData = {
-      key: data_pungutan.length + 1,
-      akun: akun,
-      selisih: selisih,
-      nilai: parseInt(nilai),
-    };
-    if (!akun) {
-      message.error("Mohon pilih akun");
-    } else if (!selisih) {
-      message.error("Mohon pilih jenis selisih");
-    } else if (!nilai) {
-      message.error("Mohon isi nilai");
-    } else {
-      const newData = [...data_pungutan, ObjData];
-      setData_pungutan(newData);
-      setAkun("");
-      setSelisih("");
-      setNilai(0);
-    }
-  };
-
-  const handleName = (val) => {
-    setName(val);
-  };
-
-  const handleValue = (e) => {
-    setValue(e.target.value);
-  };
-
-  const handleSubmitKeterangan = () => {
-    let ObjData = {
-      key: data_keterangan.length + 1,
-      name: name,
-      value: value,
-    };
-
-    const newData = [...data_keterangan, ObjData];
-    setData_keterangan(newData);
-    setName("");
-    setValue("");
-  };
-
-  const handleTanggalDokumen = (date, dateString) => {
-    setTanggal_dokumen(dateString);
-  };
-
-  const handleTanggalJatuhTMP = (date, dateString) => {
-    setTanggal_jatuh_tempo(dateString);
+  const handleBersihkan = () => {
+    // others
+    setKantor_penerbit("");
+    setKantor_monitor("");
+    setTanggal_jatuh_tempo("");
+    // 3 params
+    setSurat("");
+    setNomor("");
+    setTanggal_dokumen("");
+    form.resetFields();
+    message.success("Data Berhasil di Kosongkan!");
   };
 
   const handleSimpan = () => {
@@ -231,6 +226,21 @@ function RekamDokumenPiutang() {
     setNomor("");
     setTanggal_dokumen("");
     form.resetFields();
+    message.success("Data Berhasil di Kirim!");
+  };
+
+  // Function - Pungutan
+  // ==============================================
+  const handleAkun = (val) => {
+    setAkun(val);
+  };
+
+  const handleSelisih = (val) => {
+    setSelisih(val);
+  };
+
+  const handleNilai = (e) => {
+    setNilai(e.target.value);
   };
 
   const EditPungutan = (item) => {
@@ -283,7 +293,7 @@ function RekamDokumenPiutang() {
 
   const FormEditPungutan = (item) => {
     if (keyEditPungutan !== item.key) {
-      return item.nilai;
+      return convertToRupiah(item.nilai);
     } else {
       //   setEditValuePungutan(item.nilai);
       return (
@@ -297,28 +307,44 @@ function RekamDokumenPiutang() {
     }
   };
 
-  // edit keterangan
-  const FormEditKeterangan = (item) => {
-    if (keyEditKeterangan !== item.key) {
-      return item.value;
+  const handleSubmitPungutan = () => {
+    let ObjData = {
+      key: data_pungutan.length + 1,
+      akun: akun,
+      selisih: selisih,
+      nilai: parseInt(nilai),
+    };
+    if (!akun) {
+      message.error("Mohon pilih akun");
+    } else if (!selisih) {
+      message.error("Mohon pilih jenis selisih");
+    } else if (!nilai) {
+      message.error("Mohon isi nilai");
     } else {
-      //   setEditValuePungutan(item.nilai);
-      return (
-        <Input
-          onChange={(e) => setEditValueKeterangan(e.target.value)}
-          onPointerLeave={(e) => setEditValueKeterangan(e.target.value)}
-          defaultValue={editValueKeterangan}
-          value={editValueKeterangan}
-        />
-      );
+      const newData = [...data_pungutan, ObjData];
+      setData_pungutan(newData);
+      setAkun("");
+      setSelisih("");
+      setNilai(0);
+      message.success("Sukses di Tambahkan!");
     }
+  };
+
+  // Function - Keterangan
+  // ==============================================
+  const handleKeterangan = (val) => {
+    setKeterangan(val);
+  };
+
+  const handleDeskripsi = (e) => {
+    setDeskripsi(e.target.value);
   };
 
   const EditKeterangan = (item) => {
     function saveEdit() {
       for (let i = 0; i < data_keterangan.length; i++) {
         if (data_keterangan[i].key === item.key) {
-          data_keterangan[i].value = editValueKeterangan;
+          data_keterangan[i].deskripsi = editValueKeterangan;
         }
       }
       setKeyEditKeterangan(0);
@@ -333,7 +359,7 @@ function RekamDokumenPiutang() {
 
     function klikEdit() {
       setKeyEditKeterangan(item.key);
-      setEditValueKeterangan(item.value);
+      setEditValueKeterangan(item.deskripsi);
     }
     if (keyEditKeterangan !== item.key) {
       return (
@@ -356,9 +382,45 @@ function RekamDokumenPiutang() {
           <Button onClick={() => saveEdit()} style={{ marginRight: "5px" }}>
             Save
           </Button>
-          <Button onClick={() => setKeyEditPungutan(0)}>Cancel</Button>
+          <Button onClick={() => setKeyEditKeterangan(0)}>Cancel</Button>
         </>
       );
+    }
+  };
+
+  const FormEditKeterangan = (item) => {
+    if (keyEditKeterangan !== item.key) {
+      return item.deskripsi;
+    } else {
+      //   setEditValuePungutan(item.nilai);
+      return (
+        <Input
+          onChange={(e) => setEditValueKeterangan(e.target.value)}
+          onPointerLeave={(e) => setEditValueKeterangan(e.target.value)}
+          defaultValue={editValueKeterangan}
+          value={editValueKeterangan}
+        />
+      );
+    }
+  };
+
+  const handleSubmitKeterangan = () => {
+    let ObjData = {
+      key: data_keterangan.length + 1,
+      keterangan: keterangan,
+      deskripsi: deskripsi,
+    };
+
+    if (!keterangan) {
+      message.error("Mohon pilih keterangan");
+    } else if (!deskripsi) {
+      message.error("Mohon isi deskripsi");
+    } else {
+      const newData = [...data_keterangan, ObjData];
+      setData_keterangan(newData);
+      setKeterangan("");
+      setDeskripsi("");
+      message.success("Sukses di Tambahkan!");
     }
   };
 
@@ -400,6 +462,14 @@ function RekamDokumenPiutang() {
               <Button
                 type="primary"
                 htmlType="submit"
+                style={{ width: 100, height: 35, marginLeft: "auto", marginRight: "2px" }}
+                onClick={handleBersihkan}
+              >
+                Bersihkan
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
                 style={{ width: 100, height: 35 }}
                 onClick={handleSimpan}
               >
@@ -409,18 +479,17 @@ function RekamDokumenPiutang() {
             <Row>
               <Col span={24}>
                 <Form
-                  labelCol={{ span: 4 }}
                   form={form}
-                  wrapperCol={{ span: 12 }}
+                  labelCol={{ span: 4 }}
                   labelAlign={"left"}
                   name="record-form"
                   size={"small"}
-                  style={{ border: "1px solid #eaeaea" }}
+                  style={{ border: "1px solid #eaeaea", minWidth: "100%" }}
                 >
                   <Form.Item
                     name="kantor_penerbit"
                     label="Kantor Penerbit"
-                    wrapperCol={{ span: 12 }}
+                    wrapperCol={{ span: 0 }}
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
@@ -436,7 +505,7 @@ function RekamDokumenPiutang() {
                   <Form.Item
                     name="kantor_monitor"
                     label="Kantor Monitor"
-                    wrapperCol={{ span: 12 }}
+                    wrapperCol={{ span: 0 }}
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
@@ -460,16 +529,17 @@ function RekamDokumenPiutang() {
                     }}
                   >
                     <DatePicker
+                      placeholder=""
                       onChange={handleTanggalJatuhTMP}
                       selected={tanggal_jatuh_tempo}
-                      style={{ width: "100%" }}
+                      style={{ width: "100%", borderLeft: "5px solid #eaeaea" }}
                       format={"DD/MM/YYYY"}
                     />
                   </Form.Item>
                   <Form.Item
                     name="dokumen_asal"
                     label="Dokumen Asal"
-                    wrapperCol={{ span: 12 }}
+                    wrapperCol={{ span: 0 }}
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
@@ -481,7 +551,7 @@ function RekamDokumenPiutang() {
                       <Form.Item style={{ marginBottom: 0, width: "20%" }}>
                         <Select
                           value={surat.length === 0 ? null : surat}
-                          style={{ width: "100%" }}
+                          style={{ width: "100%", borderLeft: "5px solid #eaeaea" }}
                           onChange={(val) => setSurat(val)}
                           size={"small"}
                         >
@@ -507,7 +577,6 @@ function RekamDokumenPiutang() {
                       {/** NOMOR */}
                       <Form.Item style={{ marginBottom: 0, width: "20%" }}>
                         <Input
-                          style={{ borderLeft: "5px solid #eaeaea" }}
                           value={nomor}
                           onChange={(e) => setNomor(e.target.value)}
                           placeholder="Nomor"
@@ -546,7 +615,6 @@ function RekamDokumenPiutang() {
                   <Form.Item
                     name="perusahaan"
                     label="Perusahaan"
-                    wrapperCol={{ span: 8 }}
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
@@ -562,7 +630,7 @@ function RekamDokumenPiutang() {
                   <Form.Item
                     name="alamat_perusahaan"
                     label="Alamat Perusahaan"
-                    wrapperCol={{ span: 12 }}
+                    wrapperCol={{ span: 0 }}
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
@@ -578,7 +646,7 @@ function RekamDokumenPiutang() {
                   <Form.Item
                     name="ppjk"
                     label="PPJK"
-                    wrapperCol={{ span: 12 }}
+                    wrapperCol={{ span: 0 }}
                     style={{
                       marginBottom: 0,
                       padding: "1px 1px 1px 5px",
@@ -594,7 +662,7 @@ function RekamDokumenPiutang() {
                   <Form.Item
                     name="petugas"
                     label="Petugas"
-                    wrapperCol={{ span: 12 }}
+                    wrapperCol={{ span: 0 }}
                     style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
                   >
                     <Input
@@ -620,19 +688,19 @@ function RekamDokumenPiutang() {
                       onChange={handleAkun}
                       size={"small"}
                     >
-                      {surat === "CK1 PENUNDAAN" || surat === "CK1A BERKALA" ? (
+                      {surat === "CK1-PENUNDAAN" || surat === "CK1A-BERKALA" ? (
                         <>
-                          <Option value="Cukai HT">Cukai HT</Option>
-                          <Option value="Cukai MMEA">Cukai MMEA</Option>
-                          <Option value="Cukai EA">Cukai EA</Option>
+                          <Option value="Cukai-HT">Cukai HT</Option>
+                          <Option value="Cukai-MMEA">Cukai MMEA</Option>
+                          <Option value="Cukai-EA">Cukai EA</Option>
                         </>
                       ) : (
-                        options_akun.map((item) => (
-                          <Option key={item.key} value={item.value}>
-                            {item.name}
-                          </Option>
-                        ))
-                      )}
+                          options_akun.map((item) => (
+                            <Option key={item.key} value={item.value}>
+                              {item.name}
+                            </Option>
+                          ))
+                        )}
                     </Select>
                   </Col>
                   <Col span={6} style={{ display: "flex" }}>
@@ -661,7 +729,7 @@ function RekamDokumenPiutang() {
                   </Col>
                   <Col span={6}>
                     <Button
-                      type="info"
+                      type="primary"
                       size="small"
                       style={{ width: "100%" }}
                       onClick={handleSubmitPungutan}
@@ -682,7 +750,6 @@ function RekamDokumenPiutang() {
                           style={{
                             display: "flex",
                             justifyContent: "space-between",
-                            marginTop: 8,
                           }}
                         >
                           <div
@@ -697,16 +764,20 @@ function RekamDokumenPiutang() {
                             style={{
                               minWidth: "200px",
                               maxWidth: "550px",
-                              fontWeight: "bold",
+                              padding: 4,
                               backgroundColor:
                                 item.selisih === "lebih bayar"
-                                  ? "#52c41a"
-                                  : "#faad14",
+                                  ? "lightGreen"
+                                  : "coral",
+                              color: 'black',
+                              fontWeight: 'bolder'
                             }}
                           >
                             {FormEditPungutan(item)}
                           </div>
-                          <div>{EditPungutan(item)}</div>
+                          <div>
+                            {EditPungutan(item)}
+                          </div>
                         </List.Item>
                       )}
                     />
@@ -715,9 +786,9 @@ function RekamDokumenPiutang() {
               </Col>
               <Col span={6} offset={2}>
                 <h4>Keterangan :</h4>
-                <Badge status="success" text="Lebih Bayar" />
+                <Badge color="lightGreen" text="Lebih Bayar" />
                 <br />
-                <Badge status="warning" text="Kurang Bayar" />
+                <Badge color="coral" text="Kurang Bayar" />
               </Col>
             </Row>
             <h1 style={{ fontWeight: "bold", fontSize: 24, marginTop: 14 }}>
@@ -728,9 +799,9 @@ function RekamDokumenPiutang() {
                 <Row style={{ marginBottom: 8 }}>
                   <Col span={6} style={{ display: "flex" }}>
                     <Select
-                      value={name.length === 0 ? null : name}
+                      value={keterangan.length === 0 ? null : keterangan}
                       style={{ width: "90%" }}
-                      onChange={handleName}
+                      onChange={handleKeterangan}
                       size={"small"}
                     >
                       <Option value="Uraian Kesalahan">Uraian Kesalahan</Option>
@@ -741,13 +812,13 @@ function RekamDokumenPiutang() {
                   <Col span={12} style={{ display: "flex" }}>
                     <Input
                       style={{ width: "92%", height: "24px" }}
-                      value={value}
-                      onChange={handleValue}
+                      value={deskripsi}
+                      onChange={handleDeskripsi}
                     />
                   </Col>
                   <Col span={6}>
                     <Button
-                      type="info"
+                      type="primary"
                       size="small"
                       style={{ width: "100%" }}
                       onClick={handleSubmitKeterangan}
@@ -776,7 +847,7 @@ function RekamDokumenPiutang() {
                               maxWidth: "550px",
                             }}
                           >
-                            {item.name}
+                            {item.keterangan}
                           </div>
                           <div
                             style={{
