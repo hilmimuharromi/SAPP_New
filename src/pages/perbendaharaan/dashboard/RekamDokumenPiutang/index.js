@@ -90,7 +90,7 @@ function RekamDokumenPiutang() {
           akun: "Cukai-MMEA",
           nilai: 20000000,
           selisih: "lebih bayar",
-          key: 1,
+          key: 2,
         }
       ],
       keterangan: [],
@@ -177,6 +177,7 @@ function RekamDokumenPiutang() {
   };
 
   const handleTarik = () => {
+    if (Object.values(form.getFieldsValue())[0] !== undefined) { return message.error("Data sudah diTampilkan!"); }
     let dokumen_asal = `${surat}/${nomor}/${tanggal_dokumen}`;
     for (let i = 0; i < db_dokumen_asal.length; i++) {
       if (db_dokumen_asal[i].dokumen_asal === dokumen_asal) {
