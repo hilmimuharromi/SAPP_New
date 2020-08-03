@@ -213,6 +213,9 @@ function RekamDokumenPiutang() {
     setSurat("");
     setNomor("");
     setTanggal_dokumen("");
+    // pungutan
+    setData_pungutan([]);
+    // form
     form.resetFields();
     message.success("Data Berhasil di Kosongkan!");
   };
@@ -226,6 +229,9 @@ function RekamDokumenPiutang() {
     setSurat("");
     setNomor("");
     setTanggal_dokumen("");
+    // pungutan
+    setData_pungutan([]);
+    // form
     form.resetFields();
     message.success("Data Berhasil di Kirim!");
   };
@@ -319,8 +325,6 @@ function RekamDokumenPiutang() {
       message.error("Mohon pilih akun");
     } else if (!selisih) {
       message.error("Mohon pilih jenis selisih");
-    } else if (!nilai) {
-      message.error("Mohon isi nilai");
     } else {
       const newData = [...data_pungutan, ObjData];
       setData_pungutan(newData);
