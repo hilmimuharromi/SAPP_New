@@ -254,13 +254,13 @@ function RekamDokumenPiutang() {
     setPenetapan(e.target.value);
   };
 
-  // const handleSelisih = (val) => {
-  //   setSelisih(val);
-  // };
+  const handleSelisih = (val) => {
+    setSelisih(val);
+  };
 
-  // const handleNilai = (e) => {
-  //   setNilai(e.target.value);
-  // };
+  const handleNilai = (e) => {
+    setNilai(e.target.value);
+  };
 
   const EditPungutan = (item) => {
     function saveEdit() {
@@ -327,35 +327,60 @@ function RekamDokumenPiutang() {
   };
 
   const handleSubmitPungutan = () => {
-    const check = pemberitahuan - penetapan;
-    let ObjData = {
-      key: data_pungutan.length + 1,
-      akun: akun,
-      selisih: pemberitahuan > penetapan ? "kurang bayar" : "lebih bayar",
-      nilai:
-        String(check).match(/-/g) !== null
-          ? String(check).replace("-", "+")
-          : "-" + check,
-    };
-    if (!akun) {
-      message.error("Mohon pilih akun");
-    } else if (!pemberitahuan) {
-      message.error("Mohon Isi Pemberitahuan");
-    } else if (!penetapan) {
-      message.error("Mohon Isi Penetapan");
-    }
-    // else if (!selisih) {
-    //   message.error("Mohon pilih jenis selisih");
-    // } else if (!nilai) {
-    //   message.error("Mohon isi nilai");
-    // }
-    else {
-      const newData = [...data_pungutan, ObjData];
-      setData_pungutan(newData);
-      setAkun("");
-      setSelisih("");
-      setNilai(0);
-      message.success("Sukses di Tambahkan!");
+    if (
+      surat === "SPTNP" ||
+      surat === "SPKTNP" ||
+      surat === "SPPBK" ||
+      surat === "SPKPBK"
+    ) {
+      const check = pemberitahuan - penetapan;
+      let ObjData = {
+        key: data_pungutan.length + 1,
+        akun: akun,
+        selisih:
+          parseInt(pemberitahuan) > parseInt(penetapan)
+            ? "kurang bayar"
+            : "lebih bayar",
+        nilai:
+          String(check).match(/-/g) !== null
+            ? String(check).replace("-", "")
+            : check,
+      };
+      if (!akun) {
+        message.error("Mohon pilih akun");
+      } else if (!pemberitahuan) {
+        message.error("Mohon Isi Pemberitahuan");
+      } else if (!penetapan) {
+        message.error("Mohon Isi Penetapan");
+      } else {
+        const newData = [...data_pungutan, ObjData];
+        setData_pungutan(newData);
+        setAkun("");
+        setPemberitahuan(0);
+        setPenetapan(0);
+        return message.success("Sukses di Tambahkan!");
+      }
+    } else {
+      let ObjData = {
+        key: data_pungutan.length + 1,
+        akun: akun,
+        selisih: selisih,
+        nilai: parseInt(nilai),
+      };
+      if (!akun) {
+        message.error("Mohon pilih akun");
+      } else if (!selisih) {
+        message.error("Mohon pilih jenis selisih");
+      } else if (!nilai) {
+        message.error("Mohon isi nilai");
+      } else {
+        const newData = [...data_pungutan, ObjData];
+        setData_pungutan(newData);
+        setAkun("");
+        setSelisih("");
+        setNilai(0);
+        return message.success("Sukses di Tambahkan!");
+      }
     }
   };
 
@@ -716,85 +741,132 @@ function RekamDokumenPiutang() {
             </h1>
             <Row>
               <Col span={16}>
-                <Row style={{ marginBottom: 8 }}>
-                  <Col span={5} style={{ display: "flex" }}>
-                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>Akun :</h4>
-                    <Select
-                      value={akun.length === 0 ? null : akun}
-                      style={{ width: "60%" }}
-                      onChange={handleAkun}
-                      size={"small"}
-                    >
-                      {surat === "CK1-PENUNDAAN" || surat === "CK1A-BERKALA" ? (
-                        <>
-                          <Option value="Cukai-HT">Cukai HT</Option>
-                          <Option value="Cukai-MMEA">Cukai MMEA</Option>
-                          <Option value="Cukai-EA">Cukai EA</Option>
-                        </>
-                      ) : (
-                        options_akun.map((item) => (
-                          <Option key={item.key} value={item.value}>
-                            {item.name}
-                          </Option>
-                        ))
-                      )}
-                    </Select>
-                  </Col>
-                  <Col span={7} style={{ display: "flex" }}>
-                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>
-                      Pemberitahuan :
-                    </h4>
-                    <Input
-                      style={{ width: "40%", height: "24px" }}
-                      value={pemberitahuan}
-                      onChange={handlePemberitahuan}
-                    />
-                  </Col>
-                  <Col span={6} style={{ display: "flex" }}>
-                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>
-                      Penetapan :
-                    </h4>
-                    <Input
-                      style={{ width: "45%", height: "24px" }}
-                      value={penetapan}
-                      onChange={handlePenetapan}
-                    />
-                  </Col>
-                  {/* <Col span={6} style={{ display: "flex" }}>
-                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>
-                      Selisih :
-                    </h4>
-                    <Select
-                      value={selisih.length === 0 ? null : selisih}
-                      style={{ width: "60%" }}
-                      onChange={handleSelisih}
-                      size={"small"}
-                    >
-                      <Option value="lebih bayar">Lebih Bayar</Option>
-                      <Option value="kurang bayar">Kurang Bayar</Option>
-                    </Select>
-                  </Col>
-                  <Col span={6} style={{ display: "flex" }}>
-                    <h4 style={{ marginRight: 10, marginBottom: 0 }}>
-                      Nilai :
-                    </h4>
-                    <Input
-                      style={{ width: "60%", height: "24px" }}
-                      value={nilai}
-                      onChange={handleNilai}
-                    />
-                  </Col> */}
-                  <Col span={6}>
-                    <Button
-                      type="primary"
-                      size="small"
-                      style={{ width: "100%" }}
-                      onClick={handleSubmitPungutan}
-                    >
-                      Tambah Akun
-                    </Button>
-                  </Col>
-                </Row>
+                {surat === "SPTNP" ||
+                surat === "SPKTNP" ||
+                surat === "SPPBK" ||
+                surat === "SPKPBK" ? (
+                  <Row style={{ marginBottom: 8 }}>
+                    <Col span={5} style={{ display: "flex" }}>
+                      <h4 style={{ marginRight: 10, marginBottom: 0 }}>
+                        Akun :
+                      </h4>
+                      <Select
+                        value={akun.length === 0 ? null : akun}
+                        style={{ width: "60%" }}
+                        onChange={handleAkun}
+                        size={"small"}
+                      >
+                        {surat === "CK1-PENUNDAAN" ||
+                        surat === "CK1A-BERKALA" ? (
+                          <>
+                            <Option value="Cukai-HT">Cukai HT</Option>
+                            <Option value="Cukai-MMEA">Cukai MMEA</Option>
+                            <Option value="Cukai-EA">Cukai EA</Option>
+                          </>
+                        ) : (
+                          options_akun.map((item) => (
+                            <Option key={item.key} value={item.value}>
+                              {item.name}
+                            </Option>
+                          ))
+                        )}
+                      </Select>
+                    </Col>
+                    <Col span={7} style={{ display: "flex" }}>
+                      <h4 style={{ marginRight: 10, marginBottom: 0 }}>
+                        Pemberitahuan :
+                      </h4>
+                      <Input
+                        style={{ width: "40%", height: "24px" }}
+                        value={pemberitahuan}
+                        onChange={handlePemberitahuan}
+                      />
+                    </Col>
+                    <Col span={6} style={{ display: "flex" }}>
+                      <h4 style={{ marginRight: 10, marginBottom: 0 }}>
+                        Penetapan :
+                      </h4>
+                      <Input
+                        style={{ width: "45%", height: "24px" }}
+                        value={penetapan}
+                        onChange={handlePenetapan}
+                      />
+                    </Col>
+                    <Col span={6}>
+                      <Button
+                        type="primary"
+                        size="small"
+                        style={{ width: "100%" }}
+                        onClick={handleSubmitPungutan}
+                      >
+                        Tambah Akun
+                      </Button>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row style={{ marginBottom: 8 }}>
+                    <Col span={6} style={{ display: "flex" }}>
+                      <h4 style={{ marginRight: 10, marginBottom: 0 }}>
+                        Akun :
+                      </h4>
+                      <Select
+                        value={akun.length === 0 ? null : akun}
+                        style={{ width: "65%" }}
+                        onChange={handleAkun}
+                        size={"small"}
+                      >
+                        {surat === "CK1-PENUNDAAN" ||
+                        surat === "CK1A-BERKALA" ? (
+                          <>
+                            <Option value="Cukai-HT">Cukai HT</Option>
+                            <Option value="Cukai-MMEA">Cukai MMEA</Option>
+                            <Option value="Cukai-EA">Cukai EA</Option>
+                          </>
+                        ) : (
+                          options_akun.map((item) => (
+                            <Option key={item.key} value={item.value}>
+                              {item.name}
+                            </Option>
+                          ))
+                        )}
+                      </Select>
+                    </Col>
+                    <Col span={6} style={{ display: "flex" }}>
+                      <h4 style={{ marginRight: 10, marginBottom: 0 }}>
+                        Selisih :
+                      </h4>
+                      <Select
+                        value={selisih.length === 0 ? null : selisih}
+                        style={{ width: "65%" }}
+                        onChange={handleSelisih}
+                        size={"small"}
+                      >
+                        <Option value="lebih bayar">Lebih Bayar</Option>
+                        <Option value="kurang bayar">Kurang Bayar</Option>
+                      </Select>
+                    </Col>
+                    <Col span={6} style={{ display: "flex" }}>
+                      <h4 style={{ marginRight: 10, marginBottom: 0 }}>
+                        Nilai :
+                      </h4>
+                      <Input
+                        style={{ width: "65%", height: "24px" }}
+                        value={nilai}
+                        onChange={handleNilai}
+                      />
+                    </Col>
+                    <Col span={6}>
+                      <Button
+                        type="primary"
+                        size="small"
+                        style={{ width: "100%" }}
+                        onClick={handleSubmitPungutan}
+                      >
+                        Tambah Akun
+                      </Button>
+                    </Col>
+                  </Row>
+                )}
                 <Row justify="space-between">
                   <Col span={24}>
                     <List
