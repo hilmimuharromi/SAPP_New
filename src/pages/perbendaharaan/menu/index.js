@@ -1,16 +1,12 @@
 import {
   React,
   Input,
-  Select,
   Row,
   Col,
   Button,
-  PrinterFilled,
   PlusOutlined,
   useHistory,
 } from "../libraries/dependencies";
-
-const { Option } = Select;
 const { Search } = Input;
 
 export default function Menu({ tes }) {
@@ -20,16 +16,6 @@ export default function Menu({ tes }) {
   };
   return (
     <Row justify="start" style={{ backgroundColor: "gray", padding: 8 }}>
-      <Col span={5}>
-        {/* <div className="site-input-group-wrapper">
-          <Input.Group compact>
-            <Select defaultValue="keys" style={{ width: 200 }}>
-              <Option value="npwp">npwp</Option>
-              <Option value="status">status</Option>
-            </Select>
-          </Input.Group>
-        </div> */}
-      </Col>
       <Col span={5}>
         <Search
           placeholder="Search.."
@@ -45,12 +31,6 @@ export default function Menu({ tes }) {
           size={"middle"}
           onClick={handleNavigate}
         />
-        {/* <Button
-          type="info"
-          icon={<PrinterFilled />}
-          size={"middle"}
-          style={{ marginLeft: 8 }}
-        /> */}
       </Col>
     </Row>
   );

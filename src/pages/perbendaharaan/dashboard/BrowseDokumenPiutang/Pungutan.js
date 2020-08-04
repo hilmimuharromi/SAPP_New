@@ -1,4 +1,4 @@
-import { React, Card, Table } from "../../libraries/dependencies";
+import { React, Table } from "../../libraries/dependencies";
 import { convertToRupiah } from "../../libraries/functions";
 
 export default function Pungutan() {

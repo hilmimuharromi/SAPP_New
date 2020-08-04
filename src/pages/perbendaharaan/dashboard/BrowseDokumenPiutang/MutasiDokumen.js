@@ -1,7 +1,6 @@
 import {
   React,
   useState,
-  Card,
   Table,
   Button,
   Modal,

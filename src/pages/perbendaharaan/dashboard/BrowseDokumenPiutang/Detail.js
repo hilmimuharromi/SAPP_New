@@ -6,7 +6,7 @@ import {
   Button,
   Modal,
 } from "../../libraries/dependencies";
-
+import Iframe from "react-iframe";
 export default function Detail() {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
@@ -84,7 +84,15 @@ export default function Detail() {
         onOk={() => setModal(false)}
         onCancel={() => setModal(false)}
       >
-        <p>{contentModal.nilai}</p>
+        {/* <p>{contentModal.nilai}</p> */}
+        <Iframe
+          width="100%"
+          height="600"
+          src="https://www.docdroid.net/i25OJEV/pib-pdf"
+          frameborder="0"
+          allowtransparency
+          allowfullscreen
+        />
       </Modal>
       <List
         size="small"

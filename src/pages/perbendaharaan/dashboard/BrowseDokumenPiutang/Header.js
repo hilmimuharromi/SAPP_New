@@ -7,8 +7,15 @@ import {
   Modal,
   // Row,
 } from "../../libraries/dependencies";
+import Iframe from "react-iframe";
+// import PDFViewer from "pdf-viewer-reactjs";
+// import { Document, Page } from "react-pdf";
+// import { Document } from "react-pdf/dist/entry.webpack";
+// import samplePDF from "./tes.pdf";
 import Menu from "../../menu/index";
-
+// import Viewer from "@phuocng/react-pdf-viewer";
+// import "react-pdf/dist/Page/AnnotationLayer.css";
+import "@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css";
 export default function Header() {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
@@ -139,7 +146,7 @@ export default function Header() {
       jenisDokumen: "SPTNP",
       nomorDokumen: "0001/WBC1/2020",
       tanggalDokumen: "16/07/2020",
-      status: "Surat Teguran",
+      status: "Surat Sita",
       npwpPerusahaan: "12345678912344",
       namaPerusahaan: "PT Testing Indonesia",
       tanggalJatuhTempo: "16/09/2020",
@@ -203,7 +210,12 @@ export default function Header() {
         val.status === value ||
         val.nomorDokumen === value ||
         val.jenisDokumen === value ||
-        val.jenisDokAsal === value
+        val.jenisDokAsal === value ||
+        val.namaPerusahaan === value ||
+        val.npwpPerusahaan === value ||
+        val.tanggalDokumen === value ||
+        val.kantorPenerbit === value ||
+        val.kantorMonitor === value
       );
     });
 
@@ -221,13 +233,21 @@ export default function Header() {
         pagination={{ pageSize: 5, showQuickJumper: true }}
         scroll={{ x: 1500 }}
       />
+      <div></div>
       <Modal
         title={contentModal.no_dokumen}
         visible={showModal}
         onOk={() => setModal(false)}
         onCancel={() => setModal(false)}
       >
-        <p>{contentModal.nama_importir}</p>
+        <Iframe
+          width="100%"
+          height="600"
+          src="https://www.docdroid.net/wpFJxVV/sptnp-pdf"
+          frameborder="0"
+          allowtransparency
+          allowfullscreen
+        />
       </Modal>
     </Card>
   );
