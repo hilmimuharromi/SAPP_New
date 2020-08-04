@@ -76,7 +76,7 @@ export default function Detail() {
   }
 
   return (
-    <Card className="card-layout">
+    <Card>
       <h2>Detail</h2>
       <Modal
         title={contentModal.judul}

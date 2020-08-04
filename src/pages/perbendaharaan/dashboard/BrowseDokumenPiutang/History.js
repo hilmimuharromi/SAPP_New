@@ -31,9 +31,9 @@ export default function History() {
     },
   ];
   return (
-    <Card className="card-layout">
-      <h2>History</h2>
+    <>
+      <h3 style={{ marginLeft: "10px" }}>History</h3>
       <Table dataSource={data} columns={column} />
-    </Card>
+    </>
   );
 }

@@ -91,8 +91,8 @@ export default function Pungutan() {
   ];
 
   return (
-    <Card className="card-layout-pungutan">
-      <h2>Pungutan</h2>
+    <>
+      <h3 style={{ marginLeft: "10px" }}>Pungutan</h3>
       <Table
         size={"small"}
         pagination={false}
@@ -100,6 +100,6 @@ export default function Pungutan() {
         showHeader={false}
         columns={column}
       />
-    </Card>
+    </>
   );
 }

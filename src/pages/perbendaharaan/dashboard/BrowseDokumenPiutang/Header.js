@@ -12,6 +12,7 @@ import Menu from "../../menu/index";
 export default function Header() {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
+  const [searchData, setSearchData] = useState([]);
   function handleLihat(record) {
     setContent(record);
     setModal(true);
@@ -102,7 +103,7 @@ export default function Header() {
     },
   ];
 
-  const data = [
+  const dataAwal = [
     {
       key: "1",
       jenisDokumen: "SPTNP",
@@ -194,13 +195,28 @@ export default function Header() {
       kantorMonitor: "040300",
     },
   ];
+  function tes(value) {
+    console.log(value, "masuk sini");
+
+    const newData = dataAwal.filter((val) => {
+      return (
+        val.status === value ||
+        val.nomorDokumen === value ||
+        val.jenisDokumen === value ||
+        val.jenisDokAsal === value
+      );
+    });
+
+    setSearchData(newData);
+  }
+  // let siswa = 'saya'
   return (
     <Card className="card-layout">
-      <Menu />
+      <Menu tes={tes} />
       <h3>BROWSE DOKUMEN PIUTANG</h3>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={searchData.length > 0 ? searchData : dataAwal}
         size="small"
         pagination={{ pageSize: 5, showQuickJumper: true }}
         scroll={{ x: 1500 }}
