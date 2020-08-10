@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/compatible": "^1.0.5",
     "@ant-design/icons": "^4.2.1",
     "@phuocng/react-pdf-viewer": "^1.7.0",
     "@react-pdf/renderer": "^1.6.10",

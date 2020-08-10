@@ -8,6 +8,7 @@ import { extendMoment } from "moment-range";
 export * from "react";
 export * from "react-router-dom";
 export * from "antd";
+export * from "@ant-design/compatible";
 export * from "@ant-design/icons";
 
 // @for use other comp
