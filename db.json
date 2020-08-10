@@ -1,0 +1,409 @@
+{
+  "rekam": [
+    {
+      "id": 1,
+      "listTdKeterangan": [
+        {
+          "jenisKeterangan": "Uraian Kesalahan",
+          "seri": 1,
+          "uraian": "SALAH PEMBERITAHUAN TARIF BARANG SERI KE 1 DAN 2"
+        },
+        {
+          "jenisKeterangan": "PASAL",
+          "seri": 1,
+          "uraian": "27 PMK03/2020"
+        },
+        {
+          "jenisKeterangan": "Uraian Kesalahan",
+          "seri": 2,
+          "uraian": "SALAH PEMBERITAHUAN NILAI PABEAN"
+        }
+      ],
+      "listTdPungutan": [
+        {
+          "kodeAkun": "BM",
+          "lebihBayar": "T",
+          "nilai": 5000000,
+          "nilaiDiberitahukan": 0,
+          "nilaiPenetapan": 0,
+          "seri": 1
+        },
+        {
+          "kodeAkun": "PPN",
+          "lebihBayar": "T",
+          "nilai": 2500000,
+          "nilaiDiberitahukan": 0,
+          "nilaiPenetapan": 0,
+          "seri": 1
+        },
+        {
+          "kodeAkun": "PPH",
+          "lebihBayar": "T",
+          "nilai": 2500000,
+          "nilaiDiberitahukan": 0,
+          "nilaiPenetapan": 0,
+          "seri": 1
+        }
+      ],
+      "nipRekam": "19990404201400001",
+      "tdHeader": {
+        "alamatPerusahaan": "ALAMAT PT TESTING",
+        "idPerusahaan": "123456789101112",
+        "idPpjk": "",
+        "jenisDokumen": "STPNP",
+        "jenisDokumenAsal": "PIB",
+        "kodeBidang": "10",
+        "kodeKantorMonitor": "009000",
+        "kodeKantorPenerbit": "009000",
+        "kodeProses": "10",
+        "namaPerusahaan": "PT TESTING",
+        "namaPpjk": "",
+        "nilai": 10000000,
+        "nipPetugas1": "19990404201400001",
+        "nipPetugas2": "",
+        "nomorDokumenAsal": "123456",
+        "nomordokumen": "000010",
+        "tanggalDokumen": "2020-08-01 10:00:00",
+        "tanggalDokumenAsal": "2020-08-07 10:00:00",
+        "tanggalJatuhTempo": "2020-09-01 10:00:00"
+      }
+    },
+    {
+      "tdHeader": {
+        "alamatPerusahaan": "Jalan Alamat PT Testing Indonesia",
+        "idPerusahaan": "12345678912345",
+        "idPpjk": "",
+        "jenisDokumen": "kosong",
+        "jenisDokumenAsal": "SPTNP",
+        "kodeBidang": "String",
+        "kodeKantorMonitor": "050905 - KPPBC TMP AA",
+        "kodeKantorPenerbit": "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
+        "kodeProses": "100",
+        "namaPerusahaan": "PT TESTING INDONESIA",
+        "namaPpjk": "",
+        "nilai": 0,
+        "nipPetugas1": "198989504523538987 - Andhika Kusuma",
+        "nipPetugas2": "198989504523538987 - Andhika Kusuma",
+        "nomorDokumenAsal": "string",
+        "nomordokumen": "000001",
+        "tanggalDokumen": "2020-08-11 09:16:25",
+        "tanggalDokumenAsal": "2001-06-05 12:00:00",
+        "tanggalJatuhTempo": "2005-06-20 09:10:11"
+      },
+      "listTdKeterangan": [
+        [
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 1,
+            "uraian": "salah lu"
+          },
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 2,
+            "uraian": "salah gue"
+          },
+          {
+            "jenisKeterangan": "Alasan",
+            "seri": 3,
+            "uraian": "ga tau"
+          },
+          {
+            "jenisKeterangan": "Pasal",
+            "seri": 4,
+            "uraian": "PASAL 99"
+          }
+        ]
+      ],
+      "listTdPungutan": [
+        [
+          {
+            "akun": "Bea Masuk",
+            "seri": 1,
+            "lebihBayar": "YA",
+            "nilaiDiberitahukan": "10000",
+            "nilaiPenetapan": "20000",
+            "nilai": 30000
+          },
+          {
+            "akun": "Bea Masuk",
+            "seri": 2,
+            "lebihBayar": "TIDAK",
+            "nilaiDiberitahukan": "50000",
+            "nilaiPenetapan": "20000",
+            "nilai": 30000
+          }
+        ]
+      ],
+      "id": 2
+    },
+    {
+      "tdHeader": {
+        "alamatPerusahaan": "Jalan Raya Kenangan",
+        "idPerusahaan": "12345678912345",
+        "idPpjk": "",
+        "jenisDokumen": "kosong",
+        "jenisDokumenAsal": "CK1-PENUNDAAN",
+        "kodeBidang": "String",
+        "kodeKantorMonitor": "050905 - KPPBC TMP AA",
+        "kodeKantorPenerbit": "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
+        "kodeProses": "100",
+        "namaPerusahaan": "PT TESTING INDONESIA 3",
+        "namaPpjk": "",
+        "nilai": 5000000,
+        "nipPetugas1": "198989504523538999 - Duloh Ahmed",
+        "nipPetugas2": "198989504523538999 - Duloh Ahmed",
+        "nomorDokumenAsal": "string",
+        "nomordokumen": "000003",
+        "tanggalDokumen": "2020-08-11 09:31:54",
+        "tanggalDokumenAsal": "2020-06-05 12:00:00",
+        "tanggalJatuhTempo": "2006-06-20 06:00:00"
+      },
+      "listTdKeterangan": [
+        [
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 1,
+            "uraian": "salah 1"
+          },
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 2,
+            "uraian": "salah 2"
+          },
+          {
+            "jenisKeterangan": "Alasan",
+            "seri": 3,
+            "uraian": "alasan 1"
+          },
+          {
+            "jenisKeterangan": "Alasan",
+            "seri": 4,
+            "uraian": "alasan 2"
+          }
+        ]
+      ],
+      "listTdPungutan": [
+        [
+          {
+            "akun": "Cukai-HT",
+            "nilai": 10000000,
+            "lebihBayar": "YA"
+          },
+          {
+            "akun": "Cukai-MMEA",
+            "nilai": 20000000,
+            "lebihBayar": "YA"
+          },
+          {
+            "akun": "Cukai-EA",
+            "seri": 3,
+            "lebihBayar": "TIDAK",
+            "nilaiDiberitahukan": 0,
+            "nilaiPenetapan": 0,
+            "nilai": 5000000
+          }
+        ]
+      ],
+      "id": 3
+    },
+    {
+      "tdHeader": {
+        "idPpjk": "",
+        "jenisDokumen": "kosong",
+        "kodeBidang": "String",
+        "kodeProses": "100",
+        "namaPpjk": "",
+        "nilai": 0,
+        "nomorDokumenAsal": "string",
+        "tanggalDokumen": "2020-08-10 09:36:00",
+        "tanggalDokumenAsal": "2020-08-10 09:36:00",
+        "tanggalJatuhTempo": "2020-08-10 09:36:00"
+      },
+      "listTdKeterangan": [
+        [
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 1,
+            "uraian": "1"
+          },
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 2,
+            "uraian": "2"
+          },
+          {
+            "jenisKeterangan": "Alasan",
+            "seri": 3,
+            "uraian": "asa"
+          }
+        ]
+      ],
+      "listTdPungutan": [
+        []
+      ],
+      "id": 4
+    },
+    {
+      "tdHeader": {
+        "idPpjk": "",
+        "jenisDokumen": "kosong",
+        "kodeBidang": "String",
+        "kodeProses": "100",
+        "namaPpjk": "",
+        "nilai": 1,
+        "nomorDokumenAsal": "string",
+        "tanggalDokumen": "2020-08-10 09:52:24",
+        "tanggalDokumenAsal": "2020-08-10 09:52:24",
+        "tanggalJatuhTempo": "2020-08-10 09:52:24"
+      },
+      "listTdKeterangan": [
+        [
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 1,
+            "uraian": "1"
+          },
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 2,
+            "uraian": "2"
+          },
+          {
+            "jenisKeterangan": "Alasan",
+            "seri": 1,
+            "uraian": "1"
+          },
+          {
+            "jenisKeterangan": "Alasan",
+            "seri": 2,
+            "uraian": "2"
+          },
+          {
+            "jenisKeterangan": "Pasal",
+            "seri": 1,
+            "uraian": "1"
+          },
+          {
+            "jenisKeterangan": "Pasal",
+            "seri": 2,
+            "uraian": "2"
+          }
+        ]
+      ],
+      "listTdPungutan": [
+        [
+          {
+            "akun": "Bea Masuk",
+            "seri": 1,
+            "lebihBayar": "YA",
+            "nilaiDiberitahukan": 0,
+            "nilaiPenetapan": 0,
+            "nilai": 1
+          },
+          {
+            "akun": "Bea Masuk",
+            "seri": 2,
+            "lebihBayar": "YA",
+            "nilaiDiberitahukan": 0,
+            "nilaiPenetapan": 0,
+            "nilai": 2
+          },
+          {
+            "akun": "Bea Masuk",
+            "seri": 3,
+            "lebihBayar": "TIDAK",
+            "nilaiDiberitahukan": 0,
+            "nilaiPenetapan": 0,
+            "nilai": 1
+          }
+        ]
+      ],
+      "id": 5
+    },
+    {
+      "tdHeader": {
+        "idPpjk": "",
+        "jenisDokumen": "kosong",
+        "kodeBidang": "String",
+        "kodeProses": "100",
+        "namaPpjk": "",
+        "nilai": 1,
+        "nomorDokumenAsal": "string",
+        "tanggalDokumen": "2020-08-10 09:52:50",
+        "tanggalDokumenAsal": "2020-08-10 09:52:50",
+        "tanggalJatuhTempo": "2020-08-10 09:52:50"
+      },
+      "listTdKeterangan": [
+        [
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 1,
+            "uraian": "1"
+          },
+          {
+            "jenisKeterangan": "Uraian Kesalahan",
+            "seri": 2,
+            "uraian": "2"
+          },
+          {
+            "jenisKeterangan": "Alasan",
+            "seri": 1,
+            "uraian": "1"
+          },
+          {
+            "jenisKeterangan": "Alasan",
+            "seri": 2,
+            "uraian": "2"
+          },
+          {
+            "jenisKeterangan": "Pasal",
+            "seri": 1,
+            "uraian": "1"
+          },
+          {
+            "jenisKeterangan": "Pasal",
+            "seri": 2,
+            "uraian": "2"
+          }
+        ]
+      ],
+      "listTdPungutan": [
+        [
+          {
+            "akun": "Bea Masuk",
+            "seri": 1,
+            "lebihBayar": "YA",
+            "nilaiDiberitahukan": 0,
+            "nilaiPenetapan": 0,
+            "nilai": 1
+          },
+          {
+            "akun": "Bea Masuk",
+            "seri": 2,
+            "lebihBayar": "YA",
+            "nilaiDiberitahukan": 0,
+            "nilaiPenetapan": 0,
+            "nilai": 2
+          },
+          {
+            "akun": "Bea Masuk",
+            "seri": 3,
+            "lebihBayar": "TIDAK",
+            "nilaiDiberitahukan": 0,
+            "nilaiPenetapan": 0,
+            "nilai": 1
+          },
+          {
+            "akun": "BM AD",
+            "seri": 4,
+            "lebihBayar": "YA",
+            "nilaiDiberitahukan": 0,
+            "nilaiPenetapan": 0,
+            "nilai": 3
+          }
+        ]
+      ],
+      "id": 6
+    }
+  ]
+}

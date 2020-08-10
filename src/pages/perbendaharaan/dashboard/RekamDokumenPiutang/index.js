@@ -1,5 +1,6 @@
 import {
   React,
+  axios,
   Layout,
   Row,
   Col,
@@ -108,6 +109,7 @@ function RekamDokumenPiutang() {
   const [alamat_perusahaan, setAlamat_Perusahaan] = useState("");
   const [ppjk, setPpjk] = useState("");
   const [petugas, setPetugas] = useState("");
+  let [totalNilai, setTotalNilai] = useState(0)
   const [form] = Form.useForm();
   // Pungutan
   // ==============================================
@@ -204,15 +206,6 @@ function RekamDokumenPiutang() {
           ppjk: db_dokumen_asal[i].ppjk,
           petugas: db_dokumen_asal[i].petugas,
         });
-        // setKantor_penerbit(db_dokumen_asal[i].kantor_penerbit);
-        // setKantor_monitor(db_dokumen_asal[i].kantor_monitor);
-        // setTanggal_jatuh_tempo(
-        //   moment(db_dokumen_asal[i].tanggal_jatuh_tempo, "YYYY-MM-DD hh:mm:ss")
-        // );
-        // setPerusahaan(db_dokumen_asal[i].perusahaan);
-        // setAlamat_Perusahaan(db_dokumen_asal[i].alamat_perusahaan);
-        // setPpjk(db_dokumen_asal[i].ppjk);
-        // setPetugas(db_dokumen_asal[i].petugas);
         if (db_dokumen_asal[i].pungutan.length > 0) {
           let arrData = [];
           db_dokumen_asal[i].pungutan.map((item) => arrData.push(item));
@@ -241,6 +234,11 @@ function RekamDokumenPiutang() {
   };
 
   const handleSimpan = () => {
+    data_pungutan.map(item => {
+      if(item.lebihBayar !== 'YA'){
+        totalNilai += item.nilai
+      }
+    })
     const {
       idPerusahaan,
       namaPerusahaan,
@@ -267,7 +265,7 @@ function RekamDokumenPiutang() {
         kodeProses: "100",
         namaPerusahaan: namaPerusahaan,
         namaPpjk: ppjk,
-        nilai: 0,
+        nilai: totalNilai,
         nipPetugas1: petugas,
         nipPetugas2: petugas,
         nomorDokumenAsal: "string",
@@ -287,9 +285,27 @@ function RekamDokumenPiutang() {
     console.log(data, "submit data values");
     console.log(payload, "payload data submit");
 
-    // // all form
-    form.resetFields();
-    message.success("Data Berhasil di Kirim!");
+    // // post rekam
+    axios({
+      method: 'post',
+      url: 'http://localhost:3000/rekam',
+      data: payload
+    })
+    .then(({
+        data
+      }) => {
+       console.log(data, 'berhasil');
+       message.success("Data Berhasil di Kirim!");
+      })
+      .catch(error => {
+        console.log((error, 'error'));
+        message.error("ada yang salah!");
+      })
+      .finally(_ => {
+        console.log('sukses');
+      })
+    // form.resetFields();
+    
   };
 
   // Function - Pungutan
@@ -368,16 +384,15 @@ function RekamDokumenPiutang() {
 
   const handleSubmitPungutan = () => {
     function findSeri(res) {
-      let getSeri = data_pungutan.map((item) => {
-        if (item.akun === akun) {
-          return item;
-        } else {
-          return null;
-        }
+      let getSeri = data_pungutan.filter((item) => {
+        return item.akun === akun
       });
       if (getSeri.length < 1) {
-        return (res = 1);
+        console.log(getSeri, 'seri baru');
+        return 1;
       } else {
+        console.log(getSeri, 'seri lama');
+
         return getSeri.length + 1;
       }
     }
@@ -517,15 +532,18 @@ function RekamDokumenPiutang() {
 
   const handleSubmitKeterangan = () => {
     function findSeri(res) {
-      let getSeri = data_keterangan.map((item) => {
-        if (item.jenisKeterangan === jenisKeterangan) {
-          return item;
-        } else {
-          return null;
-        }
+      let getSeri = data_keterangan.filter((item) => {
+        // if (item.jenisKeterangan === jenisKeterangan) {
+          // console.log(item.jenisKeterangan, jenisKeterangan, 'masuk sama');
+          return item.jenisKeterangan === jenisKeterangan;
+        // } else {
+        //   return null;
+        // }
       });
+     
       if (getSeri.length < 1) {
-        return (res = 1);
+        
+        return 1;
       } else {
         return getSeri.length + 1;
       }
