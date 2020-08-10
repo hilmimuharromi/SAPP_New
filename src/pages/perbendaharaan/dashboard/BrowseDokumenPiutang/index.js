@@ -6,10 +6,12 @@ import {
   Col,
   Button,
   Tabs,
+  Card,
 } from "../../libraries/dependencies";
 import Pungutan from "./Pungutan";
 import Detail from "./Detail";
-import Timeline from "./Timeline";
+// import Timeline from "./Timeline";
+import NewTimeline from "./NewTimeline";
 import History from "./History";
 import MutasiDokumen from "./MutasiDokumen";
 import Header from "./Header";
@@ -20,6 +22,7 @@ const { TabPane } = Tabs;
 
 export default function BrowseDokumenPiutang() {
   const [togleChart, setTogleChart] = useState(true);
+  const [dataTable, setDataTable] = useState("");
 
   function callback(key) {
     console.log(key);
@@ -41,14 +44,19 @@ export default function BrowseDokumenPiutang() {
       <Row justify="center">
         <Button onClick={() => setTogleChart(!togleChart)}>Change Mode</Button>
       </Row>
+      <Row>{JSON.stringify(dataTable)}</Row>
       <Row justify="center" style={{ marginTop: "10px" }}>
         <Col span={24}>
-          <Header />
+          <Header setDataTable={setDataTable} />
         </Col>
       </Row>
       <Row justify="center">
         <Col span={24} style={{ marginTop: "10px" }}>
-          <Timeline />
+          {/* <Timeline /> */}
+          <Card className="card-layout">
+            <h2>Timeline</h2>
+            <NewTimeline bgcolor={"#ef6c00"} completed={90} />
+          </Card>
         </Col>
       </Row>
       <Row

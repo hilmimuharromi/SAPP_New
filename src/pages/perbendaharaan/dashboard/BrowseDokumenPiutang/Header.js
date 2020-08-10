@@ -16,7 +16,7 @@ import Menu from "../../menu/index";
 // import Viewer from "@phuocng/react-pdf-viewer";
 // import "react-pdf/dist/Page/AnnotationLayer.css";
 import "@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css";
-export default function Header() {
+export default function Header(props) {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
   const [searchData, setSearchData] = useState([]);
@@ -204,7 +204,6 @@ export default function Header() {
   ];
   function tes(value) {
     console.log(value, "masuk sini");
-
     const newData = dataAwal.filter((val) => {
       return (
         val.status === value ||
@@ -225,13 +224,20 @@ export default function Header() {
   return (
     <Card className="card-layout">
       <Menu tes={tes} />
-      <h3>BROWSE DOKUMEN PIUTANG</h3>
+      {/* <h3>BROWSE DOKUMEN PIUTANG</h3> */}
       <Table
         columns={columns}
         dataSource={searchData.length > 0 ? searchData : dataAwal}
         size="small"
         pagination={{ pageSize: 5, showQuickJumper: true }}
         scroll={{ x: 1500 }}
+        onRow={(record, rowIndex) => {
+          return {
+            onClick: (event) => {
+              props.setDataTable(record);
+            },
+          };
+        }}
       />
       <div></div>
       <Modal

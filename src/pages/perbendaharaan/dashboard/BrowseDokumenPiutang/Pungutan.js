@@ -68,11 +68,6 @@ export default function Pungutan() {
   const filterData = dataAwal.filter((data) => {
     return data.nilai !== null;
   });
-
-  // const newData = filterData.map((data) => {
-  //   data.nilai = convertToRupiah(data.nilai);
-  // });
-
   filterData.map((data) => {
     return (data.nilai = convertToRupiah(data.nilai));
   });
