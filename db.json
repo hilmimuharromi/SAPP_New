@@ -404,6 +404,36 @@
         ]
       ],
       "id": 6
+    },
+    {
+      "tdHeader": {
+        "alamatPerusahaan": "Jalan Alamat PT Testing Indonesia",
+        "idPerusahaan": "12345678912345",
+        "idPpjk": "",
+        "jenisDokumen": "kosong",
+        "jenisDokumenAsal": "13",
+        "kodeBidang": "String",
+        "kodeKantorMonitor": "050905 - KPPBC TMP AA",
+        "kodeKantorPenerbit": "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
+        "kodeProses": "100",
+        "namaPerusahaan": "PT TESTING INDONESIA",
+        "namaPpjk": "",
+        "nilai": 0,
+        "nipPetugas1": "198989504523538987 - Andhika Kusuma",
+        "nipPetugas2": "198989504523538987 - Andhika Kusuma",
+        "nomorDokumenAsal": "string",
+        "nomordokumen": "000001",
+        "tanggalDokumen": "2020-08-10 10:38:30",
+        "tanggalDokumenAsal": "2001-06-05 12:00:00",
+        "tanggalJatuhTempo": "2005-06-20 09:10:11"
+      },
+      "listTdKeterangan": [
+        []
+      ],
+      "listTdPungutan": [
+        []
+      ],
+      "id": 7
     }
   ]
 }

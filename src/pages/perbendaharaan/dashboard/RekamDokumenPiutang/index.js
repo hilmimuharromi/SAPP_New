@@ -41,7 +41,7 @@ function RekamDokumenPiutang() {
       kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
       kantor_monitor: "050905 - KPPBC TMP AA",
       tanggal_jatuh_tempo: "05/06/2020 09:10:11",
-      dokumen_asal: "SPTNP/000001/05/06/2001",
+      dokumen_asal: "13/000001/05/06/2001",
       // jenisDokumenAsal: "S000001",
       // nomor: "000001",
       // tanggal: "2019-02-07", // MM/DD/YYYY
@@ -58,7 +58,7 @@ function RekamDokumenPiutang() {
       kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
       kantor_monitor: "050905 - KPPBC TMP AA",
       tanggal_jatuh_tempo: "06/06/2006",
-      dokumen_asal: "SPP/000002/05/06/2020",
+      dokumen_asal: "15/000002/05/06/2020",
       // jenisDokumenAsal: "S000002",
       // nomor: "000002",
       // tanggal: "2020-02-08", // MM/DD/YYYY
@@ -75,7 +75,7 @@ function RekamDokumenPiutang() {
       kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
       kantor_monitor: "050905 - KPPBC TMP AA",
       tanggal_jatuh_tempo: "06/06/2006",
-      dokumen_asal: "CK1-PENUNDAAN/000003/05/06/2020",
+      dokumen_asal: "31/000003/05/06/2020",
       // jenisDokumenAsal: "S000002",
       // nomor: "000002",
       // tanggal: "2020-02-08", // MM/DD/YYYY
@@ -102,6 +102,7 @@ function RekamDokumenPiutang() {
   ];
   const [tanggalDokumen, setTanggalDokumen] = useState("");
   const [tanggal_jatuh_tempo, setTanggal_jatuh_tempo] = useState("");
+  const [jenisDokumen, setJenisDokumen] = useState('')
   const [jenisDokumenAsal, setJenisDokumenAsal] = useState("");
   const [nomor, setNomor] = useState("");
   const [tanggal_dokumen_asal, setTanggal_dokumen_asal] = useState("");
@@ -109,7 +110,7 @@ function RekamDokumenPiutang() {
   const [alamat_perusahaan, setAlamat_Perusahaan] = useState("");
   const [ppjk, setPpjk] = useState("");
   const [petugas, setPetugas] = useState("");
-  let [totalNilai, setTotalNilai] = useState(0)
+  let totalNilai = 0
   const [form] = Form.useForm();
   // Pungutan
   // ==============================================
@@ -218,16 +219,8 @@ function RekamDokumenPiutang() {
   };
 
   const handleBersihkan = () => {
-    // others
-    // setKantor_penerbit("");
-    // setKantor_monitor("");
-    // setTanggal_jatuh_tempo("");
-    // 3 params
-    // setJenisDokumenAsal("");
-    // setNomor("");
-    // setTanggal_dokumen_asal("");
-    // pungutan
-    // setData_pungutan([]);
+    setData_pungutan([]);
+    setData_keterangan([])
     // all form
     form.resetFields();
     message.success("Data Berhasil di Kosongkan!");
@@ -235,9 +228,7 @@ function RekamDokumenPiutang() {
 
   const handleSimpan = () => {
     data_pungutan.map(item => {
-      if(item.lebihBayar !== 'YA'){
-        totalNilai += item.nilai
-      }
+      return item.lebihBayar !== 'YA' ? totalNilai += item.nilai : null
     })
     const {
       idPerusahaan,
@@ -245,6 +236,7 @@ function RekamDokumenPiutang() {
       alamatPerusahaan,
       kantorPenerbit,
       kantorMonitor,
+      jenisDokumen,
       jenisDokumenAsal,
       nomorDokumenAsal,
       tanggalDokumen,
@@ -257,7 +249,7 @@ function RekamDokumenPiutang() {
         alamatPerusahaan: alamatPerusahaan,
         idPerusahaan: idPerusahaan,
         idPpjk: ppjk,
-        jenisDokumen: "kosong",
+        jenisDokumen: jenisDokumen,
         jenisDokumenAsal: jenisDokumenAsal,
         kodeBidang: "String",
         kodeKantorMonitor: kantorMonitor,
@@ -281,29 +273,28 @@ function RekamDokumenPiutang() {
       listTdKeterangan: [data_keterangan],
       listTdPungutan: [data_pungutan],
     };
-    let data = form.getFieldsValue();
-    console.log(data, "submit data values");
     console.log(payload, "payload data submit");
-
     // // post rekam
-    axios({
-      method: 'post',
-      url: 'http://localhost:3000/rekam',
-      data: payload
-    })
-    .then(({
-        data
-      }) => {
-       console.log(data, 'berhasil');
-       message.success("Data Berhasil di Kirim!");
-      })
-      .catch(error => {
-        console.log((error, 'error'));
-        message.error("ada yang salah!");
-      })
-      .finally(_ => {
-        console.log('sukses');
-      })
+    // axios({
+    //   method: 'post',
+    //   url: 'http://localhost:3000/rekam',
+    //   data: payload
+    // })
+    // .then(({
+    //     data
+    //   }) => {
+    //    console.log(data, 'berhasil');
+    //    message.success("Data Berhasil di Kirim!");
+    //   })
+    //   .catch(error => {
+    //     console.log((error, 'error'));
+    //     message.error("ada yang salah!");
+    //   })
+    //   .finally(_ => {
+    //     console.log('sukses');
+    //   })
+
+
     // form.resetFields();
     
   };
@@ -397,10 +388,10 @@ function RekamDokumenPiutang() {
       }
     }
     if (
-      jenisDokumenAsal === "SPTNP" ||
-      jenisDokumenAsal === "SPKTNP" ||
-      jenisDokumenAsal === "SPPBK" ||
-      jenisDokumenAsal === "SPKPBK"
+      jenisDokumenAsal === "13" ||
+      jenisDokumenAsal === "14" ||
+      jenisDokumenAsal === "20" ||
+      jenisDokumenAsal === "21"
     ) {
       const check = pemberitahuan - penetapan;
       let ObjData = {
@@ -714,6 +705,48 @@ function RekamDokumenPiutang() {
                   </Form.Item>
 
                   <Form.Item
+                        style = {
+                          {
+                            marginBottom: '5px',
+                            padding: "1px 1px 1px 5px"
+                          }
+                        }
+                        name="jenisDokumen"
+                        label="Jenis Dokumen"
+                      >
+                        <Select
+                          value={
+                            jenisDokumen.length === 0
+                              ? null
+                              : jenisDokumen
+                          }
+                          style={{
+                            width: "20%",
+                            borderLeft: "5px solid #eaeaea",
+                          }}
+                          onChange={(val) => setJenisDokumen(val)}
+                          size={"small"}
+                        >
+                          <Option value="10">PIB BERKALA</Option>
+                          <Option value="11">PIB VOORITSLAG</Option>
+                          <Option value="12">RUSH HANDLING</Option>
+                          <Option value="13">SPTNP</Option>
+                          <Option value="14">SPKTNP</Option>
+                          <Option value="15">SPP</Option>
+                          <Option value="16">SPSA</Option>
+                          <Option value="17">SPPBMCP</Option>
+                          <Option value="22">PEB PENUNDAAN</Option>
+                          <Option value="20">SPPBK</Option>
+                          <Option value="21">SPKPBK</Option>
+                          <Option value="31">CK1 PENUNDAAN</Option>
+                          <Option value="CK1A-BERKALA">CK1A BERKALA</Option>
+                          <Option value="33">CK5</Option>
+                          <Option value="34">STCK1</Option>
+                          <Option value="36">SPPBP</Option>
+                        </Select>
+                      </Form.Item>
+
+                  <Form.Item
                     name="dokumen_asal"
                     label="Dokumen Asal"
                     wrapperCol={{ span: 0 }}
@@ -742,22 +775,22 @@ function RekamDokumenPiutang() {
                           onChange={(val) => setJenisDokumenAsal(val)}
                           size={"small"}
                         >
-                          <Option value="PIB-BERKALA">PIB BERKALA</Option>
-                          <Option value="PIB-VOORITSLAG">PIB VOORITSLAG</Option>
-                          <Option value="RUSH-HANDLING">RUSH HANDLING</Option>
-                          <Option value="SPTNP">SPTNP</Option>
-                          <Option value="SPKTNP">SPKTNP</Option>
-                          <Option value="SPP">SPP</Option>
-                          <Option value="SPSA">SPSA</Option>
-                          <Option value="SPPBMCP">SPPBMCP</Option>
-                          <Option value="PEB-PENUNDAAN">PEB PENUNDAAN</Option>
-                          <Option value="SPPBK">SPPBK</Option>
-                          <Option value="SPKPBK">SPKPBK</Option>
-                          <Option value="CK1-PENUNDAAN">CK1 PENUNDAAN</Option>
+                          <Option value="10">PIB BERKALA</Option>
+                          <Option value="11">PIB VOORITSLAG</Option>
+                          <Option value="12">RUSH HANDLING</Option>
+                          <Option value="13">SPTNP</Option>
+                          <Option value="14">SPKTNP</Option>
+                          <Option value="15">SPP</Option>
+                          <Option value="16">SPSA</Option>
+                          <Option value="17">SPPBMCP</Option>
+                          <Option value="22">PEB PENUNDAAN</Option>
+                          <Option value="20">SPPBK</Option>
+                          <Option value="21">SPKPBK</Option>
+                          <Option value="31">CK1 PENUNDAAN</Option>
                           <Option value="CK1A-BERKALA">CK1A BERKALA</Option>
-                          <Option value="CK5">CK5</Option>
-                          <Option value="STCK1">STCK1</Option>
-                          <Option value="SPPBP">SPPBP</Option>
+                          <Option value="33">CK5</Option>
+                          <Option value="34">STCK1</Option>
+                          <Option value="36">SPPBP</Option>
                         </Select>
                       </Form.Item>
                       <span style={{ marginRight: 8, marginLeft: 8 }}>/</span>
@@ -883,10 +916,10 @@ function RekamDokumenPiutang() {
             </h1>
             <Row>
               <Col span={16}>
-                {jenisDokumenAsal === "SPTNP" ||
-                jenisDokumenAsal === "SPKTNP" ||
-                jenisDokumenAsal === "SPPBK" ||
-                jenisDokumenAsal === "SPKPBK" ? (
+                {jenisDokumenAsal === "13" ||
+                jenisDokumenAsal === "14" ||
+                jenisDokumenAsal === "20" ||
+                jenisDokumenAsal === "21" ? (
                   <Row style={{ marginBottom: 8 }}>
                     <Col span={5} style={{ display: "flex" }}>
                       <h4 style={{ marginRight: 10, marginBottom: 0 }}>
@@ -898,7 +931,7 @@ function RekamDokumenPiutang() {
                         onChange={handleAkun}
                         size={"small"}
                       >
-                        {jenisDokumenAsal === "CK1-PENUNDAAN" ||
+                        {jenisDokumenAsal === "31" ||
                         jenisDokumenAsal === "CK1A-BERKALA" ? (
                           <>
                             <Option value="Cukai-HT">Cukai HT</Option>
@@ -957,7 +990,7 @@ function RekamDokumenPiutang() {
                         onChange={handleAkun}
                         size={"small"}
                       >
-                        {jenisDokumenAsal === "CK1-PENUNDAAN" ||
+                        {jenisDokumenAsal === "31" ||
                         jenisDokumenAsal === "CK1A-BERKALA" ? (
                           <>
                             <Option value="Cukai-HT">Cukai HT</Option>
