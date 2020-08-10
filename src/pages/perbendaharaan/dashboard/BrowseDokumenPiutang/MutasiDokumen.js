@@ -1,7 +1,6 @@
 import {
   React,
   useState,
-  Card,
   Table,
   Button,
   Modal,
@@ -66,8 +65,8 @@ export default function MutasiDokumen() {
   ];
 
   return (
-    <Card className="card-layout">
-      <h2>Mutasi Dokumen</h2>
+    <>
+      <h3 style={{ marginLeft: "10px" }}>Mutasi Dokumen</h3>
       <Table dataSource={data} columns={column} scroll={{ x: 1000 }} />
       <Modal
         title={contentModal.jenisDok}
@@ -80,6 +79,6 @@ export default function MutasiDokumen() {
         <p>{contentModal.tanggalDokumen}</p>
         <p>{contentModal.tanggalJatuhTempo}</p>
       </Modal>
-    </Card>
+    </>
   );
 }

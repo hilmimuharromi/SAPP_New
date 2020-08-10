@@ -7,11 +7,19 @@ import {
   Modal,
   // Row,
 } from "../../libraries/dependencies";
+import Iframe from "react-iframe";
+// import PDFViewer from "pdf-viewer-reactjs";
+// import { Document, Page } from "react-pdf";
+// import { Document } from "react-pdf/dist/entry.webpack";
+// import samplePDF from "./tes.pdf";
 import Menu from "../../menu/index";
-
+// import Viewer from "@phuocng/react-pdf-viewer";
+// import "react-pdf/dist/Page/AnnotationLayer.css";
+import "@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css";
 export default function Header() {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
+  const [searchData, setSearchData] = useState([]);
   function handleLihat(record) {
     setContent(record);
     setModal(true);
@@ -102,7 +110,7 @@ export default function Header() {
     },
   ];
 
-  const data = [
+  const dataAwal = [
     {
       key: "1",
       jenisDokumen: "SPTNP",
@@ -138,7 +146,7 @@ export default function Header() {
       jenisDokumen: "SPTNP",
       nomorDokumen: "0001/WBC1/2020",
       tanggalDokumen: "16/07/2020",
-      status: "Surat Teguran",
+      status: "Surat Sita",
       npwpPerusahaan: "12345678912344",
       namaPerusahaan: "PT Testing Indonesia",
       tanggalJatuhTempo: "16/09/2020",
@@ -194,24 +202,52 @@ export default function Header() {
       kantorMonitor: "040300",
     },
   ];
+  function tes(value) {
+    console.log(value, "masuk sini");
+
+    const newData = dataAwal.filter((val) => {
+      return (
+        val.status === value ||
+        val.nomorDokumen === value ||
+        val.jenisDokumen === value ||
+        val.jenisDokAsal === value ||
+        val.namaPerusahaan === value ||
+        val.npwpPerusahaan === value ||
+        val.tanggalDokumen === value ||
+        val.kantorPenerbit === value ||
+        val.kantorMonitor === value
+      );
+    });
+
+    setSearchData(newData);
+  }
+  // let siswa = 'saya'
   return (
     <Card className="card-layout">
-      <Menu />
+      <Menu tes={tes} />
       <h3>BROWSE DOKUMEN PIUTANG</h3>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={searchData.length > 0 ? searchData : dataAwal}
         size="small"
         pagination={{ pageSize: 5, showQuickJumper: true }}
         scroll={{ x: 1500 }}
       />
+      <div></div>
       <Modal
         title={contentModal.no_dokumen}
         visible={showModal}
         onOk={() => setModal(false)}
         onCancel={() => setModal(false)}
       >
-        <p>{contentModal.nama_importir}</p>
+        <Iframe
+          width="100%"
+          height="600"
+          src="https://www.docdroid.net/wpFJxVV/sptnp-pdf"
+          frameborder="0"
+          allowtransparency
+          allowfullscreen
+        />
       </Modal>
     </Card>
   );

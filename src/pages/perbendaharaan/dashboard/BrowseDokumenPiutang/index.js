@@ -5,6 +5,7 @@ import {
   Row,
   Col,
   Button,
+  Tabs,
 } from "../../libraries/dependencies";
 import Pungutan from "./Pungutan";
 import Detail from "./Detail";
@@ -15,9 +16,14 @@ import Header from "./Header";
 import TotalSurat from "./TotalSurat";
 import CardTotalSurat from "./CardTotalSurat";
 
+const { TabPane } = Tabs;
+
 export default function BrowseDokumenPiutang() {
   const [togleChart, setTogleChart] = useState(true);
 
+  function callback(key) {
+    console.log(key);
+  }
   function ChartMode() {
     if (togleChart) {
       return <TotalSurat />;
@@ -45,24 +51,37 @@ export default function BrowseDokumenPiutang() {
           <Timeline />
         </Col>
       </Row>
-      <Row justify="space-between" style={{ marginTop: "10px" }}>
-        <Col span={16}>
+      <Row
+        justify="start"
+        style={{ marginTop: "10px" }}
+        className="card-layout"
+      >
+        <Col span={13}>
           <Detail />
         </Col>
-        <Col span={7}>
-          <Pungutan />
+        <Col span={10} style={{ marginLeft: "10px", width: "700" }}>
+          <Tabs defaultActiveKey="1" onChange={callback} type="line">
+            <TabPane tab="Pungutan" key="1">
+              <Pungutan />
+              {/* Content of Tab Pane 1 */}
+            </TabPane>
+            <TabPane tab="Mutasi Dokumen" key="2">
+              {/* Content of Tab Pane 2 */}
+              <MutasiDokumen />
+            </TabPane>
+            <TabPane tab="History" key="3">
+              {/* Content of Tab Pane 3 */}
+              <History />
+            </TabPane>
+          </Tabs>
         </Col>
+      </Row>
+      {/* <Row justify="space-between" style={{ marginTop: "10px" }}>
+        <Col span={16}></Col>
       </Row>
       <Row justify="space-between" style={{ marginTop: "10px" }}>
-        <Col span={16}>
-          <MutasiDokumen />
-        </Col>
-      </Row>
-      <Row justify="space-between" style={{ marginTop: "10px" }}>
-        <Col span={16}>
-          <History />
-        </Col>
-      </Row>
+        <Col span={16}></Col>
+      </Row> */}
     </Layout>
   );
 }
