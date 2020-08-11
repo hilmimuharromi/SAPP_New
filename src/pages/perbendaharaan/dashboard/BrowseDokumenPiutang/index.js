@@ -1,12 +1,16 @@
 import {
   React,
+  useEffect,
   useState,
+  axios,
   Layout,
   Row,
   Col,
   Button,
   Tabs,
   Card,
+  Spin,
+  Alert,
 } from "../../libraries/dependencies";
 import Pungutan from "./Pungutan";
 import Detail from "./Detail";
@@ -23,7 +27,31 @@ const { TabPane } = Tabs;
 export default function BrowseDokumenPiutang() {
   const [togleChart, setTogleChart] = useState(true);
   const [dataTable, setDataTable] = useState("");
+  const [dataHeader, setDataHeader] = useState("");
+  const [dataPungutan, setDataPungutan] = useState([]);
+  const [dataHistory, setDataHistory] = useState([]);
+  const [isLoading, setIsloading] = useState(false);
+  let lokal = "http://10.102.120.36:9090";
+  let server = "http://10.162.71.119:9090";
 
+  useEffect(() => {
+    // setIsloading(true);
+    axios({
+      method: "get",
+      url: `${server}/perbendaharaan/perben/piutang/get-data-browse`,
+    })
+      .then((res) => {
+        console.log(res.data, "berhasil fetch");
+        setDataHeader(res.data.data);
+      })
+      .catch((error) => {
+        console.log((error, "error"));
+      })
+      .finally((_) => {
+        console.log("finnaly");
+        setIsloading(false);
+      });
+  }, []);
   function callback(key) {
     console.log(key);
   }
@@ -33,6 +61,61 @@ export default function BrowseDokumenPiutang() {
     } else {
       return <CardTotalSurat />;
     }
+  }
+
+  function getPungutan() {
+    setIsloading(true);
+
+    axios({
+      method: "get",
+      url: `${server}/perbendaharaan/perben/piutang/get-data-pungutan?idHeader=${dataTable.idHeader}`,
+    })
+      .then((res) => {
+        console.log(res.data, "berhasil fetch");
+        setDataPungutan(res.data.data);
+      })
+      .catch((error) => {
+        console.log((error, "error"));
+      })
+      .finally((_) => {
+        console.log("finnaly");
+        setIsloading(false);
+      });
+  }
+
+  function getHistory() {
+    axios({
+      method: "get",
+      url: `${server}/perbendaharaan/perben/piutang/get-data-history?idHeader=${dataTable.idHeader}`,
+    })
+      .then((res) => {
+        console.log(res.data, "berhasil fetch");
+        setDataHistory(res.data.data);
+      })
+      .catch((error) => {
+        console.log((error, "error"));
+      })
+      .finally((_) => {
+        console.log("finnaly");
+        // setIsloading(false);
+      });
+  }
+
+  // if (isLoading) {
+  //   return (
+  //     <Spin tip="Loading...">
+  //       <Alert
+  //         message="Fetching data ....."
+  //         // description="Further details about the context of this alert."
+  //         // type="info"
+  //       />
+  //     </Spin>
+  //   );
+  // }
+
+  function klikRow() {
+    getPungutan();
+    getHistory();
   }
 
   return (
@@ -47,7 +130,12 @@ export default function BrowseDokumenPiutang() {
       <Row>{JSON.stringify(dataTable)}</Row>
       <Row justify="center" style={{ marginTop: "10px" }}>
         <Col span={24}>
-          <Header setDataTable={setDataTable} />
+          <Header
+            isLoading={isLoading}
+            klikRow={klikRow}
+            setDataTable={setDataTable}
+            dataHeader={dataHeader}
+          />
         </Col>
       </Row>
       <Row justify="center">
@@ -55,7 +143,7 @@ export default function BrowseDokumenPiutang() {
           {/* <Timeline /> */}
           <Card className="card-layout">
             <h2>Timeline</h2>
-            <NewTimeline bgcolor={"#ef6c00"} completed={90} />
+            <NewTimeline data={dataTable} />
           </Card>
         </Col>
       </Row>
@@ -70,7 +158,11 @@ export default function BrowseDokumenPiutang() {
         <Col span={10} style={{ marginLeft: "10px", width: "700" }}>
           <Tabs defaultActiveKey="1" onChange={callback} type="line">
             <TabPane tab="Pungutan" key="1">
-              <Pungutan />
+              <Pungutan
+                isLoading={isLoading}
+                getPungutan={getPungutan}
+                data={dataPungutan}
+              />
               {/* Content of Tab Pane 1 */}
             </TabPane>
             <TabPane tab="Mutasi Dokumen" key="2">
@@ -79,17 +171,11 @@ export default function BrowseDokumenPiutang() {
             </TabPane>
             <TabPane tab="History" key="3">
               {/* Content of Tab Pane 3 */}
-              <History />
+              <History data={dataHistory} />
             </TabPane>
           </Tabs>
         </Col>
       </Row>
-      {/* <Row justify="space-between" style={{ marginTop: "10px" }}>
-        <Col span={16}></Col>
-      </Row>
-      <Row justify="space-between" style={{ marginTop: "10px" }}>
-        <Col span={16}></Col>
-      </Row> */}
     </Layout>
   );
 }

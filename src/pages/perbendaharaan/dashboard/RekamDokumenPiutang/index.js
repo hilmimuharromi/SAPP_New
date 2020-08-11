@@ -21,6 +21,8 @@ import {
   DeleteFilled,
   EditFilled,
   moment,
+  Spin,
+  Alert,
 } from "../../libraries/dependencies";
 import { convertToRupiah } from "../../libraries/functions";
 
@@ -40,8 +42,8 @@ function RekamDokumenPiutang() {
     {
       kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
       kantor_monitor: "050905 - KPPBC TMP AA",
-      tanggal_jatuh_tempo: "05/06/2020 09:10:11",
-      dokumen_asal: "13/000001/05/06/2001",
+      tanggal_jatuh_tempo: "05/08/2020 09:10:11",
+      dokumen_asal: "13/000001/06/07/2020",
       // jenisDokumenAsal: "S000001",
       // nomor: "000001",
       // tanggal: "2019-02-07", // MM/DD/YYYY
@@ -86,12 +88,12 @@ function RekamDokumenPiutang() {
       petugas: "198989504523538999 - Duloh Ahmed",
       pungutan: [
         {
-          akun: "Cukai-HT",
+          akun: "411511",
           nilai: 10000000,
           lebihBayar: "YA",
         },
         {
-          akun: "Cukai-MMEA",
+          akun: "411513",
           nilai: 20000000,
           lebihBayar: "YA",
         },
@@ -102,7 +104,7 @@ function RekamDokumenPiutang() {
   ];
   const [tanggalDokumen, setTanggalDokumen] = useState("");
   const [tanggal_jatuh_tempo, setTanggal_jatuh_tempo] = useState("");
-  const [jenisDokumen, setJenisDokumen] = useState('')
+  const [jenisDokumen, setJenisDokumen] = useState("");
   const [jenisDokumenAsal, setJenisDokumenAsal] = useState("");
   const [nomor, setNomor] = useState("");
   const [tanggal_dokumen_asal, setTanggal_dokumen_asal] = useState("");
@@ -110,39 +112,39 @@ function RekamDokumenPiutang() {
   const [alamat_perusahaan, setAlamat_Perusahaan] = useState("");
   const [ppjk, setPpjk] = useState("");
   const [petugas, setPetugas] = useState("");
-  let totalNilai = 0
+  let totalNilai = 0;
   const [form] = Form.useForm();
   // Pungutan
   // ==============================================
   const options_akun = [
     {
       name: "Bea Masuk",
-      value: "Bea Masuk",
+      value: "412111",
       key: "1",
     },
     {
       name: "BM AD",
-      value: "BM AD",
+      value: "412121",
       key: "2",
     },
     {
       name: "BM PT",
-      value: "BM PT",
+      value: "412123",
       key: "3",
     },
     {
-      name: "PPN",
-      value: "PPN",
+      name: "PPN Impor",
+      value: "411212",
       key: "4",
     },
     {
-      name: "PPH",
-      value: "PPH",
+      name: "PPH Impor",
+      value: "411123",
       key: "5",
     },
     {
-      name: "DENDA",
-      value: "DENDA",
+      name: "Denda Administrasi Cukai",
+      value: "411514",
       key: "6",
     },
   ];
@@ -160,6 +162,8 @@ function RekamDokumenPiutang() {
   const [data_keterangan, setData_keterangan] = useState([]);
   let [editValueKeterangan, setEditValueKeterangan] = useState(0);
   const [keyEditKeterangan, setKeyEditKeterangan] = useState(0);
+  const [keyDeletePungutan, setKeyDeletePungutan] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Function - Sid - Headear
   // ==============================================
@@ -171,6 +175,17 @@ function RekamDokumenPiutang() {
   const toggle = () => {
     setCollapsed(!collapsed);
   };
+  if (isLoading) {
+    return (
+      <Spin tip="Loading...">
+        <Alert
+          message="Fetching data ....."
+          // description="Further details about the context of this alert."
+          // type="info"
+        />
+      </Spin>
+    );
+  }
 
   // Function - Form Perekaman
   // ==============================================
@@ -220,16 +235,16 @@ function RekamDokumenPiutang() {
 
   const handleBersihkan = () => {
     setData_pungutan([]);
-    setData_keterangan([])
+    setData_keterangan([]);
     // all form
     form.resetFields();
     message.success("Data Berhasil di Kosongkan!");
   };
 
   const handleSimpan = () => {
-    data_pungutan.map(item => {
-      return item.lebihBayar !== 'YA' ? totalNilai += item.nilai : null
-    })
+    data_pungutan.map((item) => {
+      return item.lebihBayar !== "Y" ? (totalNilai += item.nilai) : null;
+    });
     const {
       idPerusahaan,
       namaPerusahaan,
@@ -261,7 +276,7 @@ function RekamDokumenPiutang() {
         nipPetugas1: petugas,
         nipPetugas2: petugas,
         nomorDokumenAsal: "string",
-        nomordokumen: nomorDokumenAsal,
+        nomorDokumen: nomorDokumenAsal,
         tanggalDokumen: moment(tanggalDokumen).format("YYYY-MM-DD hh:mm:ss"),
         tanggalDokumenAsal: moment(tanggalDokumenAsal).format(
           "YYYY-MM-DD hh:mm:ss"
@@ -270,33 +285,37 @@ function RekamDokumenPiutang() {
           "YYYY-MM-DD hh:mm:ss"
         ),
       },
-      listTdKeterangan: [data_keterangan],
-      listTdPungutan: [data_pungutan],
+      nipRekam: petugas,
+      listTdKeterangan: data_keterangan,
+      listTdPungutan: data_pungutan,
     };
     console.log(payload, "payload data submit");
     // // post rekam
-    // axios({
-    //   method: 'post',
-    //   url: 'http://localhost:3000/rekam',
-    //   data: payload
-    // })
-    // .then(({
-    //     data
-    //   }) => {
-    //    console.log(data, 'berhasil');
-    //    message.success("Data Berhasil di Kirim!");
-    //   })
-    //   .catch(error => {
-    //     console.log((error, 'error'));
-    //     message.error("ada yang salah!");
-    //   })
-    //   .finally(_ => {
-    //     console.log('sukses');
-    //   })
-
+    setIsLoading(true);
+    let lokal = "http://10.102.120.36:9090";
+    let server = "http://10.162.71.119:9090";
+    axios({
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `${server}/perbendaharaan/perben/piutang/simpan-piutang`,
+      data: payload,
+    })
+      .then(({ data }) => {
+        console.log({ data }, "berhasil");
+        message.success("Data Berhasil di Kirim!");
+      })
+      .catch((error) => {
+        console.log((error, "error"));
+        message.error("ada yang salah!");
+      })
+      .finally((_) => {
+        console.log("finally");
+        setIsLoading(false);
+      });
 
     // form.resetFields();
-    
   };
 
   // Function - Pungutan
@@ -312,7 +331,10 @@ function RekamDokumenPiutang() {
   const EditPungutan = (item) => {
     function saveEdit() {
       for (let i = 0; i < data_pungutan.length; i++) {
-        if (data_pungutan[i].key === item.key) {
+        if (
+          `${data_pungutan[i].kodeAkun}-${data_pungutan[i].seri}` ===
+          keyEditPungutan
+        ) {
           data_pungutan[i].nilai = editValuePungutan;
         }
       }
@@ -321,16 +343,18 @@ function RekamDokumenPiutang() {
 
     function deletePungutan() {
       let newData = data_pungutan.filter((data) => {
-        return data.key !== item.key;
+        return (
+          `${data.kodeAkun}-${data.seri}` !== `${item.kodeAkun}-${item.seri}`
+        );
       });
       setData_pungutan(newData);
     }
 
     function klikEdit() {
-      setKeyEditPungutan(item.key);
+      setKeyEditPungutan(`${item.kodeAkun}-${item.seri}`);
       setEditValuePungutan(item.nilai);
     }
-    if (keyEditPungutan !== item.key) {
+    if (keyEditPungutan !== `${item.kodeAkun}-${item.seri}`) {
       return (
         <>
           <Button
@@ -358,7 +382,7 @@ function RekamDokumenPiutang() {
   };
 
   const FormEditPungutan = (item) => {
-    if (keyEditPungutan !== item.key) {
+    if (keyEditPungutan !== `${item.kodeAkun}-${item.seri}`) {
       return convertToRupiah(item.nilai);
     } else {
       //   setEditValuePungutan(item.nilai);
@@ -374,17 +398,15 @@ function RekamDokumenPiutang() {
   };
 
   const handleSubmitPungutan = () => {
-    function findSeri(res) {
+    function findSeri() {
       let getSeri = data_pungutan.filter((item) => {
-        return item.akun === akun
+        return item.kodeAkun === akun;
       });
       if (getSeri.length < 1) {
-        console.log(getSeri, 'seri baru');
         return 1;
       } else {
-        console.log(getSeri, 'seri lama');
-
-        return getSeri.length + 1;
+        let seri = getSeri[getSeri.length - 1].seri;
+        return seri + 1;
       }
     }
     if (
@@ -395,12 +417,11 @@ function RekamDokumenPiutang() {
     ) {
       const check = pemberitahuan - penetapan;
       let ObjData = {
-        akun: akun,
+        kodeAkun: akun,
         seri: findSeri(),
-        lebihBayar:
-          parseInt(pemberitahuan) > parseInt(penetapan) ? "TIDAK" : "YA",
-        nilaiDiberitahukan: pemberitahuan,
-        nilaiPenetapan: penetapan,
+        lebihBayar: parseInt(pemberitahuan) > parseInt(penetapan) ? "T" : "Y",
+        nilaiDiberitahukan: parseInt(pemberitahuan),
+        nilaiPenetapan: parseInt(penetapan),
         nilai:
           String(check).match(/-/g) !== null
             ? String(check).replace("-", "")
@@ -423,7 +444,7 @@ function RekamDokumenPiutang() {
       }
     } else {
       let ObjData = {
-        akun: akun,
+        kodeAkun: akun,
         seri: findSeri(),
         lebihBayar: selisih,
         nilaiDiberitahukan: 0,
@@ -460,7 +481,10 @@ function RekamDokumenPiutang() {
   const EditKeterangan = (item) => {
     function saveEdit() {
       for (let i = 0; i < data_keterangan.length; i++) {
-        if (data_keterangan[i].key === item.key) {
+        if (
+          `${data_keterangan[i].jenisKeterangan}-${data_keterangan[i].seri}` ===
+          keyEditKeterangan
+        ) {
           data_keterangan[i].uraian = editValueKeterangan;
         }
       }
@@ -469,16 +493,19 @@ function RekamDokumenPiutang() {
 
     function deleteKeterangan() {
       let newData = data_keterangan.filter((data) => {
-        return data.key !== item.key;
+        return (
+          `${data.jenisKeterangan}-${data.seri}` !==
+          `${item.jenisKeterangan}-${item.seri}`
+        );
       });
       setData_keterangan(newData);
     }
 
     function klikEdit() {
-      setKeyEditKeterangan(item.key);
+      setKeyEditKeterangan(`${item.jenisKeterangan}-${item.seri}`);
       setEditValueKeterangan(item.uraian);
     }
-    if (keyEditKeterangan !== item.key) {
+    if (keyEditKeterangan !== `${item.jenisKeterangan}-${item.seri}`) {
       return (
         <>
           <Button
@@ -506,7 +533,7 @@ function RekamDokumenPiutang() {
   };
 
   const FormEditKeterangan = (item) => {
-    if (keyEditKeterangan !== item.key) {
+    if (keyEditKeterangan !== `${item.jenisKeterangan}-${item.seri}`) {
       return item.uraian;
     } else {
       //   setEditValuePungutan(item.nilai);
@@ -521,22 +548,150 @@ function RekamDokumenPiutang() {
     }
   };
 
+  const uraianAkun = (kodeAkun) => {
+    const data = [
+      {
+        kodeAkun: "411122",
+        uraian: "PPh Pasal 22 Ekspor",
+      },
+      {
+        kodeAkun: "411123",
+        uraian: "PPH Impor",
+      },
+      {
+        kodeAkun: "411211",
+        uraian: "PPN HT / DN",
+      },
+      {
+        kodeAkun: "411212",
+        uraian: "PPN Impor",
+      },
+      {
+        kodeAkun: "411511",
+        uraian: "Cukai HT",
+      },
+      {
+        kodeAkun: "411512",
+        uraian: "Cukai EA",
+      },
+      {
+        kodeAkun: "411513",
+        uraian: "Cukai MMEA",
+      },
+      {
+        kodeAkun: "411514",
+        uraian: "Denda Administrasi Cukai",
+      },
+      {
+        kodeAkun: "411519",
+        uraian: "Pendapatan Cukai Lainnya",
+      },
+      {
+        kodeAkun: "411622",
+        uraian: "Bunga Penagihan PPN",
+      },
+      {
+        kodeAkun: "412111",
+        uraian: "Bea Masuk",
+      },
+      {
+        kodeAkun: "412112",
+        uraian: "Bea Masuk ditanggung Pemerintah atas Hibah (SPM) Nihil",
+      },
+      {
+        kodeAkun: "412113",
+        uraian: "Denda Administrasi Pabean",
+      },
+      {
+        kodeAkun: "412114",
+        uraian: "Bea Masuk KITE",
+      },
+      {
+        kodeAkun: "412115",
+        uraian: "Denda administrasi atas pengangkutan barang tertentu",
+      },
+      {
+        kodeAkun: "412116",
+        uraian: "Pendapatan Bea Masuk Ditanggung Pemerintah (BM-DTP)",
+      },
+      {
+        kodeAkun: "412119",
+        uraian: "Pendapatan Pabean Lainnya",
+      },
+      {
+        kodeAkun: "412121",
+        uraian: "Bea Masuk Anti Dumping (BMAD)",
+      },
+      {
+        kodeAkun: "412122",
+        uraian: "Bea Masuk Imbalan (BMI)",
+      },
+      {
+        kodeAkun: "412123",
+        uraian: "Bea Masuk Tindakan Pengamanan (BMTP)",
+      },
+      {
+        kodeAkun: "412211",
+        uraian: "Bea Keluar",
+      },
+      {
+        kodeAkun: "412212",
+        uraian: "Denda Administrasi Bea Keluar",
+      },
+      {
+        kodeAkun: "412213",
+        uraian: "Bunga Bea Keluar",
+      },
+      {
+        kodeAkun: "423216",
+        uraian: "-",
+      },
+      {
+        kodeAkun: "424138",
+        uraian: "Dana Sawit",
+      },
+      {
+        kodeAkun: "425151",
+        uraian:
+          "Pendapatan dari Penggunaan Sarana dan Prasarana Sesuai dengan Tusi",
+      },
+      {
+        kodeAkun: "425289",
+        uraian:
+          "Pendapatan Pengujian, Sertifikasi, Kalibrasi dan Standarisasi Lainnya",
+      },
+      {
+        kodeAkun: "425699",
+        uraian: "Pendapatan Jasa Lainnya",
+      },
+      {
+        kodeAkun: "425781",
+        uraian: "Pendapatan Biaya Penagihan Pajak Negara dengan Surat Paksa",
+      },
+      {
+        kodeAkun: "425839",
+        uraian: "Pendapatan Denda lainnya",
+      },
+      {
+        kodeAkun: "817711",
+        uraian: "Pajak Rokok",
+      },
+    ];
+    const result = data.filter((item) => item.kodeAkun === kodeAkun);
+    return result[0].uraian;
+  };
+
   const handleSubmitKeterangan = () => {
     function findSeri(res) {
       let getSeri = data_keterangan.filter((item) => {
-        // if (item.jenisKeterangan === jenisKeterangan) {
-          // console.log(item.jenisKeterangan, jenisKeterangan, 'masuk sama');
-          return item.jenisKeterangan === jenisKeterangan;
-        // } else {
-        //   return null;
-        // }
+        return item.jenisKeterangan === jenisKeterangan;
       });
-     
+
       if (getSeri.length < 1) {
-        
         return 1;
       } else {
-        return getSeri.length + 1;
+        let seri = getSeri[getSeri.length - 1].seri;
+        return seri + 1;
       }
     }
     let ObjData = {
@@ -705,46 +860,40 @@ function RekamDokumenPiutang() {
                   </Form.Item>
 
                   <Form.Item
-                        style = {
-                          {
-                            marginBottom: '5px',
-                            padding: "1px 1px 1px 5px"
-                          }
-                        }
-                        name="jenisDokumen"
-                        label="Jenis Dokumen"
-                      >
-                        <Select
-                          value={
-                            jenisDokumen.length === 0
-                              ? null
-                              : jenisDokumen
-                          }
-                          style={{
-                            width: "20%",
-                            borderLeft: "5px solid #eaeaea",
-                          }}
-                          onChange={(val) => setJenisDokumen(val)}
-                          size={"small"}
-                        >
-                          <Option value="10">PIB BERKALA</Option>
-                          <Option value="11">PIB VOORITSLAG</Option>
-                          <Option value="12">RUSH HANDLING</Option>
-                          <Option value="13">SPTNP</Option>
-                          <Option value="14">SPKTNP</Option>
-                          <Option value="15">SPP</Option>
-                          <Option value="16">SPSA</Option>
-                          <Option value="17">SPPBMCP</Option>
-                          <Option value="22">PEB PENUNDAAN</Option>
-                          <Option value="20">SPPBK</Option>
-                          <Option value="21">SPKPBK</Option>
-                          <Option value="31">CK1 PENUNDAAN</Option>
-                          <Option value="CK1A-BERKALA">CK1A BERKALA</Option>
-                          <Option value="33">CK5</Option>
-                          <Option value="34">STCK1</Option>
-                          <Option value="36">SPPBP</Option>
-                        </Select>
-                      </Form.Item>
+                    style={{
+                      marginBottom: "5px",
+                      padding: "1px 1px 1px 5px",
+                    }}
+                    name="jenisDokumen"
+                    label="Jenis Dokumen"
+                  >
+                    <Select
+                      value={jenisDokumen.length === 0 ? null : jenisDokumen}
+                      style={{
+                        width: "20%",
+                        borderLeft: "5px solid #eaeaea",
+                      }}
+                      onChange={(val) => setJenisDokumen(val)}
+                      size={"small"}
+                    >
+                      <Option value="10">PIB BERKALA</Option>
+                      <Option value="11">PIB VOORITSLAG</Option>
+                      <Option value="12">RUSH HANDLING</Option>
+                      <Option value="13">SPTNP</Option>
+                      <Option value="14">SPKTNP</Option>
+                      <Option value="15">SPP</Option>
+                      <Option value="16">SPSA</Option>
+                      <Option value="17">SPPBMCP</Option>
+                      <Option value="22">PEB PENUNDAAN</Option>
+                      <Option value="20">SPPBK</Option>
+                      <Option value="21">SPKPBK</Option>
+                      <Option value="31">CK1 PENUNDAAN</Option>
+                      <Option value="CK1A-BERKALA">CK1A BERKALA</Option>
+                      <Option value="33">CK5</Option>
+                      <Option value="34">STCK1</Option>
+                      <Option value="36">SPPBP</Option>
+                    </Select>
+                  </Form.Item>
 
                   <Form.Item
                     name="dokumen_asal"
@@ -934,9 +1083,9 @@ function RekamDokumenPiutang() {
                         {jenisDokumenAsal === "31" ||
                         jenisDokumenAsal === "CK1A-BERKALA" ? (
                           <>
-                            <Option value="Cukai-HT">Cukai HT</Option>
-                            <Option value="Cukai-MMEA">Cukai MMEA</Option>
-                            <Option value="Cukai-EA">Cukai EA</Option>
+                            <Option value="411511">Cukai HT</Option>
+                            <Option value="411513">Cukai MMEA</Option>
+                            <Option value="411512">Cukai EA</Option>
                           </>
                         ) : (
                           options_akun.map((item) => (
@@ -993,9 +1142,9 @@ function RekamDokumenPiutang() {
                         {jenisDokumenAsal === "31" ||
                         jenisDokumenAsal === "CK1A-BERKALA" ? (
                           <>
-                            <Option value="Cukai-HT">Cukai HT</Option>
-                            <Option value="Cukai-MMEA">Cukai MMEA</Option>
-                            <Option value="Cukai-EA">Cukai EA</Option>
+                            <Option value="411511">Cukai HT</Option>
+                            <Option value="411513">Cukai MMEA</Option>
+                            <Option value="411512">Cukai EA</Option>
                           </>
                         ) : (
                           options_akun.map((item) => (
@@ -1016,8 +1165,8 @@ function RekamDokumenPiutang() {
                         onChange={(val) => setSelisih(val)}
                         size={"small"}
                       >
-                        <Option value="YA">Lebih Bayar</Option>
-                        <Option value="TIDAK">Kurang Bayar</Option>
+                        <Option value="Y">Lebih Bayar</Option>
+                        <Option value="T">Kurang Bayar</Option>
                       </Select>
                     </Col>
                     <Col span={6} style={{ display: "flex" }}>
@@ -1062,7 +1211,7 @@ function RekamDokumenPiutang() {
                               maxWidth: "550px",
                             }}
                           >
-                            {item.akun}
+                            {uraianAkun(item.kodeAkun)}
                           </div>
                           <div
                             style={{
@@ -1070,7 +1219,7 @@ function RekamDokumenPiutang() {
                               maxWidth: "550px",
                               padding: 4,
                               backgroundColor:
-                                item.lebihBayar === "YA"
+                                item.lebihBayar === "Y"
                                   ? "lightGreen"
                                   : "coral",
                               color: "black",

@@ -1,20 +1,14 @@
 import {
   React,
+  axios,
   Table,
   Card,
   Button,
   useState,
   Modal,
-  // Row,
 } from "../../libraries/dependencies";
 import Iframe from "react-iframe";
-// import PDFViewer from "pdf-viewer-reactjs";
-// import { Document, Page } from "react-pdf";
-// import { Document } from "react-pdf/dist/entry.webpack";
-// import samplePDF from "./tes.pdf";
 import Menu from "../../menu/index";
-// import Viewer from "@phuocng/react-pdf-viewer";
-// import "react-pdf/dist/Page/AnnotationLayer.css";
 import "@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css";
 export default function Header(props) {
   const [showModal, setModal] = useState(false);
@@ -23,7 +17,6 @@ export default function Header(props) {
   function handleLihat(record) {
     setContent(record);
     setModal(true);
-    console.log(record, "data");
   }
   const columns = [
     {
@@ -70,19 +63,19 @@ export default function Header(props) {
     },
     {
       title: "Jenis Dok Asal",
-      dataIndex: "jenisDokAsal",
+      dataIndex: "jenisDokumenAsal",
       sorter: (a, b) => a.jenisDokAsal.length - b.jenisDokAsal.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Nomor Dok Asal",
-      dataIndex: "nomorDokAsal",
+      dataIndex: "nomorDokumenAsal",
       sorter: (a, b) => a.nomorDokAsal.length - b.nomorDokAsal.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Tanggal Dok Asal",
-      dataIndex: "tanggalDokAsal",
+      dataIndex: "tanggalDokumenAsal",
       sorter: (a, b) => a.tanggalDokAsal.length - b.tanggalDokAsal.length,
       sortDirections: ["descend", "ascend"],
     },
@@ -110,124 +103,34 @@ export default function Header(props) {
     },
   ];
 
-  const dataAwal = [
-    {
-      key: "1",
-      jenisDokumen: "SPTNP",
-      nomorDokumen: "0001/WBC1/2020",
-      tanggalDokumen: "16/07/2020",
-      status: "Surat Teguran",
-      npwpPerusahaan: "12345678912344",
-      namaPerusahaan: "PT Testing Indonesia",
-      tanggalJatuhTempo: "16/09/2020",
-      jenisDokAsal: "PIB",
-      nomorDokAsal: "025896",
-      tanggalDokAsal: "14/07/2020",
-      kantorPenerbit: "009000",
-      kantorMonitor: "050900",
-    },
-    {
-      key: "2",
-      jenisDokumen: "SPP",
-      nomorDokumen: "00012/WBC9/2020",
-      tanggalDokumen: "16/07/2020",
-      status: "Surat Paksa",
-      npwpPerusahaan: "12345678912344",
-      namaPerusahaan: "PT Testing Indonesia",
-      tanggalJatuhTempo: "16/09/2020",
-      jenisDokAsal: "KITE",
-      nomorDokAsal: "025896",
-      tanggalDokAsal: "14/07/2020",
-      kantorPenerbit: "009000",
-      kantorMonitor: "040300",
-    },
-    {
-      key: "3",
-      jenisDokumen: "SPTNP",
-      nomorDokumen: "0001/WBC1/2020",
-      tanggalDokumen: "16/07/2020",
-      status: "Surat Sita",
-      npwpPerusahaan: "12345678912344",
-      namaPerusahaan: "PT Testing Indonesia",
-      tanggalJatuhTempo: "16/09/2020",
-      jenisDokAsal: "PIB",
-      nomorDokAsal: "025896",
-      tanggalDokAsal: "14/07/2020",
-      kantorPenerbit: "009000",
-      kantorMonitor: "050900",
-    },
-    {
-      key: "4",
-      jenisDokumen: "SPP",
-      nomorDokumen: "00012/WBC9/2020",
-      tanggalDokumen: "16/07/2020",
-      status: "Surat Paksa",
-      npwpPerusahaan: "12345678912344",
-      namaPerusahaan: "PT Testing Indonesia",
-      tanggalJatuhTempo: "16/09/2020",
-      jenisDokAsal: "KITE",
-      nomorDokAsal: "025896",
-      tanggalDokAsal: "14/07/2020",
-      kantorPenerbit: "009000",
-      kantorMonitor: "040300",
-    },
-    {
-      key: "5",
-      jenisDokumen: "SPTNP",
-      nomorDokumen: "0001/WBC1/2020",
-      tanggalDokumen: "16/07/2020",
-      status: "Surat Teguran",
-      npwpPerusahaan: "12345678912344",
-      namaPerusahaan: "PT Testing Indonesia",
-      tanggalJatuhTempo: "16/09/2020",
-      jenisDokAsal: "PIB",
-      nomorDokAsal: "025896",
-      tanggalDokAsal: "14/07/2020",
-      kantorPenerbit: "009000",
-      kantorMonitor: "050900",
-    },
-    {
-      key: "6",
-      jenisDokumen: "SPP",
-      nomorDokumen: "00012/WBC9/2020",
-      tanggalDokumen: "16/07/2020",
-      status: "Surat Paksa",
-      npwpPerusahaan: "12345678912344",
-      namaPerusahaan: "PT Testing Indonesia",
-      tanggalJatuhTempo: "16/09/2020",
-      jenisDokAsal: "KITE",
-      nomorDokAsal: "025896",
-      tanggalDokAsal: "14/07/2020",
-      kantorPenerbit: "009000",
-      kantorMonitor: "040300",
-    },
-  ];
-  function tes(value) {
+  function searchHeader(value) {
     console.log(value, "masuk sini");
-    const newData = dataAwal.filter((val) => {
-      return (
-        val.status === value ||
-        val.nomorDokumen === value ||
-        val.jenisDokumen === value ||
-        val.jenisDokAsal === value ||
-        val.namaPerusahaan === value ||
-        val.npwpPerusahaan === value ||
-        val.tanggalDokumen === value ||
-        val.kantorPenerbit === value ||
-        val.kantorMonitor === value
-      );
-    });
-
-    setSearchData(newData);
+    let lokal = "http://10.102.120.36:9090";
+    let server = "http://10.162.71.119:9090";
+    axios({
+      method: "get",
+      url: `${server}/perbendaharaan/perben/piutang/get-data-browse?browse=${value}`,
+    })
+      .then((res) => {
+        console.log(res.data, "berhasil fetch");
+        setSearchData(res.data.data);
+      })
+      .catch((error) => {
+        console.log((error, "error"));
+      })
+      .finally((_) => {
+        console.log("finnaly");
+        // setIsloading(false);
+      });
   }
-  // let siswa = 'saya'
   return (
     <Card className="card-layout">
-      <Menu tes={tes} />
+      <Menu searchHeader={searchHeader} />
       {/* <h3>BROWSE DOKUMEN PIUTANG</h3> */}
       <Table
+        loading={props.isLoading}
         columns={columns}
-        dataSource={searchData.length > 0 ? searchData : dataAwal}
+        dataSource={searchData.length > 0 ? searchData : props.dataHeader}
         size="small"
         pagination={{ pageSize: 5, showQuickJumper: true }}
         scroll={{ x: 1500 }}
@@ -235,6 +138,7 @@ export default function Header(props) {
           return {
             onClick: (event) => {
               props.setDataTable(record);
+              props.klikRow();
             },
           };
         }}

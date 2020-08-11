@@ -9,7 +9,7 @@ import {
 } from "../libraries/dependencies";
 const { Search } = Input;
 
-export default function Menu({ tes }) {
+export default function Menu({ searchHeader }) {
   let history = useHistory();
   const handleNavigate = () => {
     history.push("/Perekaman");
@@ -19,8 +19,8 @@ export default function Menu({ tes }) {
       <Col span={5}>
         <Search
           placeholder="Search.."
-          onSearch={(value) => tes(value)}
-          onChange={(value) => tes(value)}
+          onSearch={(value) => searchHeader(value)}
+          onChange={(value) => searchHeader(value)}
           style={{ width: 200 }}
         />
       </Col>

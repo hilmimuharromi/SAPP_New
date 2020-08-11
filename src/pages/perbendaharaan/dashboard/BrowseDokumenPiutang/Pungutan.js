@@ -1,82 +1,23 @@
 import { React, Table } from "../../libraries/dependencies";
 import { convertToRupiah } from "../../libraries/functions";
 
-export default function Pungutan() {
-  const dataAwal = [
-    {
-      judul: "Bea Masuk",
-      nilai: 24000000,
-    },
-    {
-      judul: "Bea Keluar",
-      nilai: 1000,
-    },
-    {
-      judul: "BM AD",
-      nilai: 20000,
-    },
-    {
-      judul: "BM ADs",
-      nilai: null,
-    },
-    {
-      judul: "BM TP",
-      nilai: null,
-    },
-    {
-      judul: "BM TPs",
-      nilai: null,
-    },
-    {
-      judul: "CTEM",
-      nilai: 2222,
-    },
-    {
-      judul: "CMEA",
-      nilai: 3223232,
-    },
-    {
-      judul: "CEA",
-      nilai: null,
-    },
-    {
-      judul: "DENDA",
-      nilai: 5000000,
-    },
-    {
-      judul: "BUNGA",
-      nilai: 2323232,
-    },
-    {
-      judul: "PPN",
-      nilai: 1200000,
-    },
-    {
-      judul: "PPnBM",
-      nilai: null,
-    },
-    {
-      judul: "PPh",
-      nilai: 9800000,
-    },
-    {
-      judul: "BUNGA PPN",
-      nilai: null,
-    },
-  ];
+export default function Pungutan(props) {
+  const { data, isLoading } = props;
 
-  const filterData = dataAwal.filter((data) => {
-    return data.nilai !== null;
+  const filterData = data.filter((item) => {
+    return item.nilai !== null;
   });
-  filterData.map((data) => {
-    return (data.nilai = convertToRupiah(data.nilai));
-  });
+  if (!isLoading) {
+    filterData.map((data) => {
+      return (data.nilai = convertToRupiah(data.nilai));
+    });
+  }
 
-  const column = [
+  const columns = [
     {
-      title: "judul",
-      dataIndex: "judul",
-      key: "judul",
+      title: "Kode Akun",
+      dataIndex: "kodeAkun",
+      key: "kodeAkun",
     },
     {
       title: "nilai",
@@ -93,7 +34,8 @@ export default function Pungutan() {
         pagination={false}
         dataSource={filterData}
         showHeader={false}
-        columns={column}
+        columns={columns}
+        loading={isLoading}
       />
     </>
   );

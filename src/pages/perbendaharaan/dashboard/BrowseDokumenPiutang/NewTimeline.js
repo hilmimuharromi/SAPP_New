@@ -7,18 +7,18 @@ import {
 } from "../../libraries/dependencies";
 const Moment = extendMoment(moment);
 
-export default function NewTimeline(props) {
+export default function NewTimeline({ data }) {
   // const { bgcolor } = props;
   let bgcolor = "#00ccff";
   // let completed = "hari";
-  let datePerekaman = "2020-07-01 10:00:00";
-  let dateJatuhTempo = "2020-08-07 10:00:00";
+  let datePerekaman = data.tanggalDokumen;
+  let dateJatuhTempo = data.tanggalJatuhTempo;
   const today = Moment().format('"YYYY-MM-DD HH:MM:SS"');
+  const hariIni = Moment().format("DD-MM-YYYY");
   const start = Moment(datePerekaman, "YYYY-MM-DD");
   const end = Moment(dateJatuhTempo, "YYYY-MM-DD");
   const now = Moment(today, '"YYYY-MM-DD HH:MM:SS"');
   const jarak = moment.range(start, end);
-  console.log(jarak.diff("days"), "jarak");
   const rangeToday = moment.range(start, now);
 
   let durasiTagihan = jarak.diff("days");
@@ -168,7 +168,7 @@ export default function NewTimeline(props) {
 
       <div style={containerStyles1}>
         <Popover
-          content={`${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
+          content={`${hariIni} : ${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
           title="Status Saat Ini"
         >
           <div style={fillerStyles1}>
@@ -185,7 +185,7 @@ export default function NewTimeline(props) {
         </Popover>
       </span>
       <Popover
-        content={`${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
+        content={`${hariIni} : ${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
         title="Status Saat Ini"
       >
         <div style={containerStyles2}>
@@ -200,7 +200,7 @@ export default function NewTimeline(props) {
         </Popover>
       </span>
       <Popover
-        content={`${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
+        content={`${hariIni} : ${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
         title="Status Saat Ini"
       >
         <div style={containerStyles3}>
@@ -215,7 +215,7 @@ export default function NewTimeline(props) {
         </Popover>
       </span>
       <Popover
-        content={`${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
+        content={`${hariIni} : ${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
         title="Status Saat Ini"
       >
         <div style={containerStyles4}>
