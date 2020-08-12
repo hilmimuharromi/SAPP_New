@@ -104,9 +104,8 @@ export default function Header(props) {
   ];
 
   function searchHeader(value) {
-    console.log(value, "masuk sini");
-    let lokal = "http://10.102.120.36:9090";
     let server = "http://10.162.71.119:9090";
+    // props.setIsLoading(true);
     axios({
       method: "get",
       url: `${server}/perbendaharaan/perben/piutang/get-data-browse?browse=${value}`,
@@ -120,7 +119,7 @@ export default function Header(props) {
       })
       .finally((_) => {
         console.log("finnaly");
-        // setIsloading(false);
+        // props.setIsloading(false);
       });
   }
   return (
@@ -137,8 +136,8 @@ export default function Header(props) {
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
-              props.setDataTable(record);
-              props.klikRow();
+              // props.setDataTable(record);
+              props.klikRow(record);
             },
           };
         }}

@@ -1,17 +1,7 @@
 import { React, Table } from "../../libraries/dependencies";
-import { convertToRupiah } from "../../libraries/functions";
 
 export default function Pungutan(props) {
   const { data, isLoading } = props;
-
-  const filterData = data.filter((item) => {
-    return item.nilai !== null;
-  });
-  if (!isLoading) {
-    filterData.map((data) => {
-      return (data.nilai = convertToRupiah(data.nilai));
-    });
-  }
 
   const columns = [
     {
@@ -23,6 +13,15 @@ export default function Pungutan(props) {
       title: "nilai",
       dataIndex: "nilai",
       key: "nilai",
+      render: (text, record) => (
+        <p
+          style={{
+            backgroundColor: record.lebihBayar === "Y" ? "lightGreen" : "coral",
+          }}
+        >
+          {record.nilai}
+        </p>
+      ),
     },
   ];
 
@@ -32,7 +31,7 @@ export default function Pungutan(props) {
       <Table
         size={"small"}
         pagination={false}
-        dataSource={filterData}
+        dataSource={data}
         showHeader={false}
         columns={columns}
         loading={isLoading}

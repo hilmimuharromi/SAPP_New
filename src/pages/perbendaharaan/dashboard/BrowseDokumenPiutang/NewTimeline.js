@@ -166,16 +166,16 @@ export default function NewTimeline({ data }) {
         </Popover>
       </span>
 
-      <div style={containerStyles1}>
-        <Popover
-          content={`${hariIni} : ${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
-          title="Status Saat Ini"
-        >
+      <Popover
+        content={`${hariIni} : ${menujuHari} hari Menuju jatuh tempo ${statusSurat}`}
+        title="Status Saat Ini"
+      >
+        <div style={containerStyles1}>
           <div style={fillerStyles1}>
             <span style={labelStyles}></span>
           </div>
-        </Popover>
-      </div>
+        </div>
+      </Popover>
       <span>
         <Popover
           content={`Tanggal Teguran: ${tanggalTeguran}`}

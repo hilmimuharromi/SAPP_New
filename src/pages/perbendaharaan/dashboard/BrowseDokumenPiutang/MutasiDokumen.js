@@ -16,14 +16,14 @@ export default function MutasiDokumen() {
     console.log(key, "key===========");
   }
   const data = [
-    {
-      jenisDok: "Surat Teguran",
-      nomorDok: "00001/teguran/2020",
-      tanggalDokumen: "20/07/2020",
-      tanggalJatuhTempo: "20/08/2020",
-      tanggalLunas: "-",
-      aksi: "",
-    },
+    // {
+    //   jenisDok: "Surat Teguran",
+    //   nomorDok: "00001/teguran/2020",
+    //   tanggalDokumen: "20/07/2020",
+    //   tanggalJatuhTempo: "20/08/2020",
+    //   tanggalLunas: "-",
+    //   aksi: "",
+    // },
   ];
 
   const column = [

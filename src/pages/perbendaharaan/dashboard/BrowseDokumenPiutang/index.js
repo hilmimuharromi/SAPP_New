@@ -1,5 +1,6 @@
 import {
   React,
+  useCallback,
   useEffect,
   useState,
   axios,
@@ -9,9 +10,9 @@ import {
   Button,
   Tabs,
   Card,
-  Spin,
-  Alert,
 } from "../../libraries/dependencies";
+import { convertToRupiah } from "../../libraries/functions";
+
 import Pungutan from "./Pungutan";
 import Detail from "./Detail";
 // import Timeline from "./Timeline";
@@ -31,26 +32,33 @@ export default function BrowseDokumenPiutang() {
   const [dataPungutan, setDataPungutan] = useState([]);
   const [dataHistory, setDataHistory] = useState([]);
   const [isLoading, setIsloading] = useState(false);
-  let lokal = "http://10.102.120.36:9090";
+  const [isLoadingPungutan, setIsloadingPungutan] = useState(false);
+  // let lokal = "http://10.102.120.36:9090";
   let server = "http://10.162.71.119:9090";
 
   useEffect(() => {
-    // setIsloading(true);
-    axios({
-      method: "get",
-      url: `${server}/perbendaharaan/perben/piutang/get-data-browse`,
-    })
-      .then((res) => {
-        console.log(res.data, "berhasil fetch");
-        setDataHeader(res.data.data);
+    const fetchAwal = (server) => {
+      setIsloading(true);
+      return axios({
+        method: "get",
+        url: `${server}/perbendaharaan/perben/piutang/get-data-browse`,
       })
-      .catch((error) => {
-        console.log((error, "error"));
-      })
-      .finally((_) => {
-        console.log("finnaly");
-        setIsloading(false);
-      });
+        .then((res) => {
+          console.log(res.data, "berhasil fetch");
+          let data = res.data.data;
+          setDataHeader(data);
+          setDataTable(data[0]);
+          getPungutan(data[0].idHeader);
+        })
+        .catch((error) => {
+          console.log((error, "error"));
+        })
+        .finally((_) => {
+          console.log("finnaly");
+          setIsloading(false);
+        });
+    };
+    fetchAwal();
   }, []);
   function callback(key) {
     console.log(key);
@@ -63,30 +71,62 @@ export default function BrowseDokumenPiutang() {
     }
   }
 
-  function getPungutan() {
-    setIsloading(true);
-
-    axios({
+  const getPungutan = useCallback((idHeader) => {
+    setIsloadingPungutan(true);
+    return axios({
       method: "get",
-      url: `${server}/perbendaharaan/perben/piutang/get-data-pungutan?idHeader=${dataTable.idHeader}`,
+      url: `${server}/perbendaharaan/perben/piutang/get-data-pungutan?idHeader=${idHeader}`,
     })
       .then((res) => {
         console.log(res.data, "berhasil fetch");
-        setDataPungutan(res.data.data);
+        let data = res.data.data;
+
+        setDataPungutan(convertPungutan(data));
       })
       .catch((error) => {
         console.log((error, "error"));
       })
       .finally((_) => {
         console.log("finnaly");
-        setIsloading(false);
+        setIsloadingPungutan(false);
       });
+  }, []);
+
+  // function getPungutan(idHeader) {
+  //   setIsloadingPungutan(true);
+  //   return axios({
+  //     method: "get",
+  //     url: `${server}/perbendaharaan/perben/piutang/get-data-pungutan?idHeader=${idHeader}`,
+  //   })
+  //     .then((res) => {
+  //       console.log(res.data, "berhasil fetch");
+  //       let data = res.data.data;
+
+  //       setDataPungutan(convertPungutan(data));
+  //     })
+  //     .catch((error) => {
+  //       console.log((error, "error"));
+  //     })
+  //     .finally((_) => {
+  //       console.log("finnaly");
+  //       setIsloadingPungutan(false);
+  //     });
+  // }
+
+  function convertPungutan(data) {
+    const filterData = data.filter((item) => {
+      return item.nilai !== null;
+    });
+    filterData.map((data) => {
+      return (data.nilai = convertToRupiah(data.nilai));
+    });
+    return filterData;
   }
 
-  function getHistory() {
+  function getHistory(idHeader) {
     axios({
       method: "get",
-      url: `${server}/perbendaharaan/perben/piutang/get-data-history?idHeader=${dataTable.idHeader}`,
+      url: `${server}/perbendaharaan/perben/piutang/get-data-history?idHeader=${idHeader}`,
     })
       .then((res) => {
         console.log(res.data, "berhasil fetch");
@@ -97,25 +137,13 @@ export default function BrowseDokumenPiutang() {
       })
       .finally((_) => {
         console.log("finnaly");
-        // setIsloading(false);
       });
   }
 
-  // if (isLoading) {
-  //   return (
-  //     <Spin tip="Loading...">
-  //       <Alert
-  //         message="Fetching data ....."
-  //         // description="Further details about the context of this alert."
-  //         // type="info"
-  //       />
-  //     </Spin>
-  //   );
-  // }
-
-  function klikRow() {
-    getPungutan();
-    getHistory();
+  function klikRow(record) {
+    setDataTable(record);
+    getPungutan(record.idHeader);
+    getHistory(record.idHeader);
   }
 
   return (
@@ -132,6 +160,7 @@ export default function BrowseDokumenPiutang() {
         <Col span={24}>
           <Header
             isLoading={isLoading}
+            setIsLoading={setIsloading}
             klikRow={klikRow}
             setDataTable={setDataTable}
             dataHeader={dataHeader}
@@ -159,7 +188,7 @@ export default function BrowseDokumenPiutang() {
           <Tabs defaultActiveKey="1" onChange={callback} type="line">
             <TabPane tab="Pungutan" key="1">
               <Pungutan
-                isLoading={isLoading}
+                isLoading={isLoadingPungutan}
                 getPungutan={getPungutan}
                 data={dataPungutan}
               />

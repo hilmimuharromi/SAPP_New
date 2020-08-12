@@ -119,7 +119,6 @@ export default function Detail() {
           </List.Item>
         )}
       />
-      ,
     </Card>
   );
 }

@@ -112,7 +112,7 @@ function RekamDokumenPiutang() {
   const [alamat_perusahaan, setAlamat_Perusahaan] = useState("");
   const [ppjk, setPpjk] = useState("");
   const [petugas, setPetugas] = useState("");
-  let totalNilai = 0;
+  let [totalNilai, setTotalNilai] = useState(0);
   const [form] = Form.useForm();
   // Pungutan
   // ==============================================
@@ -162,7 +162,6 @@ function RekamDokumenPiutang() {
   const [data_keterangan, setData_keterangan] = useState([]);
   let [editValueKeterangan, setEditValueKeterangan] = useState(0);
   const [keyEditKeterangan, setKeyEditKeterangan] = useState(0);
-  const [keyDeletePungutan, setKeyDeletePungutan] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   // Function - Sid - Headear
@@ -241,10 +240,23 @@ function RekamDokumenPiutang() {
     message.success("Data Berhasil di Kosongkan!");
   };
 
+  function totalPungutan(data) {
+    let total = 0;
+    setInterval(
+      data.map((item) => {
+        if (item.lebihBayar !== "Y") {
+          total += item.nilai;
+        }
+        return setTotalNilai(total);
+      }),
+      3000
+    );
+
+    console.log(totalNilai, "total pungutan");
+  }
+
   const handleSimpan = () => {
-    data_pungutan.map((item) => {
-      return item.lebihBayar !== "Y" ? (totalNilai += item.nilai) : null;
-    });
+    totalPungutan(data_pungutan);
     const {
       idPerusahaan,
       namaPerusahaan,
@@ -254,6 +266,7 @@ function RekamDokumenPiutang() {
       jenisDokumen,
       jenisDokumenAsal,
       nomorDokumenAsal,
+      nomorDokumen,
       tanggalDokumen,
       tanggalDokumenAsal,
       tanggalJatuhTempo,
@@ -275,8 +288,8 @@ function RekamDokumenPiutang() {
         nilai: totalNilai,
         nipPetugas1: petugas,
         nipPetugas2: petugas,
-        nomorDokumenAsal: "string",
-        nomorDokumen: nomorDokumenAsal,
+        nomorDokumenAsal: nomorDokumenAsal,
+        nomorDokumen: nomorDokumen,
         tanggalDokumen: moment(tanggalDokumen).format("YYYY-MM-DD hh:mm:ss"),
         tanggalDokumenAsal: moment(tanggalDokumenAsal).format(
           "YYYY-MM-DD hh:mm:ss"
@@ -292,7 +305,7 @@ function RekamDokumenPiutang() {
     console.log(payload, "payload data submit");
     // // post rekam
     setIsLoading(true);
-    let lokal = "http://10.102.120.36:9090";
+    // let lokal = "http://10.102.120.36:9090";
     let server = "http://10.162.71.119:9090";
     axios({
       method: "post",
@@ -338,6 +351,7 @@ function RekamDokumenPiutang() {
           data_pungutan[i].nilai = editValuePungutan;
         }
       }
+      totalPungutan(data_pungutan);
       setKeyEditPungutan(0);
     }
 
@@ -348,6 +362,7 @@ function RekamDokumenPiutang() {
         );
       });
       setData_pungutan(newData);
+      totalPungutan(newData);
     }
 
     function klikEdit() {
@@ -437,6 +452,8 @@ function RekamDokumenPiutang() {
         const newData = [...data_pungutan, ObjData];
 
         setData_pungutan(newData);
+        totalPungutan(newData);
+
         setAkun("");
         setPemberitahuan(0);
         setPenetapan(0);
@@ -460,6 +477,9 @@ function RekamDokumenPiutang() {
       } else {
         const newData = [...data_pungutan, ObjData];
         setData_pungutan(newData);
+
+        totalPungutan(newData);
+
         setAkun("");
         setSelisih("");
         setNilai(0);
@@ -814,6 +834,23 @@ function RekamDokumenPiutang() {
                     />
                   </Form.Item>
 
+                  <Form.Item
+                    name="nomorDokumen"
+                    label="nomor Dokumen"
+                    wrapperCol={{ span: 0 }}
+                    style={{
+                      marginBottom: "5px",
+                      padding: "1px 1px 1px 5px",
+                      // borderBottom: "1px solid #eaeaea",
+                    }}
+                  >
+                    <Input
+                    // style={{ borderLeft: "5px solid #eaeaea" }}
+                    // value={kantor_monitor}
+                    // onChange={(e) => setKantor_monitor(e.target.value)}
+                    />
+                  </Form.Item>
+
                   {/* tanggal dok & jatuh tempo*/}
 
                   <Form.Item
@@ -832,7 +869,7 @@ function RekamDokumenPiutang() {
                       selected={tanggalDokumen}
                       style={{
                         width: "100%",
-                        borderLeft: "5px solid #eaeaea",
+                        // borderLeft: "5px solid #eaeaea",
                       }}
                       format={"DD/MM/YYYY"}
                     />
@@ -853,7 +890,7 @@ function RekamDokumenPiutang() {
                       selected={tanggal_jatuh_tempo}
                       style={{
                         width: "100%",
-                        borderLeft: "5px solid #eaeaea",
+                        // borderLeft: "5px solid #eaeaea",
                       }}
                       format={"DD/MM/YYYY"}
                     />
@@ -871,7 +908,7 @@ function RekamDokumenPiutang() {
                       value={jenisDokumen.length === 0 ? null : jenisDokumen}
                       style={{
                         width: "20%",
-                        borderLeft: "5px solid #eaeaea",
+                        // borderLeft: "5px solid #eaeaea",
                       }}
                       onChange={(val) => setJenisDokumen(val)}
                       size={"small"}
@@ -919,7 +956,7 @@ function RekamDokumenPiutang() {
                           }
                           style={{
                             width: "100%",
-                            borderLeft: "5px solid #eaeaea",
+                            // borderLeft: "5px solid #eaeaea",
                           }}
                           onChange={(val) => setJenisDokumenAsal(val)}
                           size={"small"}
@@ -996,7 +1033,9 @@ function RekamDokumenPiutang() {
                       // borderBottom: "1px solid #eaeaea",
                     }}
                   >
-                    <Input style={{ borderLeft: "5px solid #eaeaea" }} />
+                    <Input
+                    // style={{ borderLeft: "5px solid #eaeaea" }}
+                    />
                   </Form.Item>
                   <Form.Item
                     name="namaPerusahaan"
@@ -1008,7 +1047,7 @@ function RekamDokumenPiutang() {
                     }}
                   >
                     <Input
-                      style={{ borderLeft: "5px solid #eaeaea" }}
+                      // style={{ borderLeft: "5px solid #eaeaea" }}
                       value={perusahaan}
                       onChange={(e) => setPerusahaan(e.target.value)}
                     />
@@ -1024,7 +1063,7 @@ function RekamDokumenPiutang() {
                     }}
                   >
                     <Input
-                      style={{ borderLeft: "5px solid #eaeaea" }}
+                      // style={{ borderLeft: "5px solid #eaeaea" }}
                       value={alamat_perusahaan}
                       onChange={(e) => setAlamat_Perusahaan(e.target.value)}
                     />
@@ -1040,7 +1079,8 @@ function RekamDokumenPiutang() {
                     }}
                   >
                     <Input
-                      style={{ borderLeft: "5px solid #eaeaea" }}
+                      // style={
+                      //   { borderLeft: "5px solid #eaeaea" }}
                       value={ppjk}
                       onChange={(e) => setPpjk(e.target.value)}
                     />
@@ -1052,7 +1092,7 @@ function RekamDokumenPiutang() {
                     style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
                   >
                     <Input
-                      style={{ borderLeft: "5px solid #eaeaea" }}
+                      // style={{ borderLeft: "5px solid #eaeaea" }}
                       value={petugas}
                       onChange={(e) => setPetugas(e.target.value)}
                     />
@@ -1241,6 +1281,12 @@ function RekamDokumenPiutang() {
                 <br />
                 <Badge color="coral" text="Kurang Bayar" />
               </Col>
+            </Row>
+            <Row>
+              <Col span={4}>
+                <h2>Total Pungutan</h2>
+              </Col>
+              <Col>{totalNilai}</Col>
             </Row>
             <h1 style={{ fontWeight: "bold", fontSize: 24, marginTop: 14 }}>
               Keterangan
