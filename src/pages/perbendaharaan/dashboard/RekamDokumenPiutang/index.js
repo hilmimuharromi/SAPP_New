@@ -1,6 +1,5 @@
 import {
   React,
-  axios,
   Layout,
   Row,
   Col,
@@ -25,13 +24,19 @@ import {
   Alert,
 } from "../../libraries/dependencies";
 import { convertToRupiah } from "../../libraries/functions";
+import { useDispatch, useSelector } from "react-redux";
+import allActions from "../../../../stores/actions";
 
 const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { Option } = Select;
 
 function RekamDokumenPiutang() {
-  // const { getFieldDecorator } = props.form;
+  const dispatch = useDispatch();
+  let error = useSelector((state) => state.rekamManual.errorRekamManual);
+  let result = useSelector((state) => state.rekamManual.data);
+  let isLoading = useSelector((state) => state.rekamManual.loadingRekamManual);
+
   // Sid - Headear
   // ==============================================
   const [collapsed, setCollapsed] = useState(false);
@@ -162,7 +167,7 @@ function RekamDokumenPiutang() {
   const [data_keterangan, setData_keterangan] = useState([]);
   let [editValueKeterangan, setEditValueKeterangan] = useState(0);
   const [keyEditKeterangan, setKeyEditKeterangan] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   // Function - Sid - Headear
   // ==============================================
@@ -251,7 +256,6 @@ function RekamDokumenPiutang() {
       }),
       3000
     );
-
     console.log(totalNilai, "total pungutan");
   }
 
@@ -304,32 +308,20 @@ function RekamDokumenPiutang() {
     };
     console.log(payload, "payload data submit");
     // // post rekam
-    setIsLoading(true);
-    // let lokal = "http://10.102.120.36:9090";
-    let server = "http://10.162.71.119:9090";
-    axios({
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      url: `${server}/perbendaharaan/perben/piutang/simpan-piutang`,
-      data: payload,
-    })
-      .then(({ data }) => {
-        console.log({ data }, "berhasil");
-        message.success("Data Berhasil di Kirim!");
-      })
-      .catch((error) => {
-        console.log((error, "error"));
-        message.error("ada yang salah!");
-      })
-      .finally((_) => {
-        console.log("finally");
-        setIsLoading(false);
-      });
-
+    dispatch(allActions.addRekamManual(payload));
     // form.resetFields();
   };
+
+  if (result) {
+    console.log(result, "result rekam");
+    message.success("Data Berhasil Ditambahkan");
+    // result = false;
+  }
+  if (error) {
+    console.log(error, "error rekam");
+    message.error("error");
+    // error = null;
+  }
 
   // Function - Pungutan
   // ==============================================
@@ -450,10 +442,8 @@ function RekamDokumenPiutang() {
         message.error("Mohon Isi Penetapan");
       } else {
         const newData = [...data_pungutan, ObjData];
-
         setData_pungutan(newData);
         totalPungutan(newData);
-
         setAkun("");
         setPemberitahuan(0);
         setPenetapan(0);
@@ -801,37 +791,45 @@ function RekamDokumenPiutang() {
                   onFinish={handleSimpan}
                   // style={{ border: "1px solid #eaeaea", minWidth: "100%" }}
                 >
-                  <Form.Item
-                    name="kantorPenerbit"
-                    label="Kantor Penerbit"
-                    // wrapperCol={{ span: 0 }}
-                    style={{
-                      marginBottom: "5px",
-                      padding: "1px 1px 1px 5px",
-                      // borderBottom: "1px solid #eaeaea",
-                    }}
-                  >
-                    <Input
-                    // style={{ borderLeft: "5px solid #eaeaea" }}
-                    // value={kantor_penerbit}
-                    // onChange={(e) => setKantor_penerbit(e.target.value)}
-                    />
+                  <Form.Item label="Kantor Penerbit">
+                    <Input.Group compact>
+                      <Form.Item
+                        name="kantorPenerbit"
+                        // wrapperCol={{ span: 0 }}
+                        style={{
+                          // marginBottom: "5px",
+                          padding: "1px 1px 1px 5px",
+                          // borderBottom: "1px solid #eaeaea",
+                        }}
+                      >
+                        <Input
+                        // style={{ borderLeft: "5px solid #eaeaea" }}
+                        // value={kantor_penerbit}
+                        // onChange={(e) => setKantor_penerbit(e.target.value)}
+                        />
+                      </Form.Item>
+                      <a style={{ margin: "0 8px" }}>Tanjung</a>
+                    </Input.Group>
                   </Form.Item>
-                  <Form.Item
-                    name="kantorMonitor"
-                    label="Kantor Monitor"
-                    wrapperCol={{ span: 0 }}
-                    style={{
-                      marginBottom: "5px",
-                      padding: "1px 1px 1px 5px",
-                      // borderBottom: "1px solid #eaeaea",
-                    }}
-                  >
-                    <Input
-                    // style={{ borderLeft: "5px solid #eaeaea" }}
-                    // value={kantor_monitor}
-                    // onChange={(e) => setKantor_monitor(e.target.value)}
-                    />
+
+                  <Form.Item label="Kantor Monitor">
+                    <Input.Group compact>
+                      <Form.Item
+                        name="kantorMonitor"
+                        style={{
+                          marginBottom: "5px",
+                          padding: "1px 1px 1px 5px",
+                        }}
+                      >
+                        <Input
+                          style={{ width: 160 }}
+                          // style={{ borderLeft: "5px solid #eaeaea" }}
+                          // value={kantor_monitor}
+                          // onChange={(e) => setKantor_monitor(e.target.value)}
+                        />
+                      </Form.Item>
+                      <a style={{ margin: "0 8px" }}>Tanjung</a>
+                    </Input.Group>
                   </Form.Item>
 
                   <Form.Item

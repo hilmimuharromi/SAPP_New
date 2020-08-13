@@ -1,5 +1,5 @@
 const initialState = {
-  pungutan: [],
+  data: [],
   loadingPungutan: false,
   errorPungutan: null,
 };
@@ -7,7 +7,7 @@ export default function reducer(state = initialState, action) {
   if (action.type === "SET_PUNGUTAN") {
     return {
       ...state,
-      pungutan: action.payload,
+      data: action.payload,
     };
   } else if (action.type === "SET_LOADING_PUNGUTAN") {
     return {

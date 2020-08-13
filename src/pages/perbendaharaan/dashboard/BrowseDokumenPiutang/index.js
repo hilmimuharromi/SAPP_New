@@ -1,9 +1,7 @@
 import {
   React,
-  useCallback,
   useEffect,
   useState,
-  axios,
   Layout,
   Row,
   Col,
@@ -11,11 +9,10 @@ import {
   Tabs,
   Card,
 } from "../../libraries/dependencies";
-import { convertToRupiah } from "../../libraries/functions";
-
+import { useDispatch } from "react-redux";
+import allActions from "../../../../stores/actions";
 import Pungutan from "./Pungutan";
 import Detail from "./Detail";
-// import Timeline from "./Timeline";
 import NewTimeline from "./NewTimeline";
 import History from "./History";
 import MutasiDokumen from "./MutasiDokumen";
@@ -28,35 +25,11 @@ const { TabPane } = Tabs;
 export default function BrowseDokumenPiutang() {
   const [togleChart, setTogleChart] = useState(true);
   const [dataTable, setDataTable] = useState("");
-  const [dataHeader, setDataHeader] = useState("");
-  const [dataPungutan, setDataPungutan] = useState([]);
-  const [dataHistory, setDataHistory] = useState([]);
-  const [isLoading, setIsloading] = useState(false);
-  const [isLoadingPungutan, setIsloadingPungutan] = useState(false);
-  // let lokal = "http://10.102.120.36:9090";
-  const [server, setServer] = useState("http://10.162.71.119:9090");
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    setIsloading(true);
-    axios({
-      method: "get",
-      url: `${server}/perbendaharaan/perben/piutang/get-data-browse`,
-    })
-      .then((res) => {
-        console.log(res.data, "berhasil fetch");
-        let data = res.data.data;
-        setDataHeader(data);
-        setDataTable(data[0]);
-        // getPungutan(data[0].idHeader);
-      })
-      .catch((error) => {
-        console.log((error, "error"));
-      })
-      .finally((_) => {
-        console.log("finnaly");
-        setIsloading(false);
-      });
-  }, []);
+    dispatch(allActions.getHeaders("ALL"));
+  }, [dispatch]);
+
   function callback(key) {
     console.log(key);
   }
@@ -68,79 +41,8 @@ export default function BrowseDokumenPiutang() {
     }
   }
 
-  const getPungutan = useCallback((idHeader) => {
-    setIsloadingPungutan(true);
-    return axios({
-      method: "get",
-      url: `${server}/perbendaharaan/perben/piutang/get-data-pungutan?idHeader=${idHeader}`,
-    })
-      .then((res) => {
-        console.log(res.data, "berhasil fetch");
-        let data = res.data.data;
-
-        setDataPungutan(convertPungutan(data));
-      })
-      .catch((error) => {
-        console.log((error, "error"));
-      })
-      .finally((_) => {
-        console.log("finnaly");
-        setIsloadingPungutan(false);
-      });
-  }, []);
-
-  // function getPungutan(idHeader) {
-  //   setIsloadingPungutan(true);
-  //   return axios({
-  //     method: "get",
-  //     url: `${server}/perbendaharaan/perben/piutang/get-data-pungutan?idHeader=${idHeader}`,
-  //   })
-  //     .then((res) => {
-  //       console.log(res.data, "berhasil fetch");
-  //       let data = res.data.data;
-
-  //       setDataPungutan(convertPungutan(data));
-  //     })
-  //     .catch((error) => {
-  //       console.log((error, "error"));
-  //     })
-  //     .finally((_) => {
-  //       console.log("finnaly");
-  //       setIsloadingPungutan(false);
-  //     });
-  // }
-
-  function convertPungutan(data) {
-    const filterData = data.filter((item) => {
-      return item.nilai !== null;
-    });
-    filterData.map((data) => {
-      return (data.nilai = convertToRupiah(data.nilai));
-    });
-    return filterData;
-  }
-
-  function getHistory(idHeader) {
-    axios({
-      method: "get",
-      url: `${server}/perbendaharaan/perben/piutang/get-data-history?idHeader=${idHeader}`,
-    })
-      .then((res) => {
-        console.log(res.data, "berhasil fetch");
-        setDataHistory(res.data.data);
-      })
-      .catch((error) => {
-        console.log((error, "error"));
-      })
-      .finally((_) => {
-        console.log("finnaly");
-      });
-  }
-
   function klikRow(record) {
     setDataTable(record);
-    getPungutan(record.idHeader);
-    getHistory(record.idHeader);
   }
 
   return (
@@ -155,13 +57,7 @@ export default function BrowseDokumenPiutang() {
       <Row>{JSON.stringify(dataTable)}</Row>
       <Row justify="center" style={{ marginTop: "10px" }}>
         <Col span={24}>
-          <Header
-            isLoading={isLoading}
-            setIsLoading={setIsloading}
-            klikRow={klikRow}
-            setDataTable={setDataTable}
-            dataHeader={dataHeader}
-          />
+          <Header klikRow={klikRow} setDataTable={setDataTable} />
         </Col>
       </Row>
       <Row justify="center">
@@ -184,11 +80,7 @@ export default function BrowseDokumenPiutang() {
         <Col span={10} style={{ marginLeft: "10px", width: "700" }}>
           <Tabs defaultActiveKey="1" onChange={callback} type="line">
             <TabPane tab="Pungutan" key="1">
-              <Pungutan
-                isLoading={isLoadingPungutan}
-                getPungutan={getPungutan}
-                data={dataPungutan}
-              />
+              <Pungutan />
               {/* Content of Tab Pane 1 */}
             </TabPane>
             <TabPane tab="Mutasi Dokumen" key="2">
@@ -197,7 +89,7 @@ export default function BrowseDokumenPiutang() {
             </TabPane>
             <TabPane tab="History" key="3">
               {/* Content of Tab Pane 3 */}
-              <History data={dataHistory} />
+              <History />
             </TabPane>
           </Tabs>
         </Col>

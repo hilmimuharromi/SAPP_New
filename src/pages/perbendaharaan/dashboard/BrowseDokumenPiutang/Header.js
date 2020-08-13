@@ -1,19 +1,26 @@
 import {
   React,
-  axios,
   Table,
   Card,
   Button,
   useState,
   Modal,
 } from "../../libraries/dependencies";
+import { useSelector, useDispatch } from "react-redux";
+import allActions from "../../../../stores/actions";
 import Iframe from "react-iframe";
 import Menu from "./SearchHeader";
 import "@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css";
+
 export default function Header(props) {
+  const dispatch = useDispatch();
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
-  const [searchData, setSearchData] = useState([]);
+  let dataHeader = useSelector((state) => state.headers.data);
+  console.log(dataHeader, "data header");
+  let isLoading = useSelector((state) => state.headers.loadingHeader);
+  const error = useSelector((state) => state.headers.errorHeader);
+  console.log(error, "error ");
   function handleLihat(record) {
     setContent(record);
     setModal(true);
@@ -103,40 +110,22 @@ export default function Header(props) {
     },
   ];
 
-  function searchHeader(value) {
-    let server = "http://10.162.71.119:9090";
-    // props.setIsLoading(true);
-    axios({
-      method: "get",
-      url: `${server}/perbendaharaan/perben/piutang/get-data-browse?browse=${value}`,
-    })
-      .then((res) => {
-        console.log(res.data, "berhasil fetch");
-        setSearchData(res.data.data);
-      })
-      .catch((error) => {
-        console.log((error, "error"));
-      })
-      .finally((_) => {
-        console.log("finnaly");
-        // props.setIsloading(false);
-      });
-  }
   return (
     <Card className="card-layout">
-      <Menu searchHeader={searchHeader} />
+      <Menu />
       {/* <h3>BROWSE DOKUMEN PIUTANG</h3> */}
       <Table
-        loading={props.isLoading}
+        loading={isLoading}
         columns={columns}
-        dataSource={searchData.length > 0 ? searchData : props.dataHeader}
+        dataSource={dataHeader}
         size="small"
         pagination={{ pageSize: 5, showQuickJumper: true }}
         scroll={{ x: 1500 }}
         onRow={(record, rowIndex) => {
           return {
             onClick: (event) => {
-              // props.setDataTable(record);
+              dispatch(allActions.getPungutan(record.idHeader));
+              dispatch(allActions.getHistory(record.idHeader));
               props.klikRow(record);
             },
           };

@@ -1,8 +1,9 @@
 import { React, Table } from "../../libraries/dependencies";
+import { useSelector } from "react-redux";
 
-export default function Pungutan(props) {
-  const { data, isLoading } = props;
-
+export default function Pungutan() {
+  let data = useSelector((state) => state.pungutan.data);
+  let isLoading = useSelector((state) => state.pungutan.loadingPungutan);
   const columns = [
     {
       title: "Kode Akun",

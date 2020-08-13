@@ -1,6 +1,9 @@
 import { React, Table } from "../../libraries/dependencies";
+import { useSelector } from "react-redux";
 
-export default function History({ data }) {
+export default function History() {
+  let data = useSelector((state) => state.history.data);
+  let isLoading = useSelector((state) => state.history.loadingHistory);
   const column = [
     {
       title: "status",
@@ -21,7 +24,7 @@ export default function History({ data }) {
   return (
     <>
       <h3 style={{ marginLeft: "10px" }}>History</h3>
-      <Table dataSource={data} columns={column} />
+      <Table dataSource={data} columns={column} loading={isLoading} />
     </>
   );
 }

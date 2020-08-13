@@ -1,10 +1,14 @@
 import { combineReducers } from "redux";
 import headerReducer from "./headerData";
-import addEventReducer from "./addEventReducer";
+import pungutanReducer from "./pungutanData";
+import historyReducer from "./historydata";
+import rekamReducer from "./rekamManual";
 
 const rootReducers = combineReducers({
   headers: headerReducer,
-  addEvent: addEventReducer,
+  pungutan: pungutanReducer,
+  history: historyReducer,
+  rekamManual: rekamReducer,
 });
 
 export default rootReducers;
