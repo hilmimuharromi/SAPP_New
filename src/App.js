@@ -4,8 +4,8 @@ import {
   Route,
 } from "./pages/perbendaharaan/libraries/dependencies";
 import "./App.css";
-// import { Worker } from "@phuocng/react-pdf-viewer";
-
+import { Provider } from "react-redux";
+import store from "./stores";
 // @import pages
 import Perbendaharaan from "./pages/perbendaharaan";
 import { RekamDokumenPiutang } from "./pages/perbendaharaan/dashboard";
@@ -27,13 +27,13 @@ const appRoutes = [
 
 function App() {
   return (
-    // <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.4.456/build/pdf.worker.js">
-    <Router>
-      {appRoutes.map((route) => (
-        <Route key={route.name} {...route} />
-      ))}
-    </Router>
-    // </Worker>
+    <Provider store={store}>
+      <Router>
+        {appRoutes.map((route) => (
+          <Route key={route.name} {...route} />
+        ))}
+      </Router>
+    </Provider>
   );
 }
 

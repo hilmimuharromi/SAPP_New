@@ -6,7 +6,7 @@ import {
   Button,
   PlusOutlined,
   useHistory,
-} from "../libraries/dependencies";
+} from "../../libraries/dependencies";
 const { Search } = Input;
 
 export default function Menu({ searchHeader }) {

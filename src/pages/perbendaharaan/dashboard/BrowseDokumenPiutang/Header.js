@@ -8,7 +8,7 @@ import {
   Modal,
 } from "../../libraries/dependencies";
 import Iframe from "react-iframe";
-import Menu from "../../menu/index";
+import Menu from "./SearchHeader";
 import "@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css";
 export default function Header(props) {
   const [showModal, setModal] = useState(false);

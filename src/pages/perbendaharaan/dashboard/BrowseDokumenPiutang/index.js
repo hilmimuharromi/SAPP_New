@@ -34,31 +34,28 @@ export default function BrowseDokumenPiutang() {
   const [isLoading, setIsloading] = useState(false);
   const [isLoadingPungutan, setIsloadingPungutan] = useState(false);
   // let lokal = "http://10.102.120.36:9090";
-  let server = "http://10.162.71.119:9090";
+  const [server, setServer] = useState("http://10.162.71.119:9090");
 
   useEffect(() => {
-    const fetchAwal = (server) => {
-      setIsloading(true);
-      return axios({
-        method: "get",
-        url: `${server}/perbendaharaan/perben/piutang/get-data-browse`,
+    setIsloading(true);
+    axios({
+      method: "get",
+      url: `${server}/perbendaharaan/perben/piutang/get-data-browse`,
+    })
+      .then((res) => {
+        console.log(res.data, "berhasil fetch");
+        let data = res.data.data;
+        setDataHeader(data);
+        setDataTable(data[0]);
+        // getPungutan(data[0].idHeader);
       })
-        .then((res) => {
-          console.log(res.data, "berhasil fetch");
-          let data = res.data.data;
-          setDataHeader(data);
-          setDataTable(data[0]);
-          getPungutan(data[0].idHeader);
-        })
-        .catch((error) => {
-          console.log((error, "error"));
-        })
-        .finally((_) => {
-          console.log("finnaly");
-          setIsloading(false);
-        });
-    };
-    fetchAwal();
+      .catch((error) => {
+        console.log((error, "error"));
+      })
+      .finally((_) => {
+        console.log("finnaly");
+        setIsloading(false);
+      });
   }, []);
   function callback(key) {
     console.log(key);
