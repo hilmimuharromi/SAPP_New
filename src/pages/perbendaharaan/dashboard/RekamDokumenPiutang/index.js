@@ -1,5 +1,7 @@
 import {
   React,
+  useEffect,
+  axios,
   Layout,
   Row,
   Col,
@@ -41,6 +43,9 @@ function RekamDokumenPiutang() {
   // ==============================================
   const [collapsed, setCollapsed] = useState(false);
   const [akun, setAkun] = useState("");
+  const [namaKantorPenerbit, setNamaKantorPenerbit] = useState("");
+  const [namaKantorMonitor, setNamaKantorMonitor] = useState("");
+
   // Form Perekaman
   // ==============================================
   const db_dokumen_asal = [
@@ -115,8 +120,15 @@ function RekamDokumenPiutang() {
   const [tanggal_dokumen_asal, setTanggal_dokumen_asal] = useState("");
   const [perusahaan, setPerusahaan] = useState("");
   const [alamat_perusahaan, setAlamat_Perusahaan] = useState("");
-  const [ppjk, setPpjk] = useState("");
   const [petugas, setPetugas] = useState("");
+  const [statusJabatan1, setStatusJabatan1] = useState([]);
+  const [statusJabatan2, setStatusJabatan2] = useState([]);
+  const statusJabatan = [
+    { kodeJabatan: "10", namaJabatan: "plh" },
+    { kodeJabatan: "20", namaJabatan: "plt" },
+    { kodeJabatan: "30", namaJabatan: "an" },
+    { kodeJabatan: "40", namaJabatan: "ub" },
+  ];
   let [totalNilai, setTotalNilai] = useState(0);
   const [form] = Form.useForm();
   // Pungutan
@@ -167,8 +179,51 @@ function RekamDokumenPiutang() {
   const [data_keterangan, setData_keterangan] = useState([]);
   let [editValueKeterangan, setEditValueKeterangan] = useState(0);
   const [keyEditKeterangan, setKeyEditKeterangan] = useState(0);
+  // const [listJenisDokumen, setListJenisDokumen] = useState([]);
+  // const [listJenisDokumenAsal, setListJenisDokumenAsal] = useState([]);
+  const listJenisDokumen = useSelector(
+    (state) => state.jenisDokumen.jenisDokumen
+  );
+  const listJenisDokumenAsal = useSelector(
+    (state) => state.jenisDokumen.jenisDokumenAsal
+  );
+  // const listJenisDokumenAsal = useSelector((state) => state.jenisDokumen.jenisDokumenAsal)
+
   // const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    dispatch(allActions.getJenisDokumen("JENIS DOKUMEN"));
+    dispatch(allActions.getJenisDokumen("JENIS DOKUMEN ASAL"));
+
+    // axios({
+    //   method: "get",
+    //   url: `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-jenis-dokumen?keterangan=PIUTANG`,
+    // })
+    //   .then((res) => {
+    //     console.log(res.data, "masuk jenis dokumen");
+    //     setListJenisDokumen(res.data.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error, "masukerror");
+    //   })
+    //   .finally((_) => {});
+
+    // axios({
+    //   method: "get",
+    //   url: `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-jenis-dokumen?keterangan=JENIS%20DOKUMEN%20ASAL`,
+    // })
+    //   .then((res) => {
+    //     console.log(res.data, "masuk jenis dokumen");
+    //     setListJenisDokumenAsal(res.data.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error, "masukerror");
+    //   })
+    //   .finally((_) => {});
+    // // return () => {
+
+    // }
+  }, [dispatch]);
   // Function - Sid - Headear
   // ==============================================
   let history = useHistory();
@@ -256,7 +311,6 @@ function RekamDokumenPiutang() {
       }),
       3000
     );
-    console.log(totalNilai, "total pungutan");
   }
 
   const handleSimpan = () => {
@@ -274,7 +328,13 @@ function RekamDokumenPiutang() {
       tanggalDokumen,
       tanggalDokumenAsal,
       tanggalJatuhTempo,
+      kodeBidang,
       petugas,
+      statusJabatan1,
+      statusJabatan2,
+      jabatan1,
+      jabatan2,
+      ppjk,
     } = form.getFieldsValue();
     let payload = {
       tdHeader: {
@@ -283,7 +343,7 @@ function RekamDokumenPiutang() {
         idPpjk: ppjk,
         jenisDokumen: jenisDokumen,
         jenisDokumenAsal: jenisDokumenAsal,
-        kodeBidang: "String",
+        kodeBidang: kodeBidang,
         kodeKantorMonitor: kantorMonitor,
         kodeKantorPenerbit: kantorPenerbit,
         kodeProses: "100",
@@ -291,15 +351,19 @@ function RekamDokumenPiutang() {
         namaPpjk: ppjk,
         nilai: totalNilai,
         nipPetugas1: petugas,
-        nipPetugas2: petugas,
+        statusJabatan1: statusJabatan1,
+        statusJabatan2: statusJabatan2,
+        jabatan1: jabatan1,
+        jabatan2: jabatan2,
+
         nomorDokumenAsal: nomorDokumenAsal,
         nomorDokumen: nomorDokumen,
-        tanggalDokumen: moment(tanggalDokumen).format("YYYY-MM-DD hh:mm:ss"),
+        tanggalDokumen: moment(tanggalDokumen).format("YYYY-MM-DD HH:mm:ss"),
         tanggalDokumenAsal: moment(tanggalDokumenAsal).format(
-          "YYYY-MM-DD hh:mm:ss"
+          "YYYY-MM-DD HH:mm:ss"
         ),
         tanggalJatuhTempo: moment(tanggalJatuhTempo).format(
-          "YYYY-MM-DD hh:mm:ss"
+          "YYYY-MM-DD HH:mm:ss"
         ),
       },
       nipRekam: petugas,
@@ -340,11 +404,11 @@ function RekamDokumenPiutang() {
           `${data_pungutan[i].kodeAkun}-${data_pungutan[i].seri}` ===
           keyEditPungutan
         ) {
-          data_pungutan[i].nilai = editValuePungutan;
+          data_pungutan[i].nilai = Number(editValuePungutan);
         }
       }
-      totalPungutan(data_pungutan);
       setKeyEditPungutan(0);
+      totalPungutan(data_pungutan);
     }
 
     function deletePungutan() {
@@ -354,7 +418,11 @@ function RekamDokumenPiutang() {
         );
       });
       setData_pungutan(newData);
-      totalPungutan(newData);
+      if (newData.length > 0) {
+        totalPungutan(newData);
+      } else {
+        setTotalNilai(0);
+      }
     }
 
     function klikEdit() {
@@ -417,10 +485,10 @@ function RekamDokumenPiutang() {
       }
     }
     if (
-      jenisDokumenAsal === "13" ||
-      jenisDokumenAsal === "14" ||
-      jenisDokumenAsal === "20" ||
-      jenisDokumenAsal === "21"
+      jenisDokumen === "13" ||
+      jenisDokumen === "14" ||
+      jenisDokumen === "20" ||
+      jenisDokumen === "21"
     ) {
       const check = pemberitahuan - penetapan;
       let ObjData = {
@@ -477,6 +545,90 @@ function RekamDokumenPiutang() {
       }
     }
   };
+
+  //function get nama kantor
+
+  function getKantorPenerbit(kodeKantor) {
+    console.log(kodeKantor, "kode kantor");
+    axios({
+      method: "get",
+      url: `http://10.162.71.21:8111/Referensi/v1/kantor/${kodeKantor}`,
+    })
+      .then((res) => {
+        let namaKantor = res.data.data.namaKantorPendek;
+        if (!namaKantor) {
+          setNamaKantorPenerbit("kantor tidak ditemukan");
+        } else {
+          setNamaKantorPenerbit(namaKantor);
+        }
+
+        console.log(res.data.data, "masuk then");
+      })
+      .catch((error) => {
+        // console.log(error, "masukerror");
+        setNamaKantorPenerbit("kantor tidak ditemukan");
+      })
+      .finally((_) => {
+        console.log("finally");
+      });
+  }
+
+  function getKantorMonitor(kodeKantor) {
+    console.log(kodeKantor, "kode kantor");
+    axios({
+      method: "get",
+      url: `http://10.162.71.21:8111/Referensi/v1/kantor/${kodeKantor}`,
+    })
+      .then((res) => {
+        let namaKantor = res.data.data.namaKantorPendek;
+        if (!namaKantor) {
+          setNamaKantorMonitor("kantor tidak ditemukan");
+        } else {
+          setNamaKantorMonitor(namaKantor);
+        }
+
+        console.log(res.data.data, "masuk then");
+      })
+      .catch((error) => {
+        // console.log(error, "masukerror");
+        setNamaKantorMonitor("kantor tidak ditemukan");
+      })
+      .finally((_) => {
+        console.log("finally");
+      });
+  }
+
+  function getNamaPerusahaan(id) {
+    axios({
+      method: "get",
+      url: `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-perusahaan?idPerusahaan=${id}`,
+    })
+      .then((res) => {
+        let { namaPerusahaan, alamatPerusahaan } = res.data.data;
+        if (!namaPerusahaan) {
+          form.setFieldsValue({
+            namaPerusahaan: "PERUSAHAAN TIDAK DITEMUKAN",
+            alamatPerusahaan: "PERUSAHAAN TIDAK DITEMUKAN",
+          });
+        } else {
+          form.setFieldsValue({
+            namaPerusahaan: namaPerusahaan,
+            alamatPerusahaan: alamatPerusahaan,
+          });
+        }
+        console.log(namaPerusahaan, "masuk then");
+      })
+      .catch((error) => {
+        // console.log(error, "masukerror");
+        form.setFieldsValue({
+          namaPerusahaan: "PERUSAHAAN TIDAK DITEMUKAN",
+          alamatPerusahaan: "PERUSAHAAN TIDAK DITEMUKAN",
+        });
+      })
+      .finally((_) => {
+        console.log("finally");
+      });
+  }
 
   // Function - Keterangan
   // ==============================================
@@ -791,45 +943,71 @@ function RekamDokumenPiutang() {
                   onFinish={handleSimpan}
                   // style={{ border: "1px solid #eaeaea", minWidth: "100%" }}
                 >
-                  <Form.Item label="Kantor Penerbit">
+                  <Form.Item
+                    label="Kantor Penerbit"
+                    style={{
+                      marginBottom: "5px",
+                      padding: "1px 1px 1px 5px",
+                    }}
+                  >
                     <Input.Group compact>
                       <Form.Item
                         name="kantorPenerbit"
                         // wrapperCol={{ span: 0 }}
-                        style={{
-                          // marginBottom: "5px",
-                          padding: "1px 1px 1px 5px",
-                          // borderBottom: "1px solid #eaeaea",
-                        }}
                       >
                         <Input
-                        // style={{ borderLeft: "5px solid #eaeaea" }}
-                        // value={kantor_penerbit}
-                        // onChange={(e) => setKantor_penerbit(e.target.value)}
+                          // style={{ borderLeft: "5px solid #eaeaea" }}
+                          // value={kantor_penerbit}
+                          onChange={(e) => getKantorPenerbit(e.target.value)}
                         />
                       </Form.Item>
-                      <a style={{ margin: "0 8px" }}>Tanjung</a>
+                      <h3 style={{ margin: "0 8px" }}>{namaKantorPenerbit}</h3>
                     </Input.Group>
                   </Form.Item>
 
-                  <Form.Item label="Kantor Monitor">
+                  <Form.Item
+                    label="Kantor Monitor"
+                    style={{
+                      marginBottom: "5px",
+                      padding: "1px 1px 1px 5px",
+                    }}
+                  >
                     <Input.Group compact>
-                      <Form.Item
-                        name="kantorMonitor"
-                        style={{
-                          marginBottom: "5px",
-                          padding: "1px 1px 1px 5px",
-                        }}
-                      >
+                      <Form.Item name="kantorMonitor">
                         <Input
                           style={{ width: 160 }}
                           // style={{ borderLeft: "5px solid #eaeaea" }}
                           // value={kantor_monitor}
-                          // onChange={(e) => setKantor_monitor(e.target.value)}
+                          onChange={(e) => getKantorMonitor(e.target.value)}
                         />
                       </Form.Item>
-                      <a style={{ margin: "0 8px" }}>Tanjung</a>
+                      <h3 style={{ margin: "0 8px" }}>{namaKantorMonitor}</h3>
                     </Input.Group>
+                  </Form.Item>
+
+                  <Form.Item
+                    style={{
+                      marginBottom: "5px",
+                      padding: "1px 1px 1px 5px",
+                    }}
+                    name="jenisDokumen"
+                    label="Jenis Dokumen"
+                  >
+                    <Select
+                      value={jenisDokumen.length === 0 ? null : jenisDokumen}
+                      style={{
+                        width: "180px",
+                        // borderLeft: "5px solid #eaeaea",
+                      }}
+                      onChange={(val) => setJenisDokumen(val)}
+                      size={"small"}
+                    >
+                      {listJenisDokumen.map((item) => (
+                        <Option value={item.kodeDokumen}>
+                          {item.uraianDokumen}
+                        </Option>
+                      ))}
+                    </Select>
                   </Form.Item>
 
                   <Form.Item
@@ -843,13 +1021,13 @@ function RekamDokumenPiutang() {
                     }}
                   >
                     <Input
-                    // style={{ borderLeft: "5px solid #eaeaea" }}
-                    // value={kantor_monitor}
-                    // onChange={(e) => setKantor_monitor(e.target.value)}
+                      style={{
+                        width: "180px",
+                      }}
                     />
                   </Form.Item>
 
-                  {/* tanggal dok & jatuh tempo*/}
+                  {/* tanggal dok*/}
 
                   <Form.Item
                     name="tanggalDokumen"
@@ -871,63 +1049,6 @@ function RekamDokumenPiutang() {
                       }}
                       format={"DD/MM/YYYY"}
                     />
-                  </Form.Item>
-                  <Form.Item
-                    name="tanggalJatuhTempo"
-                    label="Tanggal Jatuh Tempo"
-                    wrapperCol={{ span: 4 }}
-                    style={{
-                      marginBottom: "5px",
-                      padding: "1px 1px 1px 5px",
-                      // borderBottom: "1px solid #eaeaea",
-                    }}
-                  >
-                    <DatePicker
-                      placeholder=""
-                      onChange={handleTanggalJatuhTMP}
-                      selected={tanggal_jatuh_tempo}
-                      style={{
-                        width: "100%",
-                        // borderLeft: "5px solid #eaeaea",
-                      }}
-                      format={"DD/MM/YYYY"}
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    style={{
-                      marginBottom: "5px",
-                      padding: "1px 1px 1px 5px",
-                    }}
-                    name="jenisDokumen"
-                    label="Jenis Dokumen"
-                  >
-                    <Select
-                      value={jenisDokumen.length === 0 ? null : jenisDokumen}
-                      style={{
-                        width: "20%",
-                        // borderLeft: "5px solid #eaeaea",
-                      }}
-                      onChange={(val) => setJenisDokumen(val)}
-                      size={"small"}
-                    >
-                      <Option value="10">PIB BERKALA</Option>
-                      <Option value="11">PIB VOORITSLAG</Option>
-                      <Option value="12">RUSH HANDLING</Option>
-                      <Option value="13">SPTNP</Option>
-                      <Option value="14">SPKTNP</Option>
-                      <Option value="15">SPP</Option>
-                      <Option value="16">SPSA</Option>
-                      <Option value="17">SPPBMCP</Option>
-                      <Option value="22">PEB PENUNDAAN</Option>
-                      <Option value="20">SPPBK</Option>
-                      <Option value="21">SPKPBK</Option>
-                      <Option value="31">CK1 PENUNDAAN</Option>
-                      <Option value="CK1A-BERKALA">CK1A BERKALA</Option>
-                      <Option value="33">CK5</Option>
-                      <Option value="34">STCK1</Option>
-                      <Option value="36">SPPBP</Option>
-                    </Select>
                   </Form.Item>
 
                   <Form.Item
@@ -959,22 +1080,11 @@ function RekamDokumenPiutang() {
                           onChange={(val) => setJenisDokumenAsal(val)}
                           size={"small"}
                         >
-                          <Option value="10">PIB BERKALA</Option>
-                          <Option value="11">PIB VOORITSLAG</Option>
-                          <Option value="12">RUSH HANDLING</Option>
-                          <Option value="13">SPTNP</Option>
-                          <Option value="14">SPKTNP</Option>
-                          <Option value="15">SPP</Option>
-                          <Option value="16">SPSA</Option>
-                          <Option value="17">SPPBMCP</Option>
-                          <Option value="22">PEB PENUNDAAN</Option>
-                          <Option value="20">SPPBK</Option>
-                          <Option value="21">SPKPBK</Option>
-                          <Option value="31">CK1 PENUNDAAN</Option>
-                          <Option value="CK1A-BERKALA">CK1A BERKALA</Option>
-                          <Option value="33">CK5</Option>
-                          <Option value="34">STCK1</Option>
-                          <Option value="36">SPPBP</Option>
+                          {listJenisDokumenAsal.map((item) => (
+                            <Option value={item.kodeDokumen}>
+                              {item.uraianDokumen}
+                            </Option>
+                          ))}
                         </Select>
                       </Form.Item>
                       <span style={{ marginRight: 8, marginLeft: 8 }}>/</span>
@@ -1002,6 +1112,7 @@ function RekamDokumenPiutang() {
                           format={"DD/MM/YYYY"}
                         />
                       </Form.Item>
+
                       <Form.Item
                         style={{ marginLeft: 8, marginBottom: 0, width: "12%" }}
                       >
@@ -1023,6 +1134,27 @@ function RekamDokumenPiutang() {
                     </Input.Group>
                   </Form.Item>
                   <Form.Item
+                    name="tanggalJatuhTempo"
+                    label="Tanggal Jatuh Tempo"
+                    wrapperCol={{ span: 4 }}
+                    style={{
+                      marginBottom: "5px",
+                      padding: "1px 1px 1px 5px",
+                      // borderBottom: "1px solid #eaeaea",
+                    }}
+                  >
+                    <DatePicker
+                      placeholder=""
+                      onChange={handleTanggalJatuhTMP}
+                      selected={tanggal_jatuh_tempo}
+                      style={{
+                        width: "180px",
+                        // borderLeft: "5px solid #eaeaea",
+                      }}
+                      format={"DD/MM/YYYY"}
+                    />
+                  </Form.Item>
+                  <Form.Item
                     name="idPerusahaan"
                     label="id Perusahaan"
                     style={{
@@ -1032,7 +1164,8 @@ function RekamDokumenPiutang() {
                     }}
                   >
                     <Input
-                    // style={{ borderLeft: "5px solid #eaeaea" }}
+                      // style={{ borderLeft: "5px solid #eaeaea" }}
+                      onChange={(e) => getNamaPerusahaan(e.target.value)}
                     />
                   </Form.Item>
                   <Form.Item
@@ -1077,12 +1210,26 @@ function RekamDokumenPiutang() {
                     }}
                   >
                     <Input
-                      // style={
-                      //   { borderLeft: "5px solid #eaeaea" }}
-                      value={ppjk}
-                      onChange={(e) => setPpjk(e.target.value)}
+                    // style={
+                    //   { borderLeft: "5px solid #eaeaea" }}
+                    // value={ppjk}
+                    // onChange={(e) => setPpjk(e.target.value)}
                     />
                   </Form.Item>
+
+                  <Form.Item
+                    name="kodeBidang"
+                    label="Kode Bidang"
+                    wrapperCol={{ span: 0 }}
+                    style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
+                  >
+                    <Input
+                    // style={{ borderLeft: "5px solid #eaeaea" }}
+                    // value={petugas}
+                    // onChange={(e) => setPetugas(e.target.value)}
+                    />
+                  </Form.Item>
+
                   <Form.Item
                     name="petugas"
                     label="Petugas"
@@ -1095,6 +1242,74 @@ function RekamDokumenPiutang() {
                       onChange={(e) => setPetugas(e.target.value)}
                     />
                   </Form.Item>
+
+                  <Form.Item
+                    label="Status - Jabatan1"
+                    wrapperCol={{ span: 0 }}
+                    style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
+                  >
+                    <Input.Group compact>
+                      <Form.Item
+                        style={{ marginBottom: 0, width: "20%" }}
+                        name="statusJabatan1"
+                      >
+                        <Select
+                          value={
+                            statusJabatan1.length === 0 ? null : statusJabatan1
+                          }
+                          style={{
+                            width: "100%",
+                            // borderLeft: "5px solid #eaeaea",
+                          }}
+                          onChange={(val) => setStatusJabatan1(val)}
+                          size={"small"}
+                        >
+                          {statusJabatan.map((item) => (
+                            <Option value={item.namaJabatan}>
+                              {item.namaJabatan}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item name="jabatan1">
+                        <Input />
+                      </Form.Item>
+                    </Input.Group>
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Status - Jabatan"
+                    wrapperCol={{ span: 0 }}
+                    style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
+                  >
+                    <Input.Group compact>
+                      <Form.Item
+                        style={{ marginBottom: 0, width: "20%" }}
+                        name="statusJabatan2"
+                      >
+                        <Select
+                          value={
+                            statusJabatan2.length === 0 ? null : statusJabatan2
+                          }
+                          style={{
+                            width: "100%",
+                            // borderLeft: "5px solid #eaeaea",
+                          }}
+                          onChange={(val) => setStatusJabatan2(val)}
+                          size={"small"}
+                        >
+                          {statusJabatan.map((item) => (
+                            <Option value={item.namaJabatan}>
+                              {item.namaJabatan}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item name="jabatan2">
+                        <Input />
+                      </Form.Item>
+                    </Input.Group>
+                  </Form.Item>
                 </Form>
               </Col>
             </Row>
@@ -1103,10 +1318,10 @@ function RekamDokumenPiutang() {
             </h1>
             <Row>
               <Col span={16}>
-                {jenisDokumenAsal === "13" ||
-                jenisDokumenAsal === "14" ||
-                jenisDokumenAsal === "20" ||
-                jenisDokumenAsal === "21" ? (
+                {jenisDokumen === "13" ||
+                jenisDokumen === "14" ||
+                jenisDokumen === "20" ||
+                jenisDokumen === "21" ? (
                   <Row style={{ marginBottom: 8 }}>
                     <Col span={5} style={{ display: "flex" }}>
                       <h4 style={{ marginRight: 10, marginBottom: 0 }}>
@@ -1118,8 +1333,7 @@ function RekamDokumenPiutang() {
                         onChange={handleAkun}
                         size={"small"}
                       >
-                        {jenisDokumenAsal === "31" ||
-                        jenisDokumenAsal === "CK1A-BERKALA" ? (
+                        {jenisDokumen === "31" || jenisDokumen === "32" ? (
                           <>
                             <Option value="411511">Cukai HT</Option>
                             <Option value="411513">Cukai MMEA</Option>
@@ -1177,8 +1391,7 @@ function RekamDokumenPiutang() {
                         onChange={handleAkun}
                         size={"small"}
                       >
-                        {jenisDokumenAsal === "31" ||
-                        jenisDokumenAsal === "CK1A-BERKALA" ? (
+                        {jenisDokumen === "31" || jenisDokumen === "32" ? (
                           <>
                             <Option value="411511">Cukai HT</Option>
                             <Option value="411513">Cukai MMEA</Option>

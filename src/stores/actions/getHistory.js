@@ -8,7 +8,6 @@ export default function FETCH_HISTORY(idHeader) {
       )
       .then(({ data }) => {
         dispatch(SET_HISTORY(data.data));
-        console.log(data, "HISTORY");
       })
       .catch((error) => {
         dispatch(SET_ERROR_HISTORY(error));

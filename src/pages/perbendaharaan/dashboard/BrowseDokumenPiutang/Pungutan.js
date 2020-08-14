@@ -2,8 +2,23 @@ import { React, Table } from "../../libraries/dependencies";
 import { useSelector } from "react-redux";
 
 export default function Pungutan() {
-  let data = useSelector((state) => state.pungutan.data);
-  let isLoading = useSelector((state) => state.pungutan.loadingPungutan);
+  let dataState = useSelector((state) => state.pungutan);
+  let data = dataState.data;
+  // let dataTotal = dataState.dataTotal;
+  let isLoading = dataState.loadingPungutan;
+
+  function warnaNilai(data) {
+    if (data.kodeAkun !== "Total Nilai") {
+      if (data.lebihBayar === "Y") {
+        return "lightGreen";
+      } else {
+        return "coral";
+      }
+    } else {
+      return "";
+    }
+  }
+
   const columns = [
     {
       title: "Kode Akun",
@@ -17,7 +32,7 @@ export default function Pungutan() {
       render: (text, record) => (
         <p
           style={{
-            backgroundColor: record.lebihBayar === "Y" ? "lightGreen" : "coral",
+            backgroundColor: warnaNilai(record),
           }}
         >
           {record.nilai}
@@ -25,6 +40,8 @@ export default function Pungutan() {
       ),
     },
   ];
+
+  console.log(dataState, "dari componen pungutan");
 
   return (
     <>
