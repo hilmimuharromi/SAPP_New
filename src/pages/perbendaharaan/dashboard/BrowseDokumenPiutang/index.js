@@ -47,14 +47,13 @@ export default function BrowseDokumenPiutang() {
 
   return (
     <Layout style={{ backgroundColor: "#fff" }}>
-      {/* <Menu /> */}
       <Row justify="center">
         <ChartMode />
       </Row>
       <Row justify="center">
         <Button onClick={() => setTogleChart(!togleChart)}>Change Mode</Button>
       </Row>
-      <Row>{JSON.stringify(dataTable)}</Row>
+      {/* <Row>{JSON.stringify(dataTable)}</Row> */}
       <Row justify="center" style={{ marginTop: "10px" }}>
         <Col span={24}>
           <Header klikRow={klikRow} setDataTable={setDataTable} />

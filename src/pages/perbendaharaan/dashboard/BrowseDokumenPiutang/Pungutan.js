@@ -1,10 +1,9 @@
-import { React, Table } from "../../libraries/dependencies";
+import { React, Table, Row, Badge } from "../../libraries/dependencies";
 import { useSelector } from "react-redux";
 
 export default function Pungutan() {
   let dataState = useSelector((state) => state.pungutan);
   let data = dataState.data;
-  // let dataTotal = dataState.dataTotal;
   let isLoading = dataState.loadingPungutan;
 
   function warnaNilai(data) {
@@ -41,8 +40,6 @@ export default function Pungutan() {
     },
   ];
 
-  console.log(dataState, "dari componen pungutan");
-
   return (
     <>
       <h3 style={{ marginLeft: "10px" }}>Pungutan</h3>
@@ -54,6 +51,18 @@ export default function Pungutan() {
         columns={columns}
         loading={isLoading}
       />
+      <Row>
+        <h4>Keterangan :</h4>
+
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Badge
+            style={{ marginLeft: "10px", marginRight: "10px" }}
+            color="lightGreen"
+            text="Lebih Bayar"
+          />
+          <Badge color="coral" text="Kurang Bayar" />
+        </div>
+      </Row>
     </>
   );
 }
