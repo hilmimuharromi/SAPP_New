@@ -1026,7 +1026,7 @@ function RekamDokumenPiutang() {
                       size={"small"}
                     >
                       {listJenisDokumen.map((item) => (
-                        <Option value={item.kodeDokumen}>
+                        <Option value={item.kodeDokumen} key={item.kodeDokumen}>
                           {item.uraianDokumen}
                         </Option>
                       ))}
@@ -1102,7 +1102,10 @@ function RekamDokumenPiutang() {
                           size={"small"}
                         >
                           {listJenisDokumenAsal.map((item) => (
-                            <Option value={item.kodeDokumen}>
+                            <Option
+                              value={item.kodeDokumen}
+                              key={item.kodeDokumen}
+                            >
                               {item.uraianDokumen}
                             </Option>
                           ))}
@@ -1216,7 +1219,7 @@ function RekamDokumenPiutang() {
                     label="PPJK"
                     wrapperCol={{ span: 0 }}
                     style={{
-                      marginBottom: 0,
+                      marginBottom: 10,
                       padding: "1px 1px 1px 5px",
                     }}
                   >
@@ -1227,7 +1230,7 @@ function RekamDokumenPiutang() {
                     name="kodeBidang"
                     label="Kode Bidang"
                     wrapperCol={{ span: 0 }}
-                    style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
+                    style={{ marginBottom: 10, padding: "1px 1px 1px 5px" }}
                   >
                     <Input />
                   </Form.Item>
@@ -1236,7 +1239,7 @@ function RekamDokumenPiutang() {
                     name="petugas"
                     label="Petugas"
                     wrapperCol={{ span: 0 }}
-                    style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
+                    style={{ marginBottom: 10, padding: "1px 1px 1px 5px" }}
                   >
                     <Input />
                   </Form.Item>
@@ -1244,11 +1247,17 @@ function RekamDokumenPiutang() {
                   <Form.Item
                     label="Status - Jabatan 1"
                     wrapperCol={{ span: 0 }}
-                    style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
+                    style={{
+                      marginBottom: "10px",
+                      height: "20px",
+                      padding: "1px 1px 1px 5px",
+                    }}
                   >
                     <Input.Group compact>
                       <Form.Item
-                        style={{ marginBottom: 0, width: "20%" }}
+                        style={{
+                          width: "20%",
+                        }}
                         name="statusJabatan1"
                       >
                         <Select
@@ -1263,7 +1272,10 @@ function RekamDokumenPiutang() {
                           size={"small"}
                         >
                           {statusJabatan.map((item) => (
-                            <Option value={item.namaJabatan}>
+                            <Option
+                              value={item.namaJabatan}
+                              key={item.kodeJabatan}
+                            >
                               {item.namaJabatan}
                             </Option>
                           ))}
@@ -1279,7 +1291,11 @@ function RekamDokumenPiutang() {
                   <Form.Item
                     label="Status - Jabatan 2"
                     wrapperCol={{ span: 0 }}
-                    style={{ marginBottom: 0, padding: "1px 1px 1px 5px" }}
+                    style={{
+                      marginBottom: 0,
+                      height: "10px",
+                      padding: "1px 1px 1px 5px",
+                    }}
                   >
                     <Input.Group compact>
                       <Form.Item
@@ -1297,7 +1313,10 @@ function RekamDokumenPiutang() {
                           size={"small"}
                         >
                           {statusJabatan.map((item) => (
-                            <Option value={item.namaJabatan}>
+                            <Option
+                              value={item.namaJabatan}
+                              key={item.kodeJabatan}
+                            >
                               {item.namaJabatan}
                             </Option>
                           ))}
@@ -1494,9 +1513,11 @@ function RekamDokumenPiutang() {
             </Row>
             <Row>
               <Col span={4}>
-                <h2>{totalNilai ? "Total Pungutan" : ""}</h2>
+                <h2>{totalNilai ? "Total Pungutan :" : ""}</h2>
               </Col>
-              <Col>{totalNilai}</Col>
+              <Col span={4}>
+                <h2>{totalNilai}</h2>
+              </Col>
             </Row>
             <h1 style={{ fontWeight: "bold", fontSize: 24, marginTop: 14 }}>
               Keterangan

@@ -1,40 +1,11 @@
-import {
-  React,
-  useEffect,
-  useState,
-  axios,
-} from "../../libraries/dependencies";
+import { React } from "../../libraries/dependencies";
+import { useSelector } from "react-redux";
+
 import { Bar } from "react-chartjs-2";
 
 export default function TotalSurat() {
-  const [labels, setLabels] = useState([]);
-  const [total, setTotal] = useState([]);
-
-  useEffect(() => {
-    axios({
-      method: "get",
-      url: `http://10.162.71.119:9090/perbendaharaan/perben/piutang/get-total-jenis-dokumen`,
-    })
-      .then((res) => {
-        console.log(res, "fetch auto");
-        let dataLabels = res.data.data;
-        let labelsTemp = [];
-        let totalTemps = [];
-        dataLabels.map((item) => {
-          labelsTemp.push(dataLabels.jenisDokumen);
-          totalTemps.push(dataLabels.totalDokumen);
-          setLabels(labelsTemp);
-          return setTotal(totalTemps);
-        });
-      })
-      .catch((error) => {
-        console.log(error, "masukerror");
-        // setNamaKantorPenerbit("kantor tidak ditemukan");
-      })
-      .finally((_) => {
-        console.log("finally");
-      });
-  }, []);
+  let labels = useSelector((state) => state.totalSurat.labels);
+  let total = useSelector((state) => state.totalSurat.total);
   const data = {
     labels: labels,
     datasets: [

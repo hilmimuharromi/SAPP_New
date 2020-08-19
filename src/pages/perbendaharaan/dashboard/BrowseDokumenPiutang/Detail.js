@@ -60,12 +60,12 @@ export default function Detail() {
   function listCetak(data) {
     if (data.judul === "Dokumen Asal") {
       return (
-        <div>
+        <p>
           {data.nilai} <Button onClick={() => handleLihat(data)}>Lihat</Button>
-        </div>
+        </p>
       );
     } else {
-      return <div>{data.nilai}</div>;
+      return <p>{data.nilai}</p>;
     }
   }
 
@@ -101,20 +101,21 @@ export default function Detail() {
         dataSource={data}
         renderItem={(item) => (
           <List.Item
+            key={item.judul}
             className="list-detail"
             style={{
               display: "flex",
               justifyContent: "flex-start",
             }}
           >
-            <div
+            <p
               style={{
                 minWidth: "150px",
                 maxWidth: "200px",
               }}
             >
               {item.judul}
-            </div>
+            </p>
             {listCetak(item)}
           </List.Item>
         )}

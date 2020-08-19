@@ -4,6 +4,7 @@ import pungutanReducer from "./pungutanData";
 import historyReducer from "./historydata";
 import rekamReducer from "./rekamManual";
 import jenisDokumen from "./jenisDokumen";
+import totalSurat from "./totalSurat";
 
 const rootReducers = combineReducers({
   headers: headerReducer,
@@ -11,6 +12,7 @@ const rootReducers = combineReducers({
   history: historyReducer,
   rekamManual: rekamReducer,
   jenisDokumen: jenisDokumen,
+  totalSurat,
 });
 
 export default rootReducers;

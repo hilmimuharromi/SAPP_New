@@ -16,7 +16,7 @@ import Detail from "./Detail";
 import NewTimeline from "./NewTimeline";
 import History from "./History";
 import MutasiDokumen from "./MutasiDokumen";
-import Header from "./Header";
+import HeaderTable from "./Header";
 import TotalSurat from "./TotalSurat";
 import CardTotalSurat from "./CardTotalSurat";
 
@@ -28,6 +28,7 @@ export default function BrowseDokumenPiutang() {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(allActions.getHeaders("ALL"));
+    dispatch(allActions.getTotalSurat());
   }, [dispatch]);
 
   function callback(key) {
@@ -41,10 +42,6 @@ export default function BrowseDokumenPiutang() {
     }
   }
 
-  function klikRow(record) {
-    setDataTable(record);
-  }
-
   return (
     <Layout style={{ backgroundColor: "#fff" }}>
       <Row justify="center">
@@ -56,7 +53,7 @@ export default function BrowseDokumenPiutang() {
       {/* <Row>{JSON.stringify(dataTable)}</Row> */}
       <Row justify="center" style={{ marginTop: "10px" }}>
         <Col span={24}>
-          <Header klikRow={klikRow} setDataTable={setDataTable} />
+          <HeaderTable setDataTable={setDataTable} />
         </Col>
       </Row>
       <Row justify="center">

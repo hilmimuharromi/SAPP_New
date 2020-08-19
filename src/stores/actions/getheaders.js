@@ -1,6 +1,5 @@
 import axios from "axios";
 export default function FETCH_HEADERS(query) {
-  console.log("masuk", query);
   return (dispatch) => {
     dispatch(SET_LOADING_HEADER(true));
 
@@ -10,7 +9,6 @@ export default function FETCH_HEADERS(query) {
     })
       .then((res) => {
         dispatch(SET_HEADERS(res.data.data));
-        console.log(res.data.data, "masuk then");
       })
       .catch((error) => {
         dispatch(SET_ERROR_HEADER(error));

@@ -17,10 +17,10 @@ export default function Header(props) {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
   let dataHeader = useSelector((state) => state.headers.data);
-  console.log(dataHeader, "data header");
+  // console.log(dataHeader, "data header");
   let isLoading = useSelector((state) => state.headers.loadingHeader);
-  const error = useSelector((state) => state.headers.errorHeader);
-  console.log(error, "error ");
+  // const error = useSelector((state) => state.headers.errorHeader);
+  // console.log(error, "error ");
   function handleLihat(record) {
     setContent(record);
     setModal(true);
@@ -29,72 +29,89 @@ export default function Header(props) {
     {
       title: "Jenis Dokumen",
       dataIndex: "jenisDokumen",
+      key: "jenisDokumen",
       sorter: (a, b) => a.jenisDokumen.length - b.jenisDokumen.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Nomor Dokumen",
       dataIndex: "nomorDokumen",
+      key: "nomorDokumen",
       sorter: (a, b) => a.nomorDokumen - b.nomorDokumen,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Tanggal Dokumen",
       dataIndex: "tanggalDokumen",
+      key: "tanggalDokumen",
       sorter: (a, b) => a.tanggalDokumen.length - b.tanggalDokumen.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Status",
       dataIndex: "status",
+      key: "status",
       sorter: (a, b) => a.status.length - b.status.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "NPWP Perusahaan",
       dataIndex: "npwpPerusahaan",
+      key: "npwpPerusahaan",
       sorter: (a, b) => a.npwpPerusahaan.length - b.npwpPerusahaan.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Nama Perusahaan",
       dataIndex: "namaPerusahaan",
+      key: "namaPerusahaan",
       sorter: (a, b) => a.namaPerusahaan.length - b.namaPerusahaan.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Tanggal Jatuh Tempo",
       dataIndex: "tanggalJatuhTempo",
+      key: "tanggalJatuhTempo",
       sorter: (a, b) => a.tanggalJatuhTempo.length - b.tanggalJatuhTempo.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Jenis Dok Asal",
       dataIndex: "jenisDokumenAsal",
+      key: "jenisDokumenAsal",
+
       sorter: (a, b) => a.jenisDokAsal.length - b.jenisDokAsal.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Nomor Dok Asal",
       dataIndex: "nomorDokumenAsal",
+      key: "nomorDokumenAsal",
+
       sorter: (a, b) => a.nomorDokAsal.length - b.nomorDokAsal.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Tanggal Dok Asal",
       dataIndex: "tanggalDokumenAsal",
+      key: "tanggalDokumenAsal",
+
       sorter: (a, b) => a.tanggalDokAsal.length - b.tanggalDokAsal.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Kantor Penerbit",
       dataIndex: "kantorPenerbit",
+      key: "kantorPenerbit",
+
       sorter: (a, b) => a.kantorPenerbit.length - b.kantorPenerbit.length,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Kantor Monitor",
       dataIndex: "kantorMonitor",
+      key: "kantorMonitor",
+
       sorter: (a, b) => a.kantorMonitor.length - b.kantorMonitor.length,
       sortDirections: ["descend", "ascend"],
     },
@@ -111,27 +128,28 @@ export default function Header(props) {
   ];
 
   return (
-    <Card className="card-layout">
-      <Menu />
-      {/* <h3>BROWSE DOKUMEN PIUTANG</h3> */}
-      <Table
-        loading={isLoading}
-        columns={columns}
-        dataSource={dataHeader}
-        size="small"
-        pagination={{ pageSize: 5, showQuickJumper: true }}
-        scroll={{ x: 1500 }}
-        onRow={(record, rowIndex) => {
-          return {
-            onClick: (event) => {
-              dispatch(allActions.getPungutan(record.idHeader));
-              dispatch(allActions.getHistory(record.idHeader));
-              props.klikRow(record);
-            },
-          };
-        }}
-      />
-      <div></div>
+    <>
+      <Card className="card-layout">
+        <Menu />
+        {/* <h3>BROWSE DOKUMEN PIUTANG</h3> */}
+        <Table
+          loading={isLoading}
+          columns={columns}
+          dataSource={dataHeader}
+          size="small"
+          pagination={{ pageSize: 5, showQuickJumper: true }}
+          scroll={{ x: 1500 }}
+          onRow={(record, rowIndex) => {
+            return {
+              onClick: (event) => {
+                dispatch(allActions.getPungutan(record.idHeader));
+                dispatch(allActions.getHistory(record.idHeader));
+                props.setDataTable(record);
+              },
+            };
+          }}
+        />
+      </Card>
       <Modal
         title={contentModal.no_dokumen}
         visible={showModal}
@@ -147,6 +165,6 @@ export default function Header(props) {
           allowfullscreen
         />
       </Modal>
-    </Card>
+    </>
   );
 }

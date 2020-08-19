@@ -5,8 +5,8 @@ import {
   Popover,
   ContainerOutlined,
 } from "../../libraries/dependencies";
-const Moment = extendMoment(moment);
 
+const Moment = extendMoment(moment);
 export default function NewTimeline({ data }) {
   // const { bgcolor } = props;
   let bgcolor = "#00ccff";
