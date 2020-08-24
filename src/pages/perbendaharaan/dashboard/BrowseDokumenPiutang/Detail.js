@@ -7,55 +7,60 @@ import {
   Modal,
 } from "../../libraries/dependencies";
 import Iframe from "react-iframe";
-export default function Detail() {
+export default function Detail({ dataKlik }) {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
-  const data = [
-    // {
-    //   judul: "Kantor Penerbit",
-    //   nilai: "009000 - Direktorat Informasi Kepabeanan dan Cukai",
-    // },
-    // {
-    //   judul: "Kantor Monitor",
-    //   nilai: "050900 - KPPBC TMP A Bekasi",
-    // },
-    // {
-    //   judul: "Dokumen",
-    //   nilai: "SPTNP",
-    // },
-    // {
-    //   judul: "Tanggal Jatuh Tempo",
-    //   nilai: "16/09/2020",
-    // },
-    // {
-    //   judul: "Tanggal Lunas",
-    //   nilai: null,
-    // },
-    // {
-    //   judul: "Dokumen Asal",
-    //   nilai: "PIB - NOMOR 025896 Tanggal 14/07/2020",
-    // },
-    // {
-    //   judul: "Perusahaan",
-    //   nilai: "12345678912345 - PT Testing Indonesia",
-    // },
-    // {
-    //   judul: "Alamat Perusahaan",
-    //   nilai: "Jalan Alamat PT Tesing Indonesia",
-    // },
-    // {
-    //   judul: "PPJK",
-    //   nilai: null,
-    // },
-    // {
-    //   judul: "Petugas",
-    //   nilai: "198989504523548987 - Andhika Kusuma",
-    // },
-    // {
-    //   judul: "Keterangan",
-    //   nilai: "Penetapan Dokumen Impor Karena Kesalahan tarif",
-    // },
-  ];
+  console.log(dataKlik);
+  let data = [];
+
+  if (dataKlik) {
+    data = [
+      {
+        judul: "Kantor Penerbit",
+        nilai: dataKlik.kantorPenerbit,
+      },
+      {
+        judul: "Kantor Monitor",
+        nilai: dataKlik.kantorMonitor,
+      },
+      {
+        judul: "Dokumen",
+        nilai: dataKlik.jenisDokumen,
+      },
+      {
+        judul: "Tanggal Jatuh Tempo",
+        nilai: dataKlik.tanggalJatuhTempo,
+      },
+      {
+        judul: "Tanggal Lunas",
+        nilai: null,
+      },
+      {
+        judul: "Dokumen Asal",
+        nilai: dataKlik.jenisDokumenAsal,
+      },
+      {
+        judul: "Perusahaan",
+        nilai: `${dataKlik.npwpPerusahaan}-${dataKlik.namaPerusahaan}`,
+      },
+      {
+        judul: "Alamat Perusahaan",
+        nilai: dataKlik.alamatPerusahaan,
+      },
+      {
+        judul: "PPJK",
+        nilai: dataKlik.ppjk,
+      },
+      {
+        judul: "Petugas",
+        nilai: "198989504523548987 - Andhika Kusuma",
+      },
+      {
+        judul: "Keterangan",
+        nilai: "Penetapan Dokumen Impor Karena Kesalahan tarif",
+      },
+    ];
+  }
 
   function listCetak(data) {
     if (data.judul === "Dokumen Asal") {

@@ -329,71 +329,71 @@ function RekamDokumenPiutang() {
   }
 
   const handleSimpan = () => {
-    if (data_pungutan < 1) {
-      message.error("pungutan tidak boleh kosong");
-    } else {
-      totalPungutan(data_pungutan);
-      const {
-        idPerusahaan,
-        namaPerusahaan,
-        alamatPerusahaan,
-        kantorPenerbit,
-        kantorMonitor,
-        jenisDokumen,
-        jenisDokumenAsal,
-        nomorDokumenAsal,
-        nomorDokumen,
-        tanggalDokumen,
-        tanggalDokumenAsal,
-        tanggalJatuhTempo,
-        kodeBidang,
-        petugas,
-        statusJabatan1,
-        statusJabatan2,
-        jabatan1,
-        jabatan2,
-        ppjk,
-      } = form.getFieldsValue();
-      let payload = {
-        flagManual: "T",
-        tdHeader: {
-          alamatPerusahaan: alamatPerusahaan,
-          idPerusahaan: idPerusahaan,
-          idPpjk: ppjk,
-          jenisDokumen: jenisDokumen,
-          jenisDokumenAsal: jenisDokumenAsal,
-          kodeBidang: kodeBidang,
-          kodeKantorMonitor: kantorMonitor,
-          kodeKantorPenerbit: kantorPenerbit,
-          kodeProses: "100",
-          namaPerusahaan: namaPerusahaan,
-          namaPpjk: ppjk,
-          nilai: convertToAngka(totalNilai),
-          nipPetugas1: petugas,
-          statusJabatan1: statusJabatan1,
-          statusJabatan2: statusJabatan2,
-          jabatan1: jabatan1,
-          jabatan2: jabatan2,
+    // if (data_pungutan < 1) {
+    //   message.error("pungutan tidak boleh kosong");
+    // } else {
+    totalPungutan(data_pungutan);
+    const {
+      idPerusahaan,
+      namaPerusahaan,
+      alamatPerusahaan,
+      kantorPenerbit,
+      kantorMonitor,
+      jenisDokumen,
+      jenisDokumenAsal,
+      nomorDokumenAsal,
+      nomorDokumen,
+      tanggalDokumen,
+      tanggalDokumenAsal,
+      tanggalJatuhTempo,
+      kodeBidang,
+      petugas,
+      statusJabatan1,
+      statusJabatan2,
+      jabatan1,
+      jabatan2,
+      ppjk,
+    } = form.getFieldsValue();
+    let payload = {
+      flagManual: "T",
+      tdHeader: {
+        alamatPerusahaan: alamatPerusahaan,
+        idPerusahaan: idPerusahaan,
+        idPpjk: ppjk,
+        jenisDokumen: jenisDokumen,
+        jenisDokumenAsal: jenisDokumenAsal,
+        kodeBidang: kodeBidang,
+        kodeKantorMonitor: kantorMonitor,
+        kodeKantorPenerbit: kantorPenerbit,
+        kodeProses: "100",
+        namaPerusahaan: namaPerusahaan,
+        namaPpjk: ppjk,
+        nilai: convertToAngka(totalNilai),
+        nipPetugas1: petugas,
+        statusJabatan1: statusJabatan1,
+        statusJabatan2: statusJabatan2,
+        jabatan1: jabatan1,
+        jabatan2: jabatan2,
 
-          nomorDokumenAsal: nomorDokumenAsal,
-          nomorDokumen: nomorDokumen,
-          tanggalDokumen: moment(tanggalDokumen).format("YYYY-MM-DD HH:mm:ss"),
-          tanggalDokumenAsal: moment(tanggalDokumenAsal).format(
-            "YYYY-MM-DD HH:mm:ss"
-          ),
-          tanggalJatuhTempo: moment(tanggalJatuhTempo).format(
-            "YYYY-MM-DD HH:mm:ss"
-          ),
-        },
-        nipRekam: petugas,
-        listTdKeterangan: data_keterangan,
-        listTdPungutan: data_pungutan,
-      };
-      console.log(payload, "payload data submit");
-      // // post rekam
-      dispatch(allActions.addRekamManual(payload));
-      // form.resetFields();
-    }
+        nomorDokumenAsal: nomorDokumenAsal,
+        nomorDokumen: nomorDokumen,
+        tanggalDokumen: moment(tanggalDokumen).format("YYYY-MM-DD HH:mm:ss"),
+        tanggalDokumenAsal: moment(tanggalDokumenAsal).format(
+          "YYYY-MM-DD HH:mm:ss"
+        ),
+        tanggalJatuhTempo: moment(tanggalJatuhTempo).format(
+          "YYYY-MM-DD HH:mm:ss"
+        ),
+      },
+      nipRekam: petugas,
+      listTdKeterangan: data_keterangan,
+      listTdPungutan: data_pungutan,
+    };
+    console.log(payload, "payload data submit");
+    // // post rekam
+    dispatch(allActions.addRekamManual(payload));
+    // form.resetFields();
+    // }
   };
 
   if (result) {
@@ -908,27 +908,6 @@ function RekamDokumenPiutang() {
               <h1 style={{ fontWeight: "bold", fontSize: 24 }}>
                 Perekaman Dokumen Piutang
               </h1>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{
-                  width: 100,
-                  height: 35,
-                  marginLeft: "auto",
-                  marginRight: "2px",
-                }}
-                onClick={handleBersihkan}
-              >
-                Bersihkan
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{ width: 100, height: 35 }}
-                onClick={handleSimpan}
-              >
-                Simpan
-              </Button>
             </Row>
             <Row>
               <Col span={24}>
@@ -1593,6 +1572,33 @@ function RekamDokumenPiutang() {
                     />
                   </Col>
                 </Row>
+              </Col>
+            </Row>
+            <Row justify="center" style={{ marginTop: "10px" }}>
+              <Col span={4}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{
+                    width: 100,
+                    height: 35,
+                    marginLeft: "auto",
+                    marginRight: "2px",
+                  }}
+                  onClick={handleBersihkan}
+                >
+                  Bersihkan
+                </Button>
+              </Col>
+              <Col span={4}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ width: 100, height: 35 }}
+                  onClick={handleSimpan}
+                >
+                  Simpan
+                </Button>
               </Col>
             </Row>
           </Layout>

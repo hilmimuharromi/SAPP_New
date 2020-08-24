@@ -71,7 +71,7 @@ export default function BrowseDokumenPiutang() {
         className="card-layout"
       >
         <Col span={13}>
-          <Detail />
+          <Detail dataKlik={dataTable} />
         </Col>
         <Col span={10} style={{ marginLeft: "10px", width: "700" }}>
           <Tabs defaultActiveKey="1" onChange={callback} type="line">
