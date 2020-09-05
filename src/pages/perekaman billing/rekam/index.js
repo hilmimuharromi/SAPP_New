@@ -1,6 +1,5 @@
 import {
   React,
-  useEffect,
   Form,
   Select,
   Input,
@@ -12,6 +11,7 @@ import {
   useState,
   Modal,
   axios,
+  NumberFormat,
 } from "../../../libraries/dependencies";
 import TablePerusahaan from "./tablePerusahaan";
 
@@ -20,11 +20,14 @@ const { Option } = Select;
 export default function RekamBilling() {
   const [toggleNPWP, setToggleNPWP] = useState(false);
   const [visibleRef, setVisibleRef] = useState(false);
+  const [visibleEditPembayaran, setVisibleEditPembayaran] = useState(false);
+  const [keyEditPembayaran, setkeyEditPembayaran] = useState({});
   const [refPerusahaan, setRefPerusahaan] = useState([]);
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
+  const [formEdit] = Form.useForm();
   const [dataPembayaran, setDataPembayaran] = useState([]);
-  const [total, setTotal] = useState(0);
+  let total = 0;
   const columns = [
     {
       title: "Akun",
@@ -40,6 +43,14 @@ export default function RekamBilling() {
       title: "Nilai",
       dataIndex: "nilai",
       key: "nilai",
+      render: (text, record) => (
+        <NumberFormat
+          value={record.nilai}
+          displayType={"text"}
+          thousandSeparator={true}
+          prefix={"Rp "}
+        />
+      ),
     },
     {
       title: "Action",
@@ -47,27 +58,28 @@ export default function RekamBilling() {
       render: (text, record) => (
         <Space size="middle">
           <Button onClick={() => hapusPembayaran(record)}>Hapus</Button>
-          <Button onClick={() => console.log(`edit ${record.npwp}`)}>
-            Edit
-          </Button>
+          <Button onClick={() => buttonEdit(text)}>Edit</Button>
         </Space>
       ),
     },
   ];
 
-  // useEffect(() => {
-  //   dataPembayaran.map((item) => {
-  //     let current = total;
-  //     current += item.nilai;
-  //     return setTotal(current);
-  //   });
-  // }, [dataPembayaran, total]);
+  const buttonEdit = (data) => {
+    setkeyEditPembayaran(data.key);
+    formEdit.setFieldsValue({
+      akun: data.akun,
+      npwpPembayaran: data.npwpPembayaran,
+      nilai: data.nilai,
+    });
+    setVisibleEditPembayaran(true);
+    console.log(data, "edit data");
+  };
 
   function onCopyNPWP(e) {
+    setToggleNPWP(e.target.checked);
     console.log(`checked = ${e.target.checked}`);
-    setToggleNPWP(!toggleNPWP);
-    let { idWajibBayar } = form.getFieldValue();
     if (!toggleNPWP) {
+      let { idWajibBayar } = form.getFieldValue();
       form2.setFieldsValue({
         npwpPembayaran: idWajibBayar,
       });
@@ -82,39 +94,93 @@ export default function RekamBilling() {
     await getPerusahaan("ALL", 4, 1);
   };
 
-  const tambahNilaiPembayaran = (values) => {
+  const splitRupiah = (nilai) => {
+    let splitNilai = nilai.split("");
+    let newNilai = splitNilai.filter((item) => {
+      return item !== "R" && item !== "p" && item !== " " && item !== ",";
+    });
+    console.log(newNilai, "nilai baruuu");
+    return newNilai.join("");
+  };
+
+  const tambahNilaiPembayaran = async (values) => {
     console.log("tambah pembayaran:", values);
     let { akun, npwpPembayaran, nilai } = values;
-    // dataPembayaran.push({ akun, npwpPembayaran, nilai });
+    let newNilai = splitRupiah(nilai);
+    let key = 0;
+    if (dataPembayaran.length < 1) {
+      key = 1;
+    } else {
+      key = dataPembayaran[dataPembayaran.length - 1].key + 1;
+    }
     let newData = [
       ...dataPembayaran,
       {
         akun,
         npwpPembayaran,
-        nilai: parseInt(nilai),
-        key: dataPembayaran.length + 1,
+        nilai: parseInt(newNilai),
+        key,
       },
     ];
-    setDataPembayaran(newData);
-    let current = total;
-    dataPembayaran.map((item) => {
-      current += item.nilai;
-      return;
+
+    await newData.map((item) => {
+      return (total += parseInt(item.nilai));
     });
-    setTotal(current);
-    form.setFieldsValue({
+    await setDataPembayaran(newData);
+    await form.setFieldsValue({
       totalTagihan: total,
     });
+    // setToggleNPWP(!toggleNPWP);
     console.log(total, "total");
     form2.resetFields();
     console.log(akun + "" + npwpPembayaran + " " + nilai);
   };
 
-  const hapusPembayaran = (data) => {
+  const hapusPembayaran = async (data) => {
     const newData = dataPembayaran.filter((item) => {
       return item !== data;
     });
+    await newData.map((item) => {
+      return (total += parseInt(item.nilai));
+    });
+    await setDataPembayaran(newData);
+    await form.setFieldsValue({
+      totalTagihan: total,
+    });
+  };
+
+  const editNilaiPembayaran = (values) => {
+    const { akun, npwpPembayaran, nilai } = values;
+    console.log(values, "values");
+    let newNilai = nilai;
+    const index = dataPembayaran.findIndex(
+      (item) => item.key === keyEditPembayaran
+    );
+    if (nilai !== dataPembayaran[index].nilai) {
+      newNilai = splitRupiah(nilai);
+    }
+    const newData = dataPembayaran.map((item) => {
+      if (item.key === keyEditPembayaran) {
+        item = {
+          akun,
+          npwpPembayaran,
+          nilai: parseInt(newNilai),
+          key: keyEditPembayaran,
+        };
+      }
+      return item;
+    });
+    newData.map((item) => {
+      return (total += parseInt(item.nilai));
+    });
+    form.setFieldsValue({
+      totalTagihan: total,
+    });
+    setkeyEditPembayaran(0);
     setDataPembayaran(newData);
+    console.log(" data Pembayaran: ", dataPembayaran);
+    console.log(" new data Pembayaran: ", newData);
+    setVisibleEditPembayaran(false);
   };
 
   const simpanBilling = (values) => {
@@ -235,7 +301,14 @@ export default function RekamBilling() {
         </Form.Item>
 
         <Form.Item label="Total Tagihan" name="totalTagihan" value={total}>
-          <Input />
+          <NumberFormat
+            disabled
+            customInput={Input}
+            thousandSeparator={true}
+            prefix={"Rp "}
+            inputMode="numeric"
+            allowEmptyFormatting
+          />
         </Form.Item>
 
         <h2>Detail Pembayaran</h2>
@@ -262,7 +335,13 @@ export default function RekamBilling() {
               <Checkbox onChange={onCopyNPWP}>Copy Header</Checkbox>
             </Form.Item>
             <Form.Item label="Nilai" name="nilai">
-              <Input />
+              <NumberFormat
+                customInput={Input}
+                thousandSeparator={true}
+                prefix={"Rp "}
+                inputmode="numeric"
+                allowEmptyFormatting
+              />
             </Form.Item>
             <Button
               type="primary"
@@ -298,6 +377,46 @@ export default function RekamBilling() {
           setPerusahaan={setPerusahaan}
           getPerusahaan={getPerusahaan}
         />
+      </Modal>
+      <Modal
+        title="Edit Data Pembayaran"
+        visible={visibleEditPembayaran}
+        footer={null}
+        onCancel={() => setVisibleEditPembayaran(false)}
+      >
+        <Form
+          form={formEdit}
+          name="editPembayaran"
+          onFinish={editNilaiPembayaran}
+          layout="vertical"
+        >
+          {/* <div style={{ display: "flex", flexDirection: "row" }}> */}
+          <Form.Item label="Akun" name="akun">
+            <Select>
+              <Option value="PPn">PPn</Option>
+              <Option value="PPh">PPh</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="NPWP" name="npwpPembayaran">
+            <Input disabled={toggleNPWP} />
+          </Form.Item>
+          <Form.Item name="copyHeader">
+            <Checkbox onChange={onCopyNPWP}>Copy Header</Checkbox>
+          </Form.Item>
+          <Form.Item label="Nilai" name="nilai">
+            <NumberFormat
+              customInput={Input}
+              thousandSeparator={true}
+              prefix={"Rp "}
+              inputmode="numeric"
+              allowEmptyFormatting
+            />
+          </Form.Item>
+          <Button type="primary" htmlType="submit">
+            Simpan
+          </Button>
+          {/* </div> */}
+        </Form>
       </Modal>
     </>
   );

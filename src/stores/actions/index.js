@@ -1,5 +1,5 @@
 import getPungutan from "./getPungutan";
-import getHeaders from "./getHeaders";
+import getHeaders from "./getheaders";
 import getHistory from "./getHistory";
 import addRekamManual, { SET_RESULT } from "./addRekamManual";
 import getJenisDokumen from "./getListDokumen";
