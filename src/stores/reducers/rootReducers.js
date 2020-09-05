@@ -5,6 +5,7 @@ import historyReducer from "./historydata";
 import rekamReducer from "./rekamManual";
 import jenisDokumen from "./jenisDokumen";
 import totalSurat from "./totalSurat";
+// import listKantor from "./listKantor";
 
 const rootReducers = combineReducers({
   headers: headerReducer,
@@ -13,6 +14,7 @@ const rootReducers = combineReducers({
   rekamManual: rekamReducer,
   jenisDokumen: jenisDokumen,
   totalSurat,
+  // listKantor,
 });
 
 export default rootReducers;

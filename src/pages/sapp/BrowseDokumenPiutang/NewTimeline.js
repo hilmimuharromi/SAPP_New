@@ -4,13 +4,18 @@ import {
   extendMoment,
   Popover,
   ContainerOutlined,
-} from "../../libraries/dependencies";
+  Empty,
+} from "../../../libraries/dependencies";
 
 const Moment = extendMoment(moment);
 export default function NewTimeline({ data }) {
   // const { bgcolor } = props;
-  let bgcolor = "#00ccff";
+  let biru = "#00ccff";
+  let kuning = "#ffea00";
+  let merah = "#ff1900";
+  let hitam = "#292626";
   // let completed = "hari";
+  console.log(data, "data timeline");
   let datePerekaman = data.tanggalDokumen;
   let dateJatuhTempo = data.tanggalJatuhTempo;
   const today = Moment().format('"YYYY-MM-DD HH:MM:SS"');
@@ -29,7 +34,8 @@ export default function NewTimeline({ data }) {
   let statusKini = rangeToday.diff("days");
   let menujuHari = 0;
   let statusSurat = "";
-  let tanggalPerekaman = Moment(datePerekaman).format("DD-MM-YYYY");
+  let tanggalPerekaman =
+    Moment(datePerekaman).format("DD-MM-YYYY") || "data kosong";
   let tanggalTeguran = Moment(datePerekaman)
     .add(durasiTeguran, "days")
     .format("DD-MM-YYYY");
@@ -40,60 +46,69 @@ export default function NewTimeline({ data }) {
     .add(durasiSita + durasiPaksa + durasiTeguran, "days")
     .format("DD-MM-YYYY");
 
+  if (!data) {
+    // let status = "tidak ditemukan";
+    // tanggalPerekaman = status;
+    // tanggalPaksa = status;
+    // tanggalSita = status;
+    // tanggalTeguran = status;
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  }
+
   const containerStyles1 = {
     height: 15,
     width: `${(durasiTagihan * 100) / total}%`,
     backgroundColor: "#e0e0de",
     borderRadius: 50,
-    marginRight: "10px",
+    margin: "5px",
   };
   const containerStyles2 = {
     height: 15,
     width: `${(durasiTeguran * 100) / total}%`,
     backgroundColor: "#e0e0de",
     borderRadius: 50,
-    margin: "10px",
+    margin: "5px",
   };
   const containerStyles3 = {
     height: 15,
     width: `${(durasiPaksa * 100) / total}%`,
     backgroundColor: "#e0e0de",
     borderRadius: 50,
-    margin: "10px",
+    margin: "5px",
   };
   const containerStyles4 = {
     height: 15,
     width: `${(durasiSita * 100) / total}%`,
     backgroundColor: "#e0e0de",
     borderRadius: 50,
-    margin: "10px",
+    margin: "5px",
   };
 
   const fillerStyles1 = {
     height: "100%",
     width: `0`,
-    backgroundColor: bgcolor,
+    backgroundColor: biru,
     borderRadius: "inherit",
     textAlign: "right",
   };
   const fillerStyles2 = {
     height: "100%",
     width: `0`,
-    backgroundColor: bgcolor,
+    backgroundColor: kuning,
     borderRadius: "inherit",
     textAlign: "right",
   };
   const fillerStyles3 = {
     height: "100%",
     width: `0`,
-    backgroundColor: bgcolor,
+    backgroundColor: merah,
     borderRadius: "inherit",
     textAlign: "right",
   };
   const fillerStyles4 = {
     height: "100%",
     width: `0`,
-    backgroundColor: bgcolor,
+    backgroundColor: hitam,
     borderRadius: "inherit",
     textAlign: "right",
   };
@@ -105,9 +120,10 @@ export default function NewTimeline({ data }) {
   const layoutStyles = {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "flex",
+    justifyContent: "start",
     alignItems: "center",
     width: "100%",
+    height: "100px",
   };
 
   if (statusKini <= durasiTagihan) {
@@ -196,7 +212,7 @@ export default function NewTimeline({ data }) {
       </Popover>
       <span>
         <Popover content={`Tanggal Paksa: ${tanggalPaksa}`} title="Surat Paksa">
-          <ContainerOutlined style={{ fontSize: "24px", margin: "5px" }} />
+          <ContainerOutlined style={{ fontSize: "24px" }} />
         </Popover>
       </span>
       <Popover
@@ -211,7 +227,7 @@ export default function NewTimeline({ data }) {
       </Popover>
       <span>
         <Popover content={`Tanggal Sita: ${tanggalSita}`} title="Surat Sita">
-          <ContainerOutlined style={{ fontSize: "24px", margin: "5px" }} />
+          <ContainerOutlined style={{ fontSize: "24px" }} />
         </Popover>
       </span>
       <Popover

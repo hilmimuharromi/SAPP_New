@@ -1,4 +1,5 @@
 const initialState = {
+  dataAll: [],
   data: [],
   labels: [],
   total: [],
@@ -8,8 +9,14 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action) {
-  if (action.type === "SET_DATA_TOTAL_SURAT") {
+  if (action.type === "SET_DATA_ALL") {
     return {
+      ...state,
+      dataAll: action.payload,
+    };
+  } else if (action.type === "SET_DATA_TOTAL_SURAT") {
+    return {
+      ...state,
       data: action.payload,
     };
   } else if (action.type === "SET_LABELS") {

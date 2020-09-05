@@ -1,4 +1,4 @@
-import { React, Table } from "../../libraries/dependencies";
+import { React, Table } from "../../../libraries/dependencies";
 import { useSelector } from "react-redux";
 
 export default function History() {
@@ -23,7 +23,7 @@ export default function History() {
   ];
   return (
     <>
-      <h3 style={{ marginLeft: "10px" }}>History</h3>
+      {/* <h3 style={{ marginLeft: "10px" }}>History</h3> */}
       <Table dataSource={data} columns={column} loading={isLoading} />
     </>
   );

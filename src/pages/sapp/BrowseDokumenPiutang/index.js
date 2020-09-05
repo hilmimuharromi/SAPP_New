@@ -8,17 +8,18 @@ import {
   Button,
   Tabs,
   Card,
-} from "../../libraries/dependencies";
+} from "../../../libraries/dependencies";
 import { useDispatch } from "react-redux";
-import allActions from "../../../../stores/actions";
+import allActions from "../../../stores/actions";
 import Pungutan from "./Pungutan";
 import Detail from "./Detail";
 import NewTimeline from "./NewTimeline";
 import History from "./History";
 import MutasiDokumen from "./MutasiDokumen";
 import HeaderTable from "./Header";
-import TotalSurat from "./TotalSurat";
+// import TotalSurat from "./TotalSurat";
 import CardTotalSurat from "./CardTotalSurat";
+import ChartTotalSurat from "./ChartTotalSurat";
 
 const { TabPane } = Tabs;
 
@@ -32,11 +33,11 @@ export default function BrowseDokumenPiutang() {
   }, [dispatch]);
 
   function callback(key) {
-    console.log(key);
+    console.log(key, "masuk cb");
   }
   function ChartMode() {
     if (togleChart) {
-      return <TotalSurat />;
+      return <ChartTotalSurat />;
     } else {
       return <CardTotalSurat />;
     }
@@ -45,9 +46,11 @@ export default function BrowseDokumenPiutang() {
   return (
     <Layout style={{ backgroundColor: "#fff" }}>
       <Row justify="center">
-        <ChartMode />
+        <Col span={24}>
+          <ChartMode />
+        </Col>
       </Row>
-      <Row justify="center">
+      <Row justify="center" style={{ marginTop: "10px" }}>
         <Button onClick={() => setTogleChart(!togleChart)}>Change Mode</Button>
       </Row>
       {/* <Row>{JSON.stringify(dataTable)}</Row> */}

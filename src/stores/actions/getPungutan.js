@@ -1,5 +1,5 @@
 import axios from "axios";
-import convertToRupiah from "../../pages/perbendaharaan/libraries/functions/covertRupiah";
+import convertToRupiah from "../../libraries/functions/covertRupiah";
 export default function FETCH_PUNGUTAN(idHeader) {
   console.log("masuk pungutan");
   return (dispatch) => {

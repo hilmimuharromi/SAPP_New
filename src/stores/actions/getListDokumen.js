@@ -12,13 +12,13 @@ export default function FETCH_LIST_DOKUMEN(query) {
         } else {
           dispatch(SET_JENIS_DOKUMEN_ASAL(res.data.data));
         }
-        console.log(res.data.data, "masuk then");
+        // console.log(res.data.data, "masuk then");
       })
       .catch((error) => {
-        console.log(error, "masukerror");
+        // console.log(error, "masukerror");
       })
       .finally((_) => {
-        console.log("selesai jenis dokumen");
+        // console.log("selesai jenis dokumen");
       });
   };
 }

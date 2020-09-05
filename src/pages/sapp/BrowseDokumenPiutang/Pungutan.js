@@ -1,4 +1,4 @@
-import { React, Table, Row, Badge } from "../../libraries/dependencies";
+import { React, Table, Row, Badge } from "../../../libraries/dependencies";
 import { useSelector } from "react-redux";
 
 export default function Pungutan() {
@@ -42,7 +42,7 @@ export default function Pungutan() {
 
   return (
     <>
-      <h3 style={{ marginLeft: "10px" }}>Pungutan</h3>
+      {/* <h3 style={{ marginLeft: "10px" }}>Pungutan</h3> */}
       <Table
         size={"small"}
         pagination={false}

@@ -1,6 +1,6 @@
-import { React, Input, Row, Col } from "../../libraries/dependencies";
+import { React, Input, Row, Col } from "../../../libraries/dependencies";
 import { useDispatch } from "react-redux";
-import allActions from "../../../../stores/actions";
+import allActions from "../../../stores/actions";
 const { Search } = Input;
 
 export default function Menu() {

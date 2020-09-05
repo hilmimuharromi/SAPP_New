@@ -4,7 +4,7 @@ import {
   Table,
   Button,
   Modal,
-} from "../../libraries/dependencies";
+} from "../../../libraries/dependencies";
 
 export default function MutasiDokumen() {
   const [showModal, setModal] = useState(false);
@@ -66,7 +66,7 @@ export default function MutasiDokumen() {
 
   return (
     <>
-      <h3 style={{ marginLeft: "10px" }}>Mutasi Dokumen</h3>
+      {/* <h3 style={{ marginLeft: "10px" }}>Mutasi Dokumen</h3> */}
       <Table dataSource={data} columns={column} scroll={{ x: 1000 }} />
       <Modal
         title={contentModal.jenisDok}

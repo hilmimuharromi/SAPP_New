@@ -4,15 +4,24 @@ import {
   // Col,
   Statistic,
   Progress,
-} from "../../libraries/dependencies";
+} from "../../../libraries/dependencies";
 import { useSelector } from "react-redux";
 
 export default function CardTotalSurat() {
   let data = useSelector((state) => state.totalSurat.data);
   let totalSurat = useSelector((state) => state.totalSurat.totalSurat);
-
+  const containerOver = {
+    overflow: "auto",
+    height: "150px",
+    padding: "10 0",
+    display: "flex",
+    alignContent: "center",
+    alignItems: "center",
+    whiteSpace: "nowrap",
+    scrollbarColor: "#001529 #d8dee9",
+  };
   return (
-    <>
+    <div className="card-total-surat" style={containerOver}>
       {data.map((obj) => (
         // <Col>
         <Card
@@ -20,7 +29,7 @@ export default function CardTotalSurat() {
           className="card-layout"
           style={{
             margin: "7px",
-            width: "190px",
+            minWidth: "230px",
             height: "120px",
             backgroundColor: "#001529",
             border: "none",
@@ -48,6 +57,6 @@ export default function CardTotalSurat() {
         </Card>
         // </Col>
       ))}
-    </>
+    </div>
   );
 }

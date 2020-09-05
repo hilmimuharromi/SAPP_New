@@ -1,9 +1,10 @@
 import getPungutan from "./getPungutan";
 import getHeaders from "./getHeaders";
 import getHistory from "./getHistory";
-import addRekamManual from "./addRekamManual";
+import addRekamManual, { SET_RESULT } from "./addRekamManual";
 import getJenisDokumen from "./getListDokumen";
 import getTotalSurat from "./getTotalSurat";
+// import getListKantor from "./getListKantor";
 const actions = {
   getPungutan,
   getHeaders,
@@ -11,6 +12,8 @@ const actions = {
   addRekamManual,
   getJenisDokumen,
   getTotalSurat,
+  setResultRekam: SET_RESULT,
+  // getListKantor,
 };
 
 export default actions;

@@ -5,14 +5,15 @@ import {
   List,
   Button,
   Modal,
-} from "../../libraries/dependencies";
+  Row,
+} from "../../../libraries/dependencies";
 import Iframe from "react-iframe";
 export default function Detail({ dataKlik }) {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
   console.log(dataKlik);
   let data = [];
-
+  let dataKeterangan = [];
   if (dataKlik) {
     data = [
       {
@@ -53,13 +54,11 @@ export default function Detail({ dataKlik }) {
       },
       {
         judul: "Petugas",
-        nilai: "198989504523548987 - Andhika Kusuma",
-      },
-      {
-        judul: "Keterangan",
-        nilai: "Penetapan Dokumen Impor Karena Kesalahan tarif",
+        nilai: dataKlik.nipPetugas1,
       },
     ];
+
+    dataKeterangan = dataKlik.keterangan;
   }
 
   function listCetak(data) {
@@ -78,6 +77,47 @@ export default function Detail({ dataKlik }) {
     setContent(key);
     setModal(true);
     // console.log(key, "key===========");
+  }
+
+  function listKeterangan(data) {
+    if (dataKlik.keterangan) {
+      return (
+        <>
+          <Row style={{ paddingLeft: "15px" }}>
+            <h4>Keterangan : </h4>
+          </Row>
+          {/* <Row> */}
+          <List
+            size="small"
+            // bordered
+            style={{ paddingLeft: "100px" }}
+            itemLayout="horizontal"
+            dataSource={dataKeterangan}
+            renderItem={(item, index) => (
+              <List.Item
+                key={index}
+                className="list-detail"
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <p
+                  style={{
+                    minWidth: "150px",
+                    maxWidth: "200px",
+                  }}
+                >
+                  {item.jenisKeterangan} :
+                </p>
+                <p>{item.uraian}</p>
+              </List.Item>
+            )}
+          />
+          {/* </Row> */}
+        </>
+      );
+    }
   }
 
   return (
@@ -125,6 +165,8 @@ export default function Detail({ dataKlik }) {
           </List.Item>
         )}
       />
+
+      {listKeterangan()}
     </Card>
   );
 }

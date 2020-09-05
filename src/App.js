@@ -1,38 +1,14 @@
-import {
-  React,
-  BrowserRouter as Router,
-  Route,
-} from "./pages/perbendaharaan/libraries/dependencies";
+import { React } from "./libraries/dependencies";
 import "./App.css";
 import { Provider } from "react-redux";
 import store from "./stores";
 // @import pages
-import Perbendaharaan from "./pages/perbendaharaan";
-import { RekamDokumenPiutang } from "./pages/perbendaharaan/dashboard";
+import PageAll from "./pages";
 
-const appRoutes = [
-  {
-    name: "RekamDokumenPiutang",
-    component: RekamDokumenPiutang,
-    exact: true,
-    path: "/Perekaman",
-  },
-  {
-    name: "Perbendaharaan",
-    component: Perbendaharaan,
-    exact: true,
-    path: "/",
-  },
-];
-
-function App() {
+function App(props) {
   return (
     <Provider store={store}>
-      <Router>
-        {appRoutes.map((route) => (
-          <Route key={route.name} {...route} />
-        ))}
-      </Router>
+      <PageAll />
     </Provider>
   );
 }

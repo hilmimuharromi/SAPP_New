@@ -5,9 +5,9 @@ import {
   Button,
   useState,
   Modal,
-} from "../../libraries/dependencies";
+} from "../../../libraries/dependencies";
 import { useSelector, useDispatch } from "react-redux";
-import allActions from "../../../../stores/actions";
+import allActions from "../../../stores/actions";
 import Iframe from "react-iframe";
 import Menu from "./SearchHeader";
 import "@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css";
@@ -17,10 +17,7 @@ export default function Header(props) {
   const [showModal, setModal] = useState(false);
   const [contentModal, setContent] = useState("");
   let dataHeader = useSelector((state) => state.headers.data);
-  // console.log(dataHeader, "data header");
   let isLoading = useSelector((state) => state.headers.loadingHeader);
-  // const error = useSelector((state) => state.headers.errorHeader);
-  // console.log(error, "error ");
   function handleLihat(record) {
     setContent(record);
     setModal(true);

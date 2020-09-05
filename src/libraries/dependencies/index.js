@@ -5,6 +5,7 @@ import ReactDOM from "react-dom";
 import axios from "axios";
 import moment from "moment";
 import { extendMoment } from "moment-range";
+export * from "recharts";
 export * from "react";
 export * from "react-router-dom";
 export * from "antd";
