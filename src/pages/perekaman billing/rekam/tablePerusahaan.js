@@ -1,20 +1,10 @@
 import { React, Table, Button } from "../../../libraries/dependencies";
 
 export default function TablePerusahaan(props) {
-  let { data, setPerusahaan, getPerusahaan } = props;
-
-  let dataTable = data;
-
-  // let dataTable = [
-  //   {
-  //     npwp: 123,
-  //     namaPerusahaan: "saya",
-  //   },
-  //   {
-  //     npwp: 123,
-  //     namaPerusahaan: "saya",
-  //   },
-  // ];
+  let { data, setPerusahaan, getPerusahaan, loading } = props;
+  let total = data.totalData;
+  let dataTable = data.data;
+  console.log(data, "data perusahaan");
 
   const columns = [
     {
@@ -42,11 +32,11 @@ export default function TablePerusahaan(props) {
   ];
   return (
     <>
-      {/* {JSON.stringify(dataTable)} */}
       <Table
         columns={columns}
         dataSource={dataTable}
-        pagination={{ total: 16, pageSize: 4 }}
+        pagination={{ total: total, pageSize: 50 }}
+        loading={loading}
         onChange={(pagination) =>
           getPerusahaan("all", pagination.pageSize, pagination.current)
         }

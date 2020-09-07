@@ -1,6 +1,5 @@
 import {
   React,
-  useEffect,
   Form,
   Select,
   Input,
@@ -21,6 +20,7 @@ export default function RekamBilling() {
   const [toggleNPWP, setToggleNPWP] = useState(false);
   const [visibleRef, setVisibleRef] = useState(false);
   const [refPerusahaan, setRefPerusahaan] = useState([]);
+  const [loadingPerusahaan, setLoadingPerusahaan] = useState(false);
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
   const [dataPembayaran, setDataPembayaran] = useState([]);
@@ -55,14 +55,6 @@ export default function RekamBilling() {
     },
   ];
 
-  // useEffect(() => {
-  //   dataPembayaran.map((item) => {
-  //     let current = total;
-  //     current += item.nilai;
-  //     return setTotal(current);
-  //   });
-  // }, [dataPembayaran, total]);
-
   function onCopyNPWP(e) {
     console.log(`checked = ${e.target.checked}`);
     setToggleNPWP(!toggleNPWP);
@@ -77,10 +69,6 @@ export default function RekamBilling() {
       });
     }
   }
-
-  const buttonReferensi = async () => {
-    await getPerusahaan("ALL", 4, 1);
-  };
 
   const tambahNilaiPembayaran = (values) => {
     console.log("tambah pembayaran:", values);
@@ -98,14 +86,12 @@ export default function RekamBilling() {
     setDataPembayaran(newData);
     let current = total;
     dataPembayaran.map((item) => {
-      current += item.nilai;
-      return;
+      return (current += item.nilai);
     });
     setTotal(current);
     form.setFieldsValue({
       totalTagihan: total,
     });
-    console.log(total, "total");
     form2.resetFields();
     console.log(akun + "" + npwpPembayaran + " " + nilai);
   };
@@ -127,19 +113,30 @@ export default function RekamBilling() {
     labelAlign: "left",
   };
 
+  const buttonReferensi = async () => {
+    await getPerusahaan("ALL", 50, 1);
+  };
+
   const getPerusahaan = (query, limit, page) => {
     console.log(query, limit, page);
-    let end = limit * page;
-    let start = end - limit;
 
-    // setVisibleRef(true);
-    let url = `http://localhost:3000/perusahaan?_start=${start}&_end=${end}`;
-    // let url =   `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-perusahaan?search=${query}&limit=${limit}&page=${page}`
-
-    axios.get(url).then((res) => {
-      setRefPerusahaan(res.data);
-      setVisibleRef(true);
-    });
+    // let url = `http://localhost:3000/perusahaan?_start=${start}&_end=${end}`;
+    let url = `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-perusahaan?search=${query}&limit=${limit}&page=${page}`;
+    setLoadingPerusahaan(true);
+    axios
+      .get(url)
+      .then((res) => {
+        let data = res.data.data;
+        setRefPerusahaan(data);
+        setLoadingPerusahaan(false);
+        setVisibleRef(true);
+      })
+      .catch((err) => {
+        console.log(err, "error get perusahaan");
+      })
+      .finally((_) => {
+        setLoadingPerusahaan(false);
+      });
   };
 
   const setPerusahaan = (data) => {
@@ -297,6 +294,7 @@ export default function RekamBilling() {
           data={refPerusahaan}
           setPerusahaan={setPerusahaan}
           getPerusahaan={getPerusahaan}
+          loading={loadingPerusahaan}
         />
       </Modal>
     </>
