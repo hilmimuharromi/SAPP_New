@@ -11,6 +11,7 @@ export * from "react-router-dom";
 export * from "antd";
 export * from "@ant-design/compatible";
 export * from "@ant-design/icons";
+export { default as NumberFormat } from "react-number-format";
 
 // @for use other comp
 export { React, ReactDOM, axios, moment, extendMoment, useState, useEffect };
