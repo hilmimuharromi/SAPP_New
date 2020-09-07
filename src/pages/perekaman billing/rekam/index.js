@@ -52,7 +52,9 @@ export default function RekamBilling() {
   const [formEdit] = Form.useForm();
   const [dataPembayaran, setDataPembayaran] = useState([]);
   const [listAkun, setListAkun] = useState([]);
+  const [listJenisDokumen, setListJenisDokumen] = useState([]);
   const [kdIdWajibBayar, setKdIdWajibBayar] = useState("");
+  // const [uraianJenisDok, setUraianJenisDok] = useState("");
   let total = 0;
   const columns = [
     {
@@ -96,8 +98,15 @@ export default function RekamBilling() {
         "http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-pungutan"
       )
       .then(({ data }) => {
-        console.log(data.data);
         setListAkun(data.data);
+      });
+
+    axios
+      .get(
+        "http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-jenis-dokumen?keterangan=billing"
+      )
+      .then(({ data }) => {
+        setListJenisDokumen(data.data);
       });
   }, []);
 
@@ -260,13 +269,13 @@ export default function RekamBilling() {
     dataPembayaran.map((item) => {
       return tdBillingDetail.push({
         kodeAkun: item.akun,
-        npwp: item.npwpPembayaran,
+        idWajibBayar: item.npwpPembayaran,
         nilai: item.nilai,
       });
     });
     const dataBilling = {
       tdBillingMaster: {
-        flagManual: "",
+        flagManual: "Y",
         idPiutang: "string",
         idWajibBayar,
         jenisDokumen,
@@ -281,6 +290,17 @@ export default function RekamBilling() {
       tdBillingDetail,
       nipRekam: "1234",
     };
+
+    axios({
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `http://10.162.71.119:9090/perbendaharaan/perben/billing/simpan-billing`,
+      data: dataBilling,
+    }).then(({ data }) => {
+      console.log(data, "simpan billing");
+    });
     console.log(dataBilling, "dataBilling");
   };
 
@@ -295,9 +315,6 @@ export default function RekamBilling() {
   };
 
   const getPerusahaan = (query, limit, page) => {
-    console.log(query, limit, page);
-
-    // let url = `http://localhost:3000/perusahaan?_start=${start}&_end=${end}`;
     let url = `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-perusahaan?search=${query}&limit=${limit}&page=${page}`;
     setLoadingPerusahaan(true);
     axios
@@ -336,7 +353,7 @@ export default function RekamBilling() {
         onFinish={simpanBilling}
         initialValues={{
           // kodeKantor: "009000",
-          jenisDokumen: "pib",
+          // jenisDokumen: "pib",
           kdIdWajibBayar: "NPWP",
         }}
       >
@@ -362,14 +379,17 @@ export default function RekamBilling() {
         <Form.Item label="Jenis Dokumen">
           <Input.Group compact>
             <Form.Item name="jenisDokumen">
-              <Select style={{ width: 200 }}>
-                <Option value="pib">PIB BC 2.0</Option>
-                <Option value="peb">PEB BC 3.0</Option>
+              <Select style={{ width: 200 }} placeholder={"Jenis Dokumen"}>
+                {listJenisDokumen.map((item) => (
+                  <Option value={item.kodeDokumen} key={item.kodeDokumen}>
+                    {item.uraianDokumen}
+                  </Option>
+                ))}
               </Select>
             </Form.Item>
-            <Form.Item style={{ margin: "0 7px" }}>
-              <p>PIB Bayar</p>
-            </Form.Item>
+            {/* <Form.Item style={{ margin: "0 7px" }}>
+              <p>{uraianJenisDok}</p>
+            </Form.Item> */}
           </Input.Group>
         </Form.Item>
 
@@ -394,7 +414,10 @@ export default function RekamBilling() {
                 <Option value="NPWP">NPWP</Option>
               </Select>
             </Form.Item>
-            <Form.Item name="idWajibBayar" style={{ margin: "0 7px" }}>
+            <Form.Item
+              name="idWajibBayar"
+              style={{ margin: "0 7px", width: 200 }}
+            >
               <Input />
             </Form.Item>
             <Form.Item>

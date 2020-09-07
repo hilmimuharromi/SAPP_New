@@ -44,6 +44,25 @@ const renderItem = (kode, nama) => {
     ),
   };
 };
+
+const renderTitle = (kodeKantor, nama) => {
+  return {
+    value: kodeKantor,
+    nama: nama,
+    label: (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        {kodeKantor}
+        <span>{nama}</span>
+      </div>
+    ),
+  };
+};
+
 function RekamDokumenPiutang() {
   const dispatch = useDispatch();
   let error = useSelector((state) => state.rekamManual.errorRekamManual);
@@ -53,6 +72,9 @@ function RekamDokumenPiutang() {
 
   // Sid - Headear
   // ==============================================
+  const [options, setOptions] = useState([]);
+  const [optionsMonitor, setOptionsMonitor] = useState([]);
+
   const [akun, setAkun] = useState("");
   const [namaKantorPenerbit, setNamaKantorPenerbit] = useState("");
   const [namaKantorMonitor, setNamaKantorMonitor] = useState("");
@@ -133,7 +155,6 @@ function RekamDokumenPiutang() {
   const [tanggal_dokumen_asal, setTanggal_dokumen_asal] = useState("");
   const [statusJabatan1, setStatusJabatan1] = useState([]);
   const [statusJabatan2, setStatusJabatan2] = useState([]);
-  const [listKantor, setListKantor] = useState([]);
   const [listKodeBidang, setListKodeBidang] = useState([]);
   const [listJabatan, setListJabatan] = useState([]);
   const statusJabatan = [
@@ -203,28 +224,6 @@ function RekamDokumenPiutang() {
     dispatch(allActions.getJenisDokumen("JENIS DOKUMEN"));
     dispatch(allActions.getJenisDokumen("JENIS DOKUMEN ASAL"));
   }, [dispatch]);
-
-  useEffect(() => {
-    axios
-      .get(`http://10.162.71.21:8111/Referensi/v1/kantor/all`)
-      .then((res) => {
-        let dataKantor = res.data.data;
-        let dataTemp = [];
-        dataKantor.map((item) => {
-          let data = {
-            options: [renderItem(item.kodeKantor, item.namaKantorPendek)],
-          };
-          return dataTemp.push(data);
-        });
-        setListKantor(dataTemp);
-      })
-      .catch((error) => {
-        // dispatch(SET_ERROR_HISTORY(error));
-      })
-      .finally((_) => {
-        // dispatch(SET_LOADING_HISTORY(false));
-      });
-  }, []);
 
   useEffect(() => {
     axios
@@ -596,13 +595,61 @@ function RekamDokumenPiutang() {
 
   //function get nama kantor
 
-  function getKantorPenerbit(value, option) {
+  const onSelectPenerbit = (value, option) => {
     setNamaKantorPenerbit(option.nama);
-  }
+  };
 
-  function getKantorMonitor(value, option) {
+  const onSearchPenerbit = (searchText) => {
+    if (!searchText) {
+      setOptions([]);
+    } else {
+      axios
+        .get(
+          `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-kantor?search=${searchText}`
+        )
+        .then(({ data }) => {
+          let dataKantor = data.data;
+          let listKantor = [];
+          dataKantor.map((item) => {
+            return listKantor.push({
+              options: [renderTitle(item.kodeKantor, item.namaKantorPendek)],
+            });
+          });
+          setOptions(listKantor);
+        })
+        .catch((err) => {
+          console.log(err, "error get kantor");
+        });
+    }
+  };
+
+  const onSelectMonitor = (value, option) => {
     setNamaKantorMonitor(option.nama);
-  }
+  };
+
+  const onSearchMonitor = (searchText) => {
+    if (!searchText) {
+      setOptions([]);
+    } else {
+      axios
+        .get(
+          `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-kantor?search=${searchText}`
+        )
+        .then(({ data }) => {
+          let dataKantor = data.data;
+          let listKantor = [];
+          dataKantor.map((item) => {
+            return listKantor.push({
+              options: [renderTitle(item.kodeKantor, item.namaKantorPendek)],
+            });
+          });
+          setOptionsMonitor(listKantor);
+        })
+        .catch((err) => {
+          console.log(err, "error get kantor");
+        });
+    }
+  };
 
   function getKodeBidang(value, option) {
     setKodeBidang(option.nama);
@@ -924,15 +971,12 @@ function RekamDokumenPiutang() {
                 >
                   <AutoComplete
                     dropdownClassName="certain-category-search-dropdown"
-                    dropdownMatchSelectWidth={500}
-                    style={{ width: 180 }}
-                    options={listKantor}
-                    // onChange={(option) => getKantorPenerbit(option)}
-                    onSelect={(value, option) =>
-                      getKantorPenerbit(value, option)
-                    }
-                    placeholder="Kode Kantor"
-                    filterOption={true}
+                    dropdownMatchSelectWidth={400}
+                    style={{ width: 200 }}
+                    options={options}
+                    placeholder="kode kantor"
+                    onSearch={onSearchPenerbit}
+                    onSelect={onSelectPenerbit}
                   />
                 </Form.Item>
                 <h3 style={{ margin: "0 8px" }}>{namaKantorPenerbit}</h3>
@@ -950,14 +994,12 @@ function RekamDokumenPiutang() {
                 <Form.Item name="kantorMonitor">
                   <AutoComplete
                     dropdownClassName="certain-category-search-dropdown"
-                    dropdownMatchSelectWidth={500}
-                    style={{ width: 180 }}
-                    options={listKantor}
-                    onSelect={(value, option) =>
-                      getKantorMonitor(value, option)
-                    }
-                    placeholder="Kode Kantor"
-                    filterOption={true}
+                    dropdownMatchSelectWidth={400}
+                    style={{ width: 200 }}
+                    options={optionsMonitor}
+                    placeholder="kode kantor"
+                    onSearch={onSearchMonitor}
+                    onSelect={onSelectMonitor}
                   />
                 </Form.Item>
                 <h3 style={{ margin: "0 8px" }}>{namaKantorMonitor}</h3>

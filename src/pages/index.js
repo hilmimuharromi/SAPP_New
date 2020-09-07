@@ -59,9 +59,9 @@ function Perbendaharaan() {
         <Sider trigger={null} collapsible collapsed={state.collapsed}>
           <div className="logo" />
           <Menu theme="dark" mode="inline" defaultSelectedKeys={["0"]}>
-            <SubMenu key="sub1" icon={<UserOutlined />} title="Perbendaharaan">
+            <SubMenu key="sub1" icon={<UserOutlined />} title="SAPP">
               <Menu.Item key="1">
-                <Link to="/">Browse Perekaman</Link>
+                <Link to="/">Browse SAPP</Link>
               </Menu.Item>
               <Menu.Item key="2">
                 <Link to="/rekammanual">Form Perekaman Manual</Link>
