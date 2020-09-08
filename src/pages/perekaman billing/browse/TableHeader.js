@@ -15,7 +15,7 @@ export default function TableHeader(props) {
   useEffect(() => {
     axios
       .get(
-        "http://10.162.71.119:9090/perbendaharaan/perben/billing/get-billing-browse"
+        `http://10.162.71.119:9090/perbendaharaan/perben/billing/get-billing-browse?kodeKantor=040000&start=2020-09-01&end=2020-09-30`
       )
       .then(({ data }) => {
         let listDataHeader = data.data;

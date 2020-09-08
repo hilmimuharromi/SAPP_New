@@ -5,6 +5,9 @@ import addRekamManual, { SET_RESULT } from "./addRekamManual";
 import getJenisDokumen from "./getListDokumen";
 import getTotalSurat from "./getTotalSurat";
 import getPerusahaan from "./getPerusahaan";
+import getTotalDokLunas from "./getTotalDokLunas";
+import getTotalDokTagihan from "./getTotalDokTagihan";
+
 // import getListKantor from "./getListKantor";
 const actions = {
   getPungutan,
@@ -14,6 +17,8 @@ const actions = {
   getJenisDokumen,
   getTotalSurat,
   getPerusahaan,
+  getTotalDokLunas,
+  getTotalDokTagihan,
   setResultRekam: SET_RESULT,
   // getListKantor,
 };

@@ -15,6 +15,7 @@ import {
   axios,
   NumberFormat,
   moment,
+  message,
 } from "../../../libraries/dependencies";
 import { useDispatch } from "react-redux";
 import allActions from "../../../stores/actions";
@@ -45,6 +46,7 @@ export default function RekamBilling() {
   const [visibleEditPembayaran, setVisibleEditPembayaran] = useState(false);
   const [keyEditPembayaran, setkeyEditPembayaran] = useState({});
   const [namaKantor, setNamaKantor] = useState("");
+  const [idPiutang, setIdPiutang] = useState("");
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
   const [formEdit] = Form.useForm();
@@ -276,7 +278,7 @@ export default function RekamBilling() {
     const dataBilling = {
       tdBillingMaster: {
         flagManual: "Y",
-        idPiutang: "string",
+        idPiutang,
         idWajibBayar,
         jenisDokumen,
         kdIdWajibBayar,
@@ -323,6 +325,44 @@ export default function RekamBilling() {
       // alamatPerusahaan: data.alamatPerusahaan,
     });
     setVisibleRef(false);
+  };
+
+  const NotifTarikData = (status) => {
+    if (status === "200") {
+      message.success("This is a success message");
+    } else {
+      message.error("This is a success message");
+    }
+  };
+
+  const tarikData = () => {
+    let { nomorDokumen, tanggalDokumen } = form.getFieldValue();
+    tanggalDokumen = moment(tanggalDokumen).format("YYYY-MM-DD");
+    console.log(nomorDokumen, tanggalDokumen);
+    axios
+      .get(
+        `http://10.162.71.119:9090/perbendaharaan/perben/piutang/get-data-browse?browse=${nomorDokumen}&tanggalDokumen=${tanggalDokumen}`
+      )
+      .then(({ data }) => {
+        if (data) {
+          const dataServer = data.data[0];
+          console.log(dataServer, "tarik data");
+          form.setFieldsValue({
+            kodeKantor: dataServer.kodeKantorPenerbit,
+            idWajibBayar: dataServer.npwpPerusahaan,
+            namaWajibBayar: dataServer.namaPerusahaan,
+            alamatPerusahaan: dataServer.alamatPerusahaan,
+          });
+          setNamaKantor(dataServer.kantorPenerbit);
+          setIdPiutang(dataServer.idHeader);
+          setKdIdWajibBayar(dataServer.idPerusahaan);
+
+          NotifTarikData("200");
+        } else {
+          NotifTarikData("400");
+          console.log("tidak ditemukan");
+        }
+      });
   };
 
   return (
@@ -381,10 +421,13 @@ export default function RekamBilling() {
               <Input style={{ width: 200 }} />
             </Form.Item>
             <Form.Item name="tanggalDokumen">
-              <DatePicker style={{ margin: "0 7px", width: 200 }} />
+              <DatePicker
+                style={{ margin: "0 7px", width: 200 }}
+                format={"YYYY-MM-DD"}
+              />
             </Form.Item>
             <Form.Item>
-              <Button>Tarik</Button>
+              <Button onClick={tarikData}>Tarik</Button>
             </Form.Item>
           </Input.Group>
         </Form.Item>
