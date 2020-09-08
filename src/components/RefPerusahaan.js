@@ -1,6 +1,6 @@
-import { React, Table, Button, Input } from "../../../libraries/dependencies";
+import { React, Table, Button, Input } from "../libraries/dependencies";
 import { useSelector, useDispatch } from "react-redux";
-import allActions from "../../../stores/actions";
+import allActions from "../stores/actions";
 const { Search } = Input;
 export default function TablePerusahaan(props) {
   const dispatch = useDispatch();

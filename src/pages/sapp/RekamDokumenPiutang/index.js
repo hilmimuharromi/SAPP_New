@@ -20,7 +20,9 @@ import {
   moment,
   Spin,
   Alert,
+  Modal,
 } from "../../../libraries/dependencies";
+import RefPerusahaan from "../../../components/RefPerusahaan";
 import { convertToRupiah, convertToAngka } from "../../../libraries/functions";
 import { useDispatch, useSelector } from "react-redux";
 import allActions from "../../../stores/actions";
@@ -74,7 +76,7 @@ function RekamDokumenPiutang() {
   // ==============================================
   const [options, setOptions] = useState([]);
   const [optionsMonitor, setOptionsMonitor] = useState([]);
-
+  const [visibleRefPerusahaan, setVisibleRefPerusahaan] = useState(false);
   const [akun, setAkun] = useState("");
   const [namaKantorPenerbit, setNamaKantorPenerbit] = useState("");
   const [namaKantorMonitor, setNamaKantorMonitor] = useState("");
@@ -84,77 +86,9 @@ function RekamDokumenPiutang() {
 
   // Form Perekaman
   // ==============================================
-  const db_dokumen_asal = [
-    {
-      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
-      kantor_monitor: "050905 - KPPBC TMP AA",
-      tanggal_jatuh_tempo: "05/08/2020 09:10:11",
-      dokumen_asal: "13/000001/06/07/2020",
-      // jenisDokumenAsal: "S000001",
-      // nomor: "000001",
-      // tanggal: "2019-02-07", // MM/DD/YYYY
-      idPerusahaan: "12345678912345",
-      namaPerusahaan: "PT TESTING INDONESIA",
-      alamat_perusahaan: "Jalan Alamat PT Testing Indonesia",
-      ppjk: "-",
-      petugas: "198989504523538987 - Andhika Kusuma",
-      pungutan: [],
-      keterangan: [],
-      key: "1",
-    },
-    {
-      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
-      kantor_monitor: "050905 - KPPBC TMP AA",
-      tanggal_jatuh_tempo: "06/06/2006",
-      dokumen_asal: "15/000002/05/06/2020",
-      // jenisDokumenAsal: "S000002",
-      // nomor: "000002",
-      // tanggal: "2020-02-08", // MM/DD/YYYY
-      idPerusahaan: "12345678912345",
-      namaPerusahaan: "PT TESTING INDONESIA 2",
-      alamat_perusahaan: "Jalan Alamat Cileungsi Bogor",
-      ppjk: "-",
-      petugas: "198989504523538987 - Salman Isar",
-      pungutan: [],
-      keterangan: [],
-      key: "2",
-    },
-    {
-      kantor_penerbit: "009000 - DIREKTORAT INFORMASI KEPABEANAN DAN CUKAI",
-      kantor_monitor: "050905 - KPPBC TMP AA",
-      tanggal_jatuh_tempo: "06/06/2006",
-      dokumen_asal: "31/000003/05/06/2020",
-      // jenisDokumenAsal: "S000002",
-      // nomor: "000002",
-      // tanggal: "2020-02-08", // MM/DD/YYYY
-      idPerusahaan: "12345678912345",
-      namaPerusahaan: "PT TESTING INDONESIA 3",
-      alamat_perusahaan: "Jalan Raya Kenangan",
-      ppjk: "-",
-      petugas: "198989504523538999 - Duloh Ahmed",
-      pungutan: [
-        {
-          akun: "411511",
-          nilai: 10000000,
-          lebihBayar: "YA",
-        },
-        {
-          akun: "411513",
-          nilai: 20000000,
-          lebihBayar: "YA",
-        },
-      ],
-      keterangan: [],
-      key: "3",
-    },
-  ];
-  const [tanggalDokumen, setTanggalDokumen] = useState("");
-  const [tanggal_jatuh_tempo, setTanggal_jatuh_tempo] = useState("");
-  const [jenisDokumen, setJenisDokumen] = useState("");
+
+  const [kategoriJenisDokumen, setKategoriJenisDokumen] = useState("");
   const [jenisDokumenAsal, setJenisDokumenAsal] = useState("");
-  const [tanggal_dokumen_asal, setTanggal_dokumen_asal] = useState("");
-  const [statusJabatan1, setStatusJabatan1] = useState([]);
-  const [statusJabatan2, setStatusJabatan2] = useState([]);
   const [listKodeBidang, setListKodeBidang] = useState([]);
   const [listJabatan, setListJabatan] = useState([]);
   const statusJabatan = [
@@ -219,11 +153,12 @@ function RekamDokumenPiutang() {
   const listJenisDokumenAsal = useSelector(
     (state) => state.jenisDokumen.jenisDokumenAsal
   );
+  console.log(listJenisDokumen, "list jenis dokumen");
 
   useEffect(() => {
     dispatch(allActions.getJenisDokumen("JENIS DOKUMEN"));
     dispatch(allActions.getJenisDokumen("JENIS DOKUMEN ASAL"));
-  }, [dispatch]);
+  });
 
   useEffect(() => {
     axios
@@ -276,65 +211,13 @@ function RekamDokumenPiutang() {
   if (isLoading) {
     return (
       <Spin tip="Loading...">
-        <Alert
-          message="Fetching data ....."
-          // description="Further details about the context of this alert."
-          // type="info"
-        />
+        <Alert message="Fetching data ....." />
       </Spin>
     );
   }
 
   // Function - Form Perekaman
   // ==============================================
-  const handleTanggalJatuhTMP = (date, dateString) => {
-    setTanggal_jatuh_tempo(date);
-  };
-
-  const handleTanggalDokumen = (date, dateString) => {
-    setTanggalDokumen(date);
-  };
-
-  const handleTanggalDokumenAsal = (date, dateString) => {
-    setTanggal_dokumen_asal(dateString);
-  };
-
-  const handleTarik = () => {
-    if (Object.values(form.getFieldsValue())[0] !== undefined) {
-      return message.error("Data sudah diTampilkan!");
-    }
-    const {
-      jenisDokumenAsal,
-      nomorDokumenAsal,
-      tanggalDokumenAsal,
-    } = form.getFieldsValue();
-    let dokumen_asal = `${jenisDokumenAsal}/${nomorDokumenAsal}/${tanggalDokumenAsal}`;
-    console.log(tanggal_dokumen_asal);
-    for (let i = 0; i < db_dokumen_asal.length; i++) {
-      if (db_dokumen_asal[i].dokumen_asal === dokumen_asal) {
-        form.setFieldsValue({
-          kantorPenerbit: db_dokumen_asal[i].kantor_penerbit,
-          kantorMonitor: db_dokumen_asal[i].kantor_monitor,
-          tanggalJatuhTempo: moment(
-            db_dokumen_asal[i].tanggal_jatuh_tempo,
-            "YYYY-MM-DD hh:mm:ss"
-          ),
-          idPerusahaan: db_dokumen_asal[i].idPerusahaan,
-          namaPerusahaan: db_dokumen_asal[i].namaPerusahaan,
-          alamatPerusahaan: db_dokumen_asal[i].alamat_perusahaan,
-          ppjk: db_dokumen_asal[i].ppjk,
-          petugas: db_dokumen_asal[i].petugas,
-        });
-        if (db_dokumen_asal[i].pungutan.length > 0) {
-          let arrData = [];
-          db_dokumen_asal[i].pungutan.map((item) => arrData.push(item));
-          setData_pungutan(arrData);
-        }
-        return message.success("Data ditemukan!");
-      }
-    }
-    return message.error("Data Tidak ditemukan!");
-  };
 
   const handleBersihkan = () => {
     setData_pungutan([]);
@@ -419,7 +302,7 @@ function RekamDokumenPiutang() {
       };
       console.log(payload, "payload data submit");
       // // post rekam
-      dispatch(allActions.addRekamManual(payload));
+      // dispatch(allActions.addRekamManual(payload));
       // form.resetFields();
     }
   };
@@ -532,12 +415,7 @@ function RekamDokumenPiutang() {
         return seri + 1;
       }
     }
-    if (
-      jenisDokumen === "13" ||
-      jenisDokumen === "14" ||
-      jenisDokumen === "20" ||
-      jenisDokumen === "21"
-    ) {
+    if (kategoriJenisDokumen === "PENETAPAN") {
       const check = pemberitahuan - penetapan;
       let ObjData = {
         kodeAkun: akun,
@@ -661,37 +539,6 @@ function RekamDokumenPiutang() {
 
   function getJabatan2(value, option) {
     setJabatan2(option.nama);
-  }
-
-  function getNamaPerusahaan(id) {
-    axios({
-      method: "get",
-      url: `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-perusahaan?idPerusahaan=${id}`,
-    })
-      .then((res) => {
-        let { namaPerusahaan, alamatPerusahaan } = res.data.data;
-        if (!namaPerusahaan) {
-          form.setFieldsValue({
-            namaPerusahaan: "PERUSAHAAN TIDAK DITEMUKAN",
-            alamatPerusahaan: "PERUSAHAAN TIDAK DITEMUKAN",
-          });
-        } else {
-          form.setFieldsValue({
-            namaPerusahaan: namaPerusahaan,
-            alamatPerusahaan: alamatPerusahaan,
-          });
-        }
-        console.log(namaPerusahaan, "masuk then");
-      })
-      .catch((error) => {
-        form.setFieldsValue({
-          namaPerusahaan: "PERUSAHAAN TIDAK DITEMUKAN",
-          alamatPerusahaan: "PERUSAHAAN TIDAK DITEMUKAN",
-        });
-      })
-      .finally((_) => {
-        console.log("finally");
-      });
   }
 
   // Function - Keterangan
@@ -939,6 +786,22 @@ function RekamDokumenPiutang() {
     }
   };
 
+  const buttonReferensi = async () => {
+    dispatch(allActions.getPerusahaan("ALL", 50, 1));
+    setVisibleRefPerusahaan(true);
+  };
+
+  const setPerusahaan = async (data) => {
+    const { npwp, namaPerusahaan, alamatPerusahaan } = data;
+    console.log(data, "setPerusahaan");
+    form.setFieldsValue({
+      idPerusahaan: npwp,
+      namaPerusahaan,
+      alamatPerusahaan,
+    });
+    setVisibleRefPerusahaan(false);
+  };
+
   return (
     <Layout style={{ backgroundColor: "white" }}>
       <Row justify="space-between">
@@ -1016,16 +879,21 @@ function RekamDokumenPiutang() {
             >
               <Select
                 placeholder="Jenis Dokumen"
-                value={jenisDokumen.length === 0 ? null : jenisDokumen}
                 style={{
                   width: "180px",
                   // borderLeft: "5px solid #eaeaea",
                 }}
-                onChange={(val) => setJenisDokumen(val)}
+                onChange={(val, option) =>
+                  setKategoriJenisDokumen(option.kategori)
+                }
                 size={"small"}
               >
                 {listJenisDokumen.map((item) => (
-                  <Option value={item.kodeDokumen} key={item.kodeDokumen}>
+                  <Option
+                    value={item.kodeDokumen}
+                    key={item.kodeDokumen}
+                    kategori={item.kategori}
+                  >
                     {item.uraianDokumen}
                   </Option>
                 ))}
@@ -1063,8 +931,6 @@ function RekamDokumenPiutang() {
             >
               <DatePicker
                 placeholder=""
-                onChange={handleTanggalDokumen}
-                selected={tanggalDokumen}
                 style={{
                   width: "180px",
                 }}
@@ -1127,7 +993,6 @@ function RekamDokumenPiutang() {
                 >
                   <DatePicker
                     style={{ width: "100%" }}
-                    onChange={handleTanggalDokumenAsal}
                     placeholder="Tanggal"
                     format={"DD/MM/YYYY"}
                   />
@@ -1139,7 +1004,7 @@ function RekamDokumenPiutang() {
                   <Button
                     type="info"
                     style={{ width: "100%" }}
-                    onClick={handleTarik}
+                    onClick={() => console.log("tarik button")}
                   >
                     Tarik
                   </Button>
@@ -1165,8 +1030,6 @@ function RekamDokumenPiutang() {
             >
               <DatePicker
                 placeholder=""
-                onChange={handleTanggalJatuhTMP}
-                selected={tanggal_jatuh_tempo}
                 style={{
                   width: "180px",
                 }}
@@ -1177,16 +1040,23 @@ function RekamDokumenPiutang() {
               name="idPerusahaan"
               label="Id Perusahaan"
               style={{
-                marginBottom: 10,
+                marginBottom: 5,
                 padding: "1px 1px 1px 5px",
               }}
             >
-              <Input
-                style={{
-                  width: "180px",
-                }}
-                onChange={(e) => getNamaPerusahaan(e.target.value)}
-              />
+              <Input.Group compact>
+                <Form.Item name="idPerusahaan">
+                  <Input
+                    style={{
+                      width: "180px",
+                    }}
+                    // onChange={(e) => getNamaPerusahaan(e.target.value)}
+                  />
+                </Form.Item>
+                <Form.Item style={{ marginLeft: "5px" }}>
+                  <Button onClick={buttonReferensi}>Referensi</Button>
+                </Form.Item>
+              </Input.Group>
             </Form.Item>
             <Form.Item
               name="namaPerusahaan"
@@ -1277,12 +1147,10 @@ function RekamDokumenPiutang() {
                 >
                   <Select
                     placeholder="Status"
-                    value={statusJabatan1.length === 0 ? null : statusJabatan1}
                     style={{
                       width: "100%",
                       // borderLeft: "5px solid #eaeaea",
                     }}
-                    onChange={(val) => setStatusJabatan1(val)}
                     size={"small"}
                   >
                     {statusJabatan.map((item) => (
@@ -1324,11 +1192,9 @@ function RekamDokumenPiutang() {
                 >
                   <Select
                     placeholder="Status"
-                    value={statusJabatan2.length === 0 ? null : statusJabatan2}
                     style={{
                       width: "100%",
                     }}
-                    onChange={(val) => setStatusJabatan2(val)}
                     size={"small"}
                   >
                     {statusJabatan.map((item) => (
@@ -1361,10 +1227,7 @@ function RekamDokumenPiutang() {
       </h1>
       <Row>
         <Col span={16}>
-          {jenisDokumen === "13" ||
-          jenisDokumen === "14" ||
-          jenisDokumen === "20" ||
-          jenisDokumen === "22" ? (
+          {kategoriJenisDokumen === "PENETAPAN" ? (
             <Row style={{ marginBottom: 8 }}>
               <Col span={5} style={{ display: "flex" }}>
                 <h4 style={{ marginRight: 10, marginBottom: 0 }}>Akun :</h4>
@@ -1374,7 +1237,7 @@ function RekamDokumenPiutang() {
                   onChange={handleAkun}
                   size={"small"}
                 >
-                  {jenisDokumen === "31" || jenisDokumen === "32" ? (
+                  {kategoriJenisDokumen === "AKUNCUKAI" ? (
                     <>
                       <Option value="411511">Cukai HT</Option>
                       <Option value="411513">Cukai MMEA</Option>
@@ -1430,7 +1293,7 @@ function RekamDokumenPiutang() {
                   onChange={handleAkun}
                   size={"small"}
                 >
-                  {jenisDokumen === "31" || jenisDokumen === "32" ? (
+                  {kategoriJenisDokumen === "AKUNCUKAI" ? (
                     <>
                       <Option value="411511">Cukai HT</Option>
                       <Option value="411513">Cukai MMEA</Option>
@@ -1638,6 +1501,17 @@ function RekamDokumenPiutang() {
           </Button>
         </Col>
       </Row>
+
+      <Modal
+        title="Referensi Perusahaan"
+        visible={visibleRefPerusahaan}
+        footer={null}
+        header={null}
+        width={700}
+        onCancel={() => setVisibleRefPerusahaan(false)}
+      >
+        <RefPerusahaan setPerusahaan={(data) => setPerusahaan(data)} />
+      </Modal>
     </Layout>
   );
 }

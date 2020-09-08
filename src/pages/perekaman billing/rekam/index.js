@@ -16,10 +16,10 @@ import {
   NumberFormat,
   moment,
 } from "../../../libraries/dependencies";
-import TablePerusahaan from "./tablePerusahaan";
-
+import { useDispatch } from "react-redux";
+import allActions from "../../../stores/actions";
+import RefPerusahaan from "../../../components/RefPerusahaan";
 const { Option } = Select;
-const { Search } = Input;
 
 const renderTitle = (kodeKantor, nama) => {
   return {
@@ -44,8 +44,6 @@ export default function RekamBilling() {
   const [visibleRef, setVisibleRef] = useState(false);
   const [visibleEditPembayaran, setVisibleEditPembayaran] = useState(false);
   const [keyEditPembayaran, setkeyEditPembayaran] = useState({});
-  const [refPerusahaan, setRefPerusahaan] = useState([]);
-  const [loadingPerusahaan, setLoadingPerusahaan] = useState(false);
   const [namaKantor, setNamaKantor] = useState("");
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
@@ -55,6 +53,8 @@ export default function RekamBilling() {
   const [listJenisDokumen, setListJenisDokumen] = useState([]);
   const [kdIdWajibBayar, setKdIdWajibBayar] = useState("");
   // const [uraianJenisDok, setUraianJenisDok] = useState("");
+  const dispatch = useDispatch();
+
   let total = 0;
   const columns = [
     {
@@ -311,26 +311,8 @@ export default function RekamBilling() {
   };
 
   const buttonReferensi = async () => {
-    await getPerusahaan("ALL", 50, 1);
-  };
-
-  const getPerusahaan = (query, limit, page) => {
-    let url = `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-perusahaan?search=${query}&limit=${limit}&page=${page}`;
-    setLoadingPerusahaan(true);
-    axios
-      .get(url)
-      .then((res) => {
-        let data = res.data.data;
-        setRefPerusahaan(data);
-        setLoadingPerusahaan(false);
-        setVisibleRef(true);
-      })
-      .catch((err) => {
-        console.log(err, "error get perusahaan");
-      })
-      .finally((_) => {
-        setLoadingPerusahaan(false);
-      });
+    dispatch(allActions.getPerusahaan("ALL", 50, 1));
+    setVisibleRef(true);
   };
 
   const setPerusahaan = (data) => {
@@ -514,30 +496,7 @@ export default function RekamBilling() {
         width={700}
         onCancel={() => setVisibleRef(false)}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "10px",
-            padding: 0,
-          }}
-        >
-          <Search
-            placeholder="input search Perusahaan"
-            // enterButton="Search"
-            size="large"
-            style={{ width: 300 }}
-            onSearch={(value) => getPerusahaan(value, 100, 1)}
-            enterButton
-          />
-        </div>
-
-        <TablePerusahaan
-          data={refPerusahaan}
-          setPerusahaan={setPerusahaan}
-          getPerusahaan={getPerusahaan}
-          loading={loadingPerusahaan}
-        />
+        <RefPerusahaan setPerusahaan={setPerusahaan} />
       </Modal>
       <Modal
         title="Edit Data Pembayaran"
