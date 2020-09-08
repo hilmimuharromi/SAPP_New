@@ -4,6 +4,7 @@ import {
   Col,
   useState,
   useEffect,
+  moment,
 } from "../../../libraries/dependencies";
 import TableHeader from "./TableHeader";
 import DetailDokumen from "./DetailDokumen";
@@ -31,10 +32,19 @@ export default function BrowseBilling() {
       allActions.getTotalDokLunas("050900", "2020-09-01", "2020-09-30", "LUNAS")
     );
   });
+  let tanggalAwal = moment().add(1, "M").endOf("month").format("YYYY/MM/DD");
+  let bulanSekarang = moment().get("month");
+  let bulan = bulanSekarang + 1;
+  let tahun = moment().get("year");
+
+  let tanggalLima = moment([tahun, bulan, 5]).format("YYYY/MM/DD");
+  console.log(bulan, tahun, "setting tanggal", bulanSekarang);
   return (
     <>
       {" "}
       <h2>Browse Billing</h2>
+      <Row>{JSON.stringify(tanggalAwal)}</Row>
+      <Row>{JSON.stringify(tanggalLima)}</Row>
       <Row justify="center">
         <CardTotalBilling />
       </Row>

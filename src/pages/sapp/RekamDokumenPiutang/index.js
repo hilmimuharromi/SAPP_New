@@ -802,6 +802,26 @@ function RekamDokumenPiutang() {
     setVisibleRefPerusahaan(false);
   };
 
+  const getJatuhTempo = (date, dateString) => {
+    let plusLastBulan = moment(date)
+      .add(1, "M")
+      .endOf("month")
+      .format("YYYY/MM/DD");
+    let addHari = moment(date).add(60, "d");
+    const bulan = moment(date).add(1, "M").set("date", 5).format("YYYY/MM/DD");
+
+    console.log(plusLastBulan, "get jatuh tempo lastday bulan berikutnya");
+    console.log(addHari, "get jatuh tempo 60 hari");
+    console.log(
+      bulan,
+
+      "get jatuh tempo tanggal 5 bulan berikutnya"
+    );
+    form.setFieldsValue({
+      tanggalJatuhTempo: moment(addHari, "DD/MM/YYYY"),
+    });
+  };
+
   return (
     <Layout style={{ backgroundColor: "white" }}>
       <Row justify="space-between">
@@ -935,6 +955,7 @@ function RekamDokumenPiutang() {
                   width: "180px",
                 }}
                 format={"DD/MM/YYYY"}
+                onChange={getJatuhTempo}
               />
             </Form.Item>
 
@@ -1029,6 +1050,7 @@ function RekamDokumenPiutang() {
               }}
             >
               <DatePicker
+                disabled
                 placeholder=""
                 style={{
                   width: "180px",
