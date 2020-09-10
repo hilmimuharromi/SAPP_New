@@ -11,6 +11,7 @@ export * from "react-router-dom";
 export * from "antd";
 export * from "@ant-design/compatible";
 export * from "@ant-design/icons";
+export { ScrollTo } from "react-scroll-into-view";
 export { default as NumberFormat } from "react-number-format";
 
 // @for use other comp

@@ -7,6 +7,7 @@ import getTotalSurat from "./getTotalSurat";
 import getPerusahaan from "./getPerusahaan";
 import getTotalDokLunas from "./getTotalDokLunas";
 import getTotalDokTagihan from "./getTotalDokTagihan";
+import getHeaderBilling from "./getHeaderBilling";
 
 // import getListKantor from "./getListKantor";
 const actions = {
@@ -19,6 +20,7 @@ const actions = {
   getPerusahaan,
   getTotalDokLunas,
   getTotalDokTagihan,
+  getHeaderBilling,
   setResultRekam: SET_RESULT,
   // getListKantor,
 };

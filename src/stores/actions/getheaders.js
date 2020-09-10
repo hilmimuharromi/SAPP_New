@@ -1,11 +1,11 @@
 import axios from "axios";
-export default function FETCH_HEADERS(query) {
+export default function FETCH_HEADERS(query, start, end, kodeKantor) {
   return (dispatch) => {
     dispatch(SET_LOADING_HEADER(true));
 
     axios({
       method: "get",
-      url: `http://10.162.71.119:9090/perbendaharaan/perben/piutang/get-data-browse?browse=${query}`,
+      url: `http://10.162.71.119:9090/perbendaharaan/perben/piutang/get-data-browse?browse=${query}&start=${start}&end=${end}&kodeKantor=${kodeKantor}`,
     })
       .then((res) => {
         dispatch(SET_HEADERS(res.data.data));

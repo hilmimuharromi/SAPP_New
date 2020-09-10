@@ -54,8 +54,22 @@ export default function RekamBilling() {
   const [listAkun, setListAkun] = useState([]);
   const [listJenisDokumen, setListJenisDokumen] = useState([]);
   const [kdIdWajibBayar, setKdIdWajibBayar] = useState("");
-  // const [uraianJenisDok, setUraianJenisDok] = useState("");
+  const [flagManual, setFlagManual] = useState("Y");
+  const [disableInput, setDisableInput] = useState(false);
   const dispatch = useDispatch();
+
+  // console.log(location, "get data history");
+  // const data = location.state.dataHistory;
+  // setFlagManual("T");
+  // setNamaKantor(data.kantorPenerbit);
+  // setIdPiutang(data.idHeader);
+  // setKdIdWajibBayar(data.npwpPerusahaan);
+  // form.setFieldsValue({
+  //   kodeKantor: data.kodeKantorPenerbit,
+  //   idWajibBayar: data.npwpPerusahaan,
+  //   namaWajibBayar: data.namaPerusahaan,
+  //   alamatPerusahaan: data.alamatPerusahaan,
+  // });
 
   let total = 0;
   const columns = [
@@ -277,7 +291,7 @@ export default function RekamBilling() {
     });
     const dataBilling = {
       tdBillingMaster: {
-        flagManual: "Y",
+        flagManual: flagManual,
         idPiutang,
         idWajibBayar,
         jenisDokumen,
@@ -300,9 +314,15 @@ export default function RekamBilling() {
       },
       url: `http://10.162.71.119:9090/perbendaharaan/perben/billing/simpan-billing`,
       data: dataBilling,
-    }).then(({ data }) => {
-      console.log(data, "simpan billing");
-    });
+    })
+      .then(({ data }) => {
+        message.success("This is a success message");
+        console.log(data, "simpan billing");
+      })
+      .catch((err) => {
+        message.error("error");
+        console.log(err, "derror simpan");
+      });
     console.log(dataBilling, "dataBilling");
   };
 
@@ -313,8 +333,12 @@ export default function RekamBilling() {
   };
 
   const buttonReferensi = async () => {
-    dispatch(allActions.getPerusahaan("ALL", 50, 1));
-    setVisibleRef(true);
+    if (disableInput) {
+      message.info("tidak bisa akses referensi");
+    } else {
+      dispatch(allActions.getPerusahaan("ALL", 50, 1));
+      setVisibleRef(true);
+    }
   };
 
   const setPerusahaan = (data) => {
@@ -331,7 +355,7 @@ export default function RekamBilling() {
     if (status === "200") {
       message.success("This is a success message");
     } else {
-      message.error("This is a success message");
+      message.error("data tidak ditemukan");
     }
   };
 
@@ -344,10 +368,11 @@ export default function RekamBilling() {
         `http://10.162.71.119:9090/perbendaharaan/perben/piutang/get-data-browse?browse=${nomorDokumen}&tanggalDokumen=${tanggalDokumen}`
       )
       .then(({ data }) => {
-        if (data) {
+        if (data.data) {
           const dataServer = data.data[0];
           console.log(dataServer, "tarik data");
           form.setFieldsValue({
+            jenisDokumen: dataServer.kodeJenisDokumen,
             kodeKantor: dataServer.kodeKantorPenerbit,
             idWajibBayar: dataServer.npwpPerusahaan,
             namaWajibBayar: dataServer.namaPerusahaan,
@@ -356,11 +381,11 @@ export default function RekamBilling() {
           setNamaKantor(dataServer.kantorPenerbit);
           setIdPiutang(dataServer.idHeader);
           setKdIdWajibBayar(dataServer.idPerusahaan);
-
+          setFlagManual("T");
+          setDisableInput(true);
           NotifTarikData("200");
         } else {
           NotifTarikData("400");
-          console.log("tidak ditemukan");
         }
       });
   };
@@ -379,10 +404,11 @@ export default function RekamBilling() {
           kdIdWajibBayar: "NPWP",
         }}
       >
-        <Form.Item label="Kode Kantor">
+        <Form.Item label="Kode Kantor" style={{ marginBottom: "5px" }}>
           <Input.Group compact>
             <Form.Item name="kodeKantor">
               <AutoComplete
+                disabled={disableInput}
                 dropdownClassName="certain-category-search-dropdown"
                 dropdownMatchSelectWidth={400}
                 style={{ width: 200 }}
@@ -398,10 +424,14 @@ export default function RekamBilling() {
           </Input.Group>
         </Form.Item>
 
-        <Form.Item label="Jenis Dokumen">
+        <Form.Item label="Jenis Dokumen" style={{ marginBottom: "5px" }}>
           <Input.Group compact>
             <Form.Item name="jenisDokumen">
-              <Select style={{ width: 200 }} placeholder={"Jenis Dokumen"}>
+              <Select
+                disabled={disableInput}
+                style={{ width: 200 }}
+                placeholder={"Jenis Dokumen"}
+              >
                 {listJenisDokumen.map((item) => (
                   <Option value={item.kodeDokumen} key={item.kodeDokumen}>
                     {item.uraianDokumen}
@@ -415,13 +445,17 @@ export default function RekamBilling() {
           </Input.Group>
         </Form.Item>
 
-        <Form.Item label="No dan Tanggal Dokumen">
+        <Form.Item
+          label="No dan Tanggal Dokumen"
+          style={{ marginBottom: "5px" }}
+        >
           <Input.Group compact>
             <Form.Item name="nomorDokumen">
-              <Input style={{ width: 200 }} />
+              <Input disabled={disableInput} style={{ width: 200 }} />
             </Form.Item>
             <Form.Item name="tanggalDokumen">
               <DatePicker
+                disabled={disableInput}
                 style={{ margin: "0 7px", width: 200 }}
                 format={"YYYY-MM-DD"}
               />
@@ -432,10 +466,10 @@ export default function RekamBilling() {
           </Input.Group>
         </Form.Item>
 
-        <Form.Item label="ID Wajib Bayar">
+        <Form.Item label="ID Wajib Bayar" style={{ marginBottom: "5px" }}>
           <Input.Group compact>
             <Form.Item name="kdIdWajibBayar">
-              <Select style={{ width: 200 }}>
+              <Select disabled={disableInput} style={{ width: 200 }}>
                 <Option value="NPWP">NPWP</Option>
               </Select>
             </Form.Item>
@@ -443,7 +477,7 @@ export default function RekamBilling() {
               name="idWajibBayar"
               style={{ margin: "0 7px", width: 200 }}
             >
-              <Input />
+              <Input disabled={disableInput} />
             </Form.Item>
             <Form.Item>
               <Button onClick={buttonReferensi}>Referensi</Button>
@@ -451,19 +485,32 @@ export default function RekamBilling() {
           </Input.Group>
         </Form.Item>
 
-        <Form.Item label="Nama" name="namaWajibBayar">
-          <Input style={{ width: 200 }} />
+        <Form.Item
+          label="Nama"
+          name="namaWajibBayar"
+          style={{ marginBottom: "5px" }}
+        >
+          <Input disabled={disableInput} style={{ width: 200 }} />
         </Form.Item>
 
         {/* <Form.Item label="Alamat" name="alamatPerusahaan">
           <Input />
         </Form.Item> */}
 
-        <Form.Item label="Tanggal Expired" name="tanggalExpired">
+        <Form.Item
+          label="Tanggal Expired"
+          name="tanggalExpired"
+          style={{ marginBottom: "5px" }}
+        >
           <DatePicker style={{ width: 200 }} />
         </Form.Item>
 
-        <Form.Item label="Total Tagihan" name="totalTagihan" value={total}>
+        <Form.Item
+          label="Total Tagihan"
+          name="totalTagihan"
+          value={total}
+          style={{ marginBottom: "5px" }}
+        >
           <NumberFormat
             style={{ width: 200 }}
             disabled
@@ -484,6 +531,7 @@ export default function RekamBilling() {
           initialValues={{
             akun: "411123",
           }}
+          style={{ marginBottom: "5px" }}
         >
           <div style={{ display: "flex", flexDirection: "row" }}>
             <Form.Item label="Akun" name="akun">

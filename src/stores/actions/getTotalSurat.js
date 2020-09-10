@@ -1,10 +1,10 @@
 import axios from "axios";
-export default function FETCH_TOTAL_SURAT() {
+export default function FETCH_TOTAL_SURAT(start, end, kodeKantor) {
   return (dispatch) => {
     dispatch(SET_LOADING_TOTAL_SURAT(true));
     axios
       .get(
-        `http://10.162.71.119:9090/perbendaharaan/perben/piutang/get-total-jenis-dokumen`
+        `http://10.162.71.119:9090/perbendaharaan/perben/piutang/get-total-jenis-dokumen?start=${start}&end=${end}&kodeKantor=${kodeKantor}`
       )
       .then((res) => {
         const { data } = res.data;

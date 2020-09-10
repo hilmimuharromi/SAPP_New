@@ -2,6 +2,7 @@ import {
   React,
   BrowserRouter as Router,
   Route,
+  Redirect,
   Link,
   Layout,
   Menu,
@@ -22,25 +23,31 @@ const appRoutes = [
     name: "RekamDokumenPiutang",
     component: RekamDokumenPiutang,
     exact: true,
-    path: "/rekammanual",
+    path: "/rekam-manual",
   },
   {
     name: "BrowseSAPP",
     component: BrowseDokumenPiutang,
     exact: true,
-    path: "/",
+    path: "/browse-sapp",
   },
   {
     name: "RekamBilling",
     component: RekamBilling,
     exact: true,
-    path: "/rekambilling",
+    path: "/rekam-billing",
   },
   {
     name: "BrowseBilling",
     component: BrowseBilling,
     exact: true,
-    path: "/browsebilling",
+    path: "/browse-billing",
+  },
+  {
+    name: "Home",
+    path: "/",
+    exact: true,
+    render: () => <Redirect to="/browse-sapp" />,
   },
 ];
 
@@ -61,10 +68,10 @@ function Perbendaharaan() {
           <Menu theme="dark" mode="inline" defaultSelectedKeys={["0"]}>
             <SubMenu key="sub1" icon={<UserOutlined />} title="SAPP">
               <Menu.Item key="1">
-                <Link to="/">Browse SAPP</Link>
+                <Link to="/browse-sapp">Browse SAPP</Link>
               </Menu.Item>
               <Menu.Item key="2">
-                <Link to="/rekammanual">Form Perekaman Manual</Link>
+                <Link to="/rekam-manual">Form Perekaman Manual</Link>
               </Menu.Item>
             </SubMenu>
 
@@ -74,10 +81,10 @@ function Perbendaharaan() {
               title="Perekaman Billing"
             >
               <Menu.Item key="3">
-                <Link to="/rekambilling">Rekam</Link>
+                <Link to="/rekam-billing">Rekam</Link>
               </Menu.Item>
               <Menu.Item key="4">
-                <Link to="/browsebilling">Browse</Link>
+                <Link to="/browse-billing">Browse</Link>
               </Menu.Item>
             </SubMenu>
           </Menu>
@@ -101,7 +108,7 @@ function Perbendaharaan() {
             }}
           >
             {appRoutes.map((route) => (
-              <Route key={route.name} {...route} />
+              <Route key={route.name} {...route} Re />
             ))}
           </Content>
         </Layout>

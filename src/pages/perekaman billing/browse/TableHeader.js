@@ -1,30 +1,12 @@
-import {
-  React,
-  useEffect,
-  useState,
-  axios,
-  Table,
-  Space,
-  Button,
-} from "../../../libraries/dependencies";
+import { React, Table, Space, Button } from "../../../libraries/dependencies";
+import { useSelector } from "react-redux";
+import ScrollTo from "react-scroll-into-view";
 
 export default function TableHeader(props) {
-  const [dataHeader, setDataHeader] = useState([]);
-  const { setIdBilling, setGetDetail } = props;
+  let dataHeader = useSelector((state) => state.headerBilling.dataHeader);
 
-  useEffect(() => {
-    axios
-      .get(
-        `http://10.162.71.119:9090/perbendaharaan/perben/billing/get-billing-browse?kodeKantor=040000&start=2020-09-01&end=2020-09-30`
-      )
-      .then(({ data }) => {
-        let listDataHeader = data.data;
-        listDataHeader.map((item, index) => {
-          return (item.no = index + 1);
-        });
-        setDataHeader(listDataHeader);
-      });
-  });
+  const { setIdBilling, setGetDetail, setHideDetail } = props;
+
   const columns = [
     {
       title: "No",
@@ -37,7 +19,7 @@ export default function TableHeader(props) {
       key: "kodeBilling",
     },
     {
-      title: "Banggal Billing",
+      title: "Tanggal Billing",
       dataIndex: "tanggalBilling",
       key: "tanggalBilling",
     },
@@ -66,7 +48,12 @@ export default function TableHeader(props) {
       key: "action",
       render: (text, record) => (
         <Space size="middle">
-          <Button onClick={() => buttonPilih(record)}>Pilih</Button>
+          <ScrollTo
+            onClick={() => buttonPilih(record)}
+            selector={`#detailBilling`}
+          >
+            <Button>Pilih</Button>
+          </ScrollTo>
         </Space>
       ),
     },
@@ -75,9 +62,11 @@ export default function TableHeader(props) {
   const buttonPilih = (record) => {
     setIdBilling(record.idBilling);
     setGetDetail(true);
+    setHideDetail(false);
   };
   return (
     <Table
+      bordered
       dataSource={dataHeader}
       columns={columns}
       pagination={{ pageSize: 5 }}

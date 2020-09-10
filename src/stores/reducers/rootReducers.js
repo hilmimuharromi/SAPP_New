@@ -8,6 +8,7 @@ import totalSurat from "./totalSurat";
 import listPerusahaan from "./listPerusahaan";
 import totalDokTagihan from "./totalDokTagihan";
 import totalDokLunas from "./totalDokLunas";
+import headerBilling from "./headerBilling";
 // import listKantor from "./listKantor";
 
 const rootReducers = combineReducers({
@@ -17,6 +18,7 @@ const rootReducers = combineReducers({
   rekamManual: rekamReducer,
   jenisDokumen: jenisDokumen,
   refPerusahaan: listPerusahaan,
+  headerBilling,
   totalDokTagihan,
   totalDokLunas,
   totalSurat,

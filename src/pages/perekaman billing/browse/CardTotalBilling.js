@@ -14,14 +14,21 @@ export default function CardTotalSurat() {
     totalDokumen: dataLunas.data.totalDokumen,
     totalBayar: dataLunas.data.totalBayar,
   };
-  console.log(dataTagihan, "card data tagihan");
-  console.log(dataLunas, "card data lunas");
+  // const cardStyle = {
+  //   margin: "7px",
+  //   width: 230,
+  //   textAlign: "center",
+  //   border: "none",
+  // };
 
   const cardStyle = {
     margin: "7px",
-    width: 230,
+    minWidth: "230px",
+    height: "120px",
     textAlign: "center",
+    backgroundColor: "#001529",
     border: "none",
+    color: "#fff",
   };
 
   return (
@@ -38,9 +45,10 @@ export default function CardTotalSurat() {
         size="small"
         title="Total Dokumen Billing"
         className="card-layout"
+        headStyle={{ color: "#fff" }}
         style={cardStyle}
       >
-        <h4>{dokTagihan.totalDokumen} Dokumen</h4>
+        <h4 style={{ color: "#fff" }}>{dokTagihan.totalDokumen} Dokumen</h4>
 
         <NumberFormat
           value={dokTagihan.totalTagihan}
@@ -55,9 +63,10 @@ export default function CardTotalSurat() {
         size="small"
         title="Total Dokumen Billing di Bayar"
         className="card-layout"
+        headStyle={{ color: "#fff" }}
         style={cardStyle}
       >
-        <h4>{dokLunas.totalDokumen} Dokumen</h4>
+        <h4 style={{ color: "#fff" }}>{dokLunas.totalDokumen} Dokumen</h4>
 
         <NumberFormat
           value={dokLunas.totalBayar}

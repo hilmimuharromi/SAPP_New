@@ -158,7 +158,7 @@ function RekamDokumenPiutang() {
   useEffect(() => {
     dispatch(allActions.getJenisDokumen("JENIS DOKUMEN"));
     dispatch(allActions.getJenisDokumen("JENIS DOKUMEN ASAL"));
-  });
+  }, []);
 
   useEffect(() => {
     axios
@@ -818,7 +818,7 @@ function RekamDokumenPiutang() {
       "get jatuh tempo tanggal 5 bulan berikutnya"
     );
     form.setFieldsValue({
-      tanggalJatuhTempo: moment(addHari, "DD/MM/YYYY"),
+      tanggalJatuhTempo: moment(plusLastBulan, "DD/MM/YYYY"),
     });
   };
 

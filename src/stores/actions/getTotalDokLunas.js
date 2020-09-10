@@ -15,7 +15,9 @@ export default function fetchTotalDokumenBilling(
         `http://10.162.71.119:9090/perbendaharaan/perben/billing/get-total-dokumen?kodeKantor=${kodeKantor}&start=${start}&end=${end}&status=${status}`
       )
       .then(({ data }) => {
-        dispatch(SET_TOTAL_DOK_BILLING_LUNAS(data.data));
+        if (data.data) {
+          dispatch(SET_TOTAL_DOK_BILLING_LUNAS(data.data));
+        }
 
         console.log(data.data, "total dokumen ", status);
       })

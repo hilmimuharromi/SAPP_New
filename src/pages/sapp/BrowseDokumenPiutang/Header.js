@@ -9,7 +9,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import allActions from "../../../stores/actions";
 import Iframe from "react-iframe";
-import Menu from "./SearchHeader";
+import SearchHeader from "./SearchHeader";
 import "@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css";
 
 export default function Header(props) {
@@ -18,6 +18,7 @@ export default function Header(props) {
   const [contentModal, setContent] = useState("");
   let dataHeader = useSelector((state) => state.headers.data);
   let isLoading = useSelector((state) => state.headers.loadingHeader);
+  const { dataKantorPeriode, setHideDetail } = props;
   function handleLihat(record) {
     setContent(record);
     setModal(true);
@@ -127,7 +128,7 @@ export default function Header(props) {
   return (
     <>
       <Card className="card-layout">
-        <Menu />
+        <SearchHeader data={dataKantorPeriode} />
         {/* <h3>BROWSE DOKUMEN PIUTANG</h3> */}
         <Table
           loading={isLoading}
@@ -142,11 +143,16 @@ export default function Header(props) {
                 dispatch(allActions.getPungutan(record.idHeader));
                 dispatch(allActions.getHistory(record.idHeader));
                 props.setDataTable(record);
+                setHideDetail(false);
+                if (record.kodeProses === "100") {
+                  props.setHideCreateBilling(false);
+                }
               },
             };
           }}
         />
       </Card>
+
       <Modal
         title={contentModal.no_dokumen}
         visible={showModal}

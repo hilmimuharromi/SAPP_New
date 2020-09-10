@@ -8,6 +8,11 @@ import {
   Button,
   Tabs,
   Card,
+  Form,
+  Input,
+  moment,
+  DatePicker,
+  useHistory,
 } from "../../../libraries/dependencies";
 import { useDispatch } from "react-redux";
 import allActions from "../../../stores/actions";
@@ -20,17 +25,28 @@ import HeaderTable from "./Header";
 // import TotalSurat from "./TotalSurat";
 import CardTotalSurat from "./CardTotalSurat";
 import ChartTotalSurat from "./ChartTotalSurat";
+import SearchKantor from "../../../components/SearchKantor";
 
 const { TabPane } = Tabs;
+const { RangePicker } = DatePicker;
 
 export default function BrowseDokumenPiutang() {
+  const [namaKantor, setNamaKantor] = useState("KANWIL JAKARTA");
+  const [kodeKantor, setKodeKantor] = useState("040000");
+  const dateFormat = "YYYY-MM-DD";
+  const [startDate, setStartDate] = useState(moment());
+  const [endDate, setEndDate] = useState(moment().add(1, "m"));
   const [togleChart, setTogleChart] = useState(true);
   const [dataTable, setDataTable] = useState("");
+  const [hideCreateBilling, setHideCreateBilling] = useState(true);
+  const [hideDetail, setHideDetail] = useState(true);
+
   const dispatch = useDispatch();
+  const history = useHistory();
   useEffect(() => {
-    dispatch(allActions.getHeaders("ALL"));
-    dispatch(allActions.getTotalSurat());
-  }, [dispatch]);
+    dispatch(allActions.getHeaders("ALL", startDate, endDate, kodeKantor));
+    dispatch(allActions.getTotalSurat(startDate, endDate, kodeKantor));
+  }, [dispatch, startDate, endDate, kodeKantor]);
 
   function callback(key) {
     console.log(key, "masuk cb");
@@ -43,8 +59,54 @@ export default function BrowseDokumenPiutang() {
     }
   }
 
+  const dataKantorPeriode = {
+    start: startDate,
+    end: endDate,
+    kodeKantor,
+  };
+
+  const FetchData = () => {
+    console.log("=======");
+    console.log(startDate, endDate, "periode");
+    console.log(kodeKantor, "kantor");
+    console.log("=======");
+  };
+
   return (
     <Layout style={{ backgroundColor: "#fff" }}>
+      <Row justify="end">
+        <div>
+          <Form.Item label="Kantor" style={{ marginBottom: "5px" }}>
+            <Input.Group compact>
+              <SearchKantor
+                kodeKantor={kodeKantor}
+                style={{ width: 150 }}
+                onSelect={(value, option) => {
+                  console.log(value, option, "dari browse");
+                  setNamaKantor(option.nama);
+                  setKodeKantor(value);
+                  FetchData();
+                }}
+              />
+              <h3 style={{ marginLeft: "5px" }}> {namaKantor}</h3>
+            </Input.Group>
+          </Form.Item>
+          <Form.Item label="Periode">
+            <RangePicker
+              onChange={(date, dateString) => {
+                setStartDate(dateString[0]);
+                setEndDate(dateString[1]);
+                FetchData();
+              }}
+              defaultValue={[
+                moment(startDate, dateFormat),
+                moment(endDate, dateFormat),
+              ]}
+              format={dateFormat}
+            />
+          </Form.Item>
+        </div>
+      </Row>
       <Row justify="center">
         <Col span={24}>
           <ChartMode />
@@ -54,12 +116,19 @@ export default function BrowseDokumenPiutang() {
         <Button onClick={() => setTogleChart(!togleChart)}>Change Mode</Button>
       </Row>
       {/* <Row>{JSON.stringify(dataTable)}</Row> */}
+
       <Row justify="center" style={{ marginTop: "10px" }}>
         <Col span={24}>
-          <HeaderTable setDataTable={setDataTable} />
+          <HeaderTable
+            setDataTable={setDataTable}
+            dataKantorPeriode={dataKantorPeriode}
+            setHideCreateBilling={setHideCreateBilling}
+            setHideDetail={setHideDetail}
+          />
         </Col>
       </Row>
-      <Row justify="center">
+
+      <Row hidden={hideDetail} justify="center">
         <Col span={24} style={{ marginTop: "10px" }}>
           {/* <Timeline /> */}
           <Card className="card-layout">
@@ -69,9 +138,11 @@ export default function BrowseDokumenPiutang() {
         </Col>
       </Row>
       <Row
+        id="detail"
         justify="start"
         style={{ marginTop: "10px" }}
         className="card-layout"
+        hidden={hideDetail}
       >
         <Col span={13}>
           <Detail dataKlik={dataTable} />
@@ -92,6 +163,20 @@ export default function BrowseDokumenPiutang() {
             </TabPane>
           </Tabs>
         </Col>
+      </Row>
+      <Row
+        hidden={hideCreateBilling}
+        justify="center"
+        style={{ marginTop: "10px" }}
+      >
+        <Button
+          onClick={() =>
+            history.push("/rekam-billing", { dataHistory: dataTable })
+          }
+          className="card-layout"
+        >
+          Create Billing
+        </Button>
       </Row>
     </Layout>
   );

@@ -51,7 +51,7 @@ export default function TablePerusahaan(props) {
           // enterButton="Search"
           size="large"
           style={{ width: 300 }}
-          onSearch={(value) => dispatch(allActions.getPerusahaan(value, 50, 1))}
+          onSearch={(value) => dispatch(allActions.getPerusahaan(value, 50, 0))}
           enterButton
         />
       </div>
@@ -65,7 +65,7 @@ export default function TablePerusahaan(props) {
             allActions.getPerusahaan(
               "all",
               pagination.pageSize,
-              pagination.current
+              pagination.current - 1
             )
           )
         }
