@@ -16,10 +16,12 @@ import {
   NumberFormat,
   moment,
   message,
+  Spin,
+  Row,
 } from "../../../libraries/dependencies";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import allActions from "../../../stores/actions";
-import RefPerusahaan from "../../../components/RefPerusahaan";
+import { RefPerusahaan, SelectAkunPungutan } from "../../../components";
 const { Option } = Select;
 
 const renderTitle = (kodeKantor, nama) => {
@@ -47,36 +49,58 @@ export default function RekamBilling() {
   const [keyEditPembayaran, setkeyEditPembayaran] = useState({});
   const [namaKantor, setNamaKantor] = useState("");
   const [idPiutang, setIdPiutang] = useState("");
+  const [loadingSimpan, setLoadingSimpan] = useState(false);
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
   const [formEdit] = Form.useForm();
   const [dataPembayaran, setDataPembayaran] = useState([]);
-  const [listAkun, setListAkun] = useState([]);
   const [listJenisDokumen, setListJenisDokumen] = useState([]);
-  const [kdIdWajibBayar, setKdIdWajibBayar] = useState("");
+  const [listKdIdPerusahaan, setListKdIdPerusahaan] = useState([]);
   const [flagManual, setFlagManual] = useState("Y");
   const [disableInput, setDisableInput] = useState(false);
+  const [namaAkun, setNamaAkun] = useState("");
+  const [kodeAkun, setKodeAkun] = useState("");
+  const [inputPungutan, setInputPungutan] = useState(0);
   const dispatch = useDispatch();
-
-  // console.log(location, "get data history");
-  // const data = location.state.dataHistory;
-  // setFlagManual("T");
-  // setNamaKantor(data.kantorPenerbit);
-  // setIdPiutang(data.idHeader);
-  // setKdIdWajibBayar(data.npwpPerusahaan);
-  // form.setFieldsValue({
-  //   kodeKantor: data.kodeKantorPenerbit,
-  //   idWajibBayar: data.npwpPerusahaan,
-  //   namaWajibBayar: data.namaPerusahaan,
-  //   alamatPerusahaan: data.alamatPerusahaan,
-  // });
-
+  const dataServer = useSelector((state) => state.dataCreateBilling);
+  const data = dataServer.data;
+  const statusTarikData = dataServer.status;
+  const pungutan = dataServer.pungutan;
+  const [totalPungutan, setTotalPungutan] = useState(0);
   let total = 0;
+  if (statusTarikData) {
+    console.log(dataServer, "hasil tombol create billing");
+    if (statusTarikData === "ditemukan") {
+      setFlagManual("T");
+      setIdPiutang(data.idHeader);
+      setNamaKantor(data.kantorPenerbit);
+
+      form.setFieldsValue({
+        kodeKantor: data.kodeKantorPenerbit,
+        idWajibBayar: data.npwpPerusahaan,
+        namaWajibBayar: data.namaPerusahaan,
+        jenisDokumen: data.kodeJenisDokumen,
+        nomorDokumen: data.nomorDokumen,
+        kdIdWajibBayar: data.kodeIdPerusahaan,
+        tanggalDokumen: moment(data.tanggalDokumen),
+        totalTagihan: pungutan.total,
+      });
+      setDataPembayaran(pungutan.data);
+      setTotalPungutan(pungutan.total);
+      setDisableInput(true);
+      message.success("sukses tarik data");
+      dispatch(allActions.setStatusTarikData(false));
+    } else {
+      message.error("data tidak ditemukan");
+      dispatch(allActions.setStatusTarikData(false));
+    }
+  }
+
   const columns = [
     {
       title: "Akun",
-      dataIndex: "akun",
-      key: "akun",
+      dataIndex: "namaAkun",
+      key: "namaAkun",
     },
     {
       title: "Npwp",
@@ -102,7 +126,14 @@ export default function RekamBilling() {
       render: (text, record) => (
         <Space size="middle">
           <Button onClick={() => hapusPembayaran(record)}>Hapus</Button>
-          <Button onClick={() => buttonEdit(text)}>Edit</Button>
+          <Button
+            onClick={() => {
+              setKodeAkun(record.kodeAkun);
+              buttonEdit(record);
+            }}
+          >
+            Edit
+          </Button>
         </Space>
       ),
     },
@@ -111,18 +142,19 @@ export default function RekamBilling() {
   useEffect(() => {
     axios
       .get(
-        "http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-pungutan"
-      )
-      .then(({ data }) => {
-        setListAkun(data.data);
-      });
-
-    axios
-      .get(
         "http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-jenis-dokumen?keterangan=billing"
       )
       .then(({ data }) => {
         setListJenisDokumen(data.data);
+      });
+
+    axios
+      .get(
+        "http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-id-perusahaan"
+      )
+      .then(({ data }) => {
+        console.log(data, "kd id perusahaan");
+        setListKdIdPerusahaan(data.data);
       });
   }, []);
 
@@ -155,14 +187,17 @@ export default function RekamBilling() {
   };
 
   const buttonEdit = (data) => {
+    console.log(data, "edit data");
     setkeyEditPembayaran(data.key);
     formEdit.setFieldsValue({
-      akun: data.akun,
       npwpPembayaran: data.npwpPembayaran,
       nilai: data.nilai,
     });
+
+    setInputPungutan(data.nilai);
+    setNamaAkun(data.namaAkun);
+    // setKodeAkun(data.kodeAkun);
     setVisibleEditPembayaran(true);
-    console.log(data, "edit data");
   };
 
   function onCopyNPWP(e) {
@@ -180,19 +215,12 @@ export default function RekamBilling() {
     }
   }
 
-  const splitRupiah = (nilai) => {
-    let splitNilai = nilai.split("");
-    let newNilai = splitNilai.filter((item) => {
-      return item !== "R" && item !== "p" && item !== " " && item !== ",";
-    });
-    console.log(newNilai, "nilai baruuu");
-    return newNilai.join("");
-  };
-
   const tambahNilaiPembayaran = async (values) => {
-    console.log("tambah pembayaran:", values);
-    let { akun, npwpPembayaran, nilai } = values;
-    let newNilai = splitRupiah(nilai);
+    if (disableInput) return message.error("tidak bisa tambah pungutan");
+    let { npwpPembayaran } = values;
+    console.log(values, "values tambah pembayaran");
+    let newNilai = inputPungutan;
+    if (!newNilai) return;
     let key = 0;
     if (dataPembayaran.length < 1) {
       key = 1;
@@ -202,7 +230,8 @@ export default function RekamBilling() {
     let newData = [
       ...dataPembayaran,
       {
-        akun,
+        namaAkun,
+        kodeAkun,
         npwpPembayaran,
         nilai: parseInt(newNilai),
         key,
@@ -219,10 +248,10 @@ export default function RekamBilling() {
     // setToggleNPWP(!toggleNPWP);
     console.log(total, "total");
     // form2.resetFields();
-    console.log(akun + "" + npwpPembayaran + " " + nilai);
   };
 
   const hapusPembayaran = async (data) => {
+    if (disableInput) return message.error("tidak bisa hapus pungutan");
     const newData = dataPembayaran.filter((item) => {
       return item !== data;
     });
@@ -236,19 +265,14 @@ export default function RekamBilling() {
   };
 
   const editNilaiPembayaran = (values) => {
-    const { akun, npwpPembayaran, nilai } = values;
-    console.log(values, "values");
-    let newNilai = nilai;
-    const index = dataPembayaran.findIndex(
-      (item) => item.key === keyEditPembayaran
-    );
-    if (nilai !== dataPembayaran[index].nilai) {
-      newNilai = splitRupiah(nilai);
-    }
+    const { npwpPembayaran } = values;
+
+    let newNilai = inputPungutan;
     const newData = dataPembayaran.map((item) => {
       if (item.key === keyEditPembayaran) {
         item = {
-          akun,
+          kodeAkun,
+          namaAkun,
           npwpPembayaran,
           nilai: parseInt(newNilai),
           key: keyEditPembayaran,
@@ -256,6 +280,7 @@ export default function RekamBilling() {
       }
       return item;
     });
+
     newData.map((item) => {
       return (total += parseInt(item.nilai));
     });
@@ -264,16 +289,15 @@ export default function RekamBilling() {
     });
     setkeyEditPembayaran(0);
     setDataPembayaran(newData);
-    console.log(" data Pembayaran: ", dataPembayaran);
-    console.log(" new data Pembayaran: ", newData);
     setVisibleEditPembayaran(false);
   };
 
   const simpanBilling = (values) => {
+    setLoadingSimpan(true);
     const {
       tanggalDokumen,
-      tanggalExpired,
       jenisDokumen,
+      kdIdWajibBayar,
       idWajibBayar,
       kodeKantor,
       namaWajibBayar,
@@ -284,11 +308,12 @@ export default function RekamBilling() {
     let tdBillingDetail = [];
     dataPembayaran.map((item) => {
       return tdBillingDetail.push({
-        kodeAkun: item.akun,
+        kodeAkun: item.kodeAkun,
         idWajibBayar: item.npwpPembayaran,
         nilai: item.nilai,
       });
     });
+    console.log("data pembayaran: ", dataPembayaran);
     const dataBilling = {
       tdBillingMaster: {
         flagManual: flagManual,
@@ -300,29 +325,33 @@ export default function RekamBilling() {
         namaWajibBayar,
         nomorDokumen,
         tanggalDokumen: moment(tanggalDokumen).format("YYYY-MM-DD HH:mm:ss"),
-        tanggalExpired: moment(tanggalExpired).format("YYYY-MM-DD HH:mm:ss"),
+        tanggalExpired: moment().add(5, "d").format("YYYY-MM-DD HH:mm:ss"),
         totalTagihan,
       },
       tdBillingDetail,
       nipRekam: "1234",
     };
 
-    axios({
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      url: `http://10.162.71.119:9090/perbendaharaan/perben/billing/simpan-billing`,
-      data: dataBilling,
-    })
-      .then(({ data }) => {
-        message.success("This is a success message");
-        console.log(data, "simpan billing");
-      })
-      .catch((err) => {
-        message.error("error");
-        console.log(err, "derror simpan");
-      });
+    // axios({
+    //   method: "post",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   url: `http://10.162.71.119:9090/perbendaharaan/perben/billing/simpan-billing`,
+    //   data: dataBilling,
+    // })
+    //   .then(({ data }) => {
+    //     message.success("Sukses simpan billing");
+    //     console.log(data, "simpan billing");
+    //     setLoadingSimpan(false);
+    //   })
+    //   .catch((err) => {
+    //     message.error("error simpan");
+    //     console.log(err, "error simpan");
+    //   })
+    //   .finally((_) => {
+    //     setLoadingSimpan(false);
+    //   });
     console.log(dataBilling, "dataBilling");
   };
 
@@ -342,71 +371,73 @@ export default function RekamBilling() {
   };
 
   const setPerusahaan = (data) => {
-    setKdIdWajibBayar(data.idPerusahaan);
     form.setFieldsValue({
       idWajibBayar: data.npwp,
+      kdIdWajibBayar: data.kodeId,
       namaWajibBayar: data.namaPerusahaan,
       // alamatPerusahaan: data.alamatPerusahaan,
     });
     setVisibleRef(false);
   };
 
-  const NotifTarikData = (status) => {
-    if (status === "200") {
-      message.success("This is a success message");
-    } else {
-      message.error("data tidak ditemukan");
-    }
-  };
+  // const NotifTarikData = (status) => {
+  //   if (status === "200") {
+  //     message.success("This is a success message");
+  //   } else {
+  //     message.error("data tidak ditemukan");
+  //   }
+  // };
 
   const tarikData = () => {
+    if (disableInput) return message.error("tidak bisa tarik data");
     let { nomorDokumen, tanggalDokumen } = form.getFieldValue();
-    tanggalDokumen = moment(tanggalDokumen).format("YYYY-MM-DD");
-    console.log(nomorDokumen, tanggalDokumen);
-    axios
-      .get(
-        `http://10.162.71.119:9090/perbendaharaan/perben/piutang/get-data-browse?browse=${nomorDokumen}&tanggalDokumen=${tanggalDokumen}`
-      )
-      .then(({ data }) => {
-        if (data.data) {
-          const dataServer = data.data[0];
-          console.log(dataServer, "tarik data");
-          form.setFieldsValue({
-            jenisDokumen: dataServer.kodeJenisDokumen,
-            kodeKantor: dataServer.kodeKantorPenerbit,
-            idWajibBayar: dataServer.npwpPerusahaan,
-            namaWajibBayar: dataServer.namaPerusahaan,
-            alamatPerusahaan: dataServer.alamatPerusahaan,
-          });
-          setNamaKantor(dataServer.kantorPenerbit);
-          setIdPiutang(dataServer.idHeader);
-          setKdIdWajibBayar(dataServer.idPerusahaan);
-          setFlagManual("T");
-          setDisableInput(true);
-          NotifTarikData("200");
-        } else {
-          NotifTarikData("400");
-        }
-      });
+    tanggalDokumen = moment(tanggalDokumen).format("DD-MM-YYYY");
+    dispatch(allActions.getDataRekamBilling(nomorDokumen, tanggalDokumen));
+  };
+
+  if (loadingSimpan) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <Spin
+          spinning={loadingSimpan}
+          delay={500}
+          tip="Menunggu Simpan Billing ....."
+        />
+      </div>
+    );
+  }
+
+  const bersihkan = () => {
+    form.resetFields();
+    setDataPembayaran([]);
+    setDisableInput(false);
+    setFlagManual("T");
+    setNamaKantor("");
+  };
+
+  const formStyle = {
+    padding: "1px 1px 1px 5px",
+    marginBottom: "5px",
   };
 
   return (
     <>
       {" "}
-      <h2>Rekam Billing</h2>
-      <Form
-        {...layout}
-        form={form}
-        onFinish={simpanBilling}
-        initialValues={{
-          // kodeKantor: "009000",
-          // jenisDokumen: "pib",
-          kdIdWajibBayar: "NPWP",
-        }}
-      >
-        <Form.Item label="Kode Kantor" style={{ marginBottom: "5px" }}>
+      <Row justify="space-between">
+        <h2>Rekam Billing</h2>
+        <Button onClick={bersihkan}>Bersihkan</Button>
+      </Row>
+      <Form {...layout} form={form} onFinish={simpanBilling}>
+        <Form.Item label="Kode Kantor" style={formStyle}>
           <Input.Group compact>
-            <Form.Item name="kodeKantor">
+            <Form.Item name="kodeKantor" style={{ marginBottom: "5px" }}>
               <AutoComplete
                 disabled={disableInput}
                 dropdownClassName="certain-category-search-dropdown"
@@ -424,12 +455,12 @@ export default function RekamBilling() {
           </Input.Group>
         </Form.Item>
 
-        <Form.Item label="Jenis Dokumen" style={{ marginBottom: "5px" }}>
+        <Form.Item label="Jenis Dokumen" style={formStyle}>
           <Input.Group compact>
-            <Form.Item name="jenisDokumen">
+            <Form.Item name="jenisDokumen" style={{ marginBottom: "5px" }}>
               <Select
                 disabled={disableInput}
-                style={{ width: 200 }}
+                style={{ width: 400 }}
                 placeholder={"Jenis Dokumen"}
               >
                 {listJenisDokumen.map((item) => (
@@ -439,38 +470,34 @@ export default function RekamBilling() {
                 ))}
               </Select>
             </Form.Item>
-            {/* <Form.Item style={{ margin: "0 7px" }}>
-              <p>{uraianJenisDok}</p>
-            </Form.Item> */}
           </Input.Group>
         </Form.Item>
 
-        <Form.Item
-          label="No dan Tanggal Dokumen"
-          style={{ marginBottom: "5px" }}
-        >
+        <Form.Item label="No dan Tanggal Dokumen" style={formStyle}>
           <Input.Group compact>
-            <Form.Item name="nomorDokumen">
+            <Form.Item name="nomorDokumen" style={{ marginBottom: "5px" }}>
               <Input disabled={disableInput} style={{ width: 200 }} />
             </Form.Item>
-            <Form.Item name="tanggalDokumen">
+            <Form.Item name="tanggalDokumen" style={{ marginBottom: "5px" }}>
               <DatePicker
                 disabled={disableInput}
                 style={{ margin: "0 7px", width: 200 }}
-                format={"YYYY-MM-DD"}
+                format={"DD-MM-YYYY"}
               />
             </Form.Item>
-            <Form.Item>
+            <Form.Item style={{ marginBottom: "5px" }}>
               <Button onClick={tarikData}>Tarik</Button>
             </Form.Item>
           </Input.Group>
         </Form.Item>
 
-        <Form.Item label="ID Wajib Bayar" style={{ marginBottom: "5px" }}>
+        <Form.Item label="ID Wajib Bayar" style={formStyle}>
           <Input.Group compact>
-            <Form.Item name="kdIdWajibBayar">
+            <Form.Item name="kdIdWajibBayar" style={{ marginBottom: "5px" }}>
               <Select disabled={disableInput} style={{ width: 200 }}>
-                <Option value="NPWP">NPWP</Option>
+                {listKdIdPerusahaan.map((item) => (
+                  <Option value={item.kodeId}>{item.uraian}</Option>
+                ))}
               </Select>
             </Form.Item>
             <Form.Item
@@ -479,37 +506,34 @@ export default function RekamBilling() {
             >
               <Input disabled={disableInput} />
             </Form.Item>
-            <Form.Item>
+            <Form.Item style={{ marginBottom: "5px" }}>
               <Button onClick={buttonReferensi}>Referensi</Button>
             </Form.Item>
           </Input.Group>
         </Form.Item>
 
-        <Form.Item
-          label="Nama"
-          name="namaWajibBayar"
-          style={{ marginBottom: "5px" }}
-        >
+        <Form.Item label="Nama" name="namaWajibBayar" style={formStyle}>
           <Input disabled={disableInput} style={{ width: 200 }} />
         </Form.Item>
-
-        {/* <Form.Item label="Alamat" name="alamatPerusahaan">
-          <Input />
-        </Form.Item> */}
 
         <Form.Item
           label="Tanggal Expired"
           name="tanggalExpired"
-          style={{ marginBottom: "5px" }}
+          style={formStyle}
         >
-          <DatePicker style={{ width: 200 }} />
+          <DatePicker
+            style={{ width: 200 }}
+            format={"DD-MM-YYYY"}
+            disabled
+            defaultValue={moment().add(5, "d")}
+          />
         </Form.Item>
 
         <Form.Item
           label="Total Tagihan"
           name="totalTagihan"
-          value={total}
-          style={{ marginBottom: "5px" }}
+          value={totalPungutan}
+          style={formStyle}
         >
           <NumberFormat
             style={{ width: 200 }}
@@ -528,20 +552,16 @@ export default function RekamBilling() {
           name="tambahPembayaran"
           onFinish={tambahNilaiPembayaran}
           layout="inline"
-          initialValues={{
-            akun: "411123",
-          }}
-          style={{ marginBottom: "5px" }}
+          style={formStyle}
         >
           <div style={{ display: "flex", flexDirection: "row" }}>
             <Form.Item label="Akun" name="akun">
-              <Select style={{ width: "200px" }}>
-                {listAkun.map((item) => (
-                  <Option value={item.kodeAkun} key={item.kodeAkun}>
-                    {item.uraian}
-                  </Option>
-                ))}
-              </Select>
+              <SelectAkunPungutan
+                onSelect={(value, option) => {
+                  setNamaAkun(option.namaAkun);
+                  setKodeAkun(value);
+                }}
+              />
             </Form.Item>
             <Form.Item label="NPWP" name="npwpPembayaran">
               <Input disabled={toggleNPWP} />
@@ -555,7 +575,9 @@ export default function RekamBilling() {
                 thousandSeparator={true}
                 prefix={"Rp "}
                 inputmode="numeric"
+                defaultValue={0}
                 allowEmptyFormatting
+                onValueChange={(values) => setInputPungutan(values.value)}
               />
             </Form.Item>
             <Button
@@ -593,7 +615,11 @@ export default function RekamBilling() {
         title="Edit Data Pembayaran"
         visible={visibleEditPembayaran}
         footer={null}
-        onCancel={() => setVisibleEditPembayaran(false)}
+        onCancel={() => {
+          setVisibleEditPembayaran(false);
+          formEdit.resetFields();
+          setKodeAkun("");
+        }}
       >
         <Form
           form={formEdit}
@@ -603,13 +629,14 @@ export default function RekamBilling() {
         >
           {/* <div style={{ display: "flex", flexDirection: "row" }}> */}
           <Form.Item label="Akun" name="akun">
-            <Select>
-              {listAkun.map((item) => (
-                <Option value={item.kodeAkun} key={item.kodeAkun}>
-                  {item.uraian}
-                </Option>
-              ))}
-            </Select>
+            <SelectAkunPungutan
+              disabled={disableInput}
+              defaultValue={kodeAkun}
+              onSelect={(value, option) => {
+                setNamaAkun(option.namaAkun);
+                setKodeAkun(value);
+              }}
+            />
           </Form.Item>
           <Form.Item label="NPWP" name="npwpPembayaran">
             <Input disabled={toggleNPWP} />
@@ -619,11 +646,13 @@ export default function RekamBilling() {
           </Form.Item>
           <Form.Item label="Nilai" name="nilai">
             <NumberFormat
+              disabled={disableInput}
               customInput={Input}
               thousandSeparator={true}
               prefix={"Rp "}
               inputmode="numeric"
               allowEmptyFormatting
+              onValueChange={(values) => setInputPungutan(values.value)}
             />
           </Form.Item>
           <Button type="primary" htmlType="submit">

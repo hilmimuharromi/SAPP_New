@@ -1,6 +1,5 @@
 import axios from "axios";
 export default function FETCH_LIST_DOKUMEN(query) {
-  console.log("masuk", query);
   return (dispatch) => {
     axios({
       method: "get",

@@ -5,6 +5,7 @@ import {
   Button,
   useState,
   Modal,
+  ScrollTo,
 } from "../../../libraries/dependencies";
 import { useSelector, useDispatch } from "react-redux";
 import allActions from "../../../stores/actions";
@@ -19,6 +20,7 @@ export default function Header(props) {
   let dataHeader = useSelector((state) => state.headers.data);
   let isLoading = useSelector((state) => state.headers.loadingHeader);
   const { dataKantorPeriode, setHideDetail } = props;
+  console.log(dataHeader, "data header");
   function handleLihat(record) {
     setContent(record);
     setModal(true);
@@ -30,6 +32,9 @@ export default function Header(props) {
       key: "jenisDokumen",
       sorter: (a, b) => a.jenisDokumen.length - b.jenisDokumen.length,
       sortDirections: ["descend", "ascend"],
+      render: (text, record) => (
+        <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>
+      ),
     },
     {
       title: "Nomor Dokumen",
@@ -37,6 +42,7 @@ export default function Header(props) {
       key: "nomorDokumen",
       sorter: (a, b) => a.nomorDokumen - b.nomorDokumen,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Tanggal Dokumen",
@@ -44,6 +50,7 @@ export default function Header(props) {
       key: "tanggalDokumen",
       sorter: (a, b) => a.tanggalDokumen.length - b.tanggalDokumen.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Status",
@@ -51,6 +58,7 @@ export default function Header(props) {
       key: "status",
       sorter: (a, b) => a.status.length - b.status.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "NPWP Perusahaan",
@@ -58,6 +66,7 @@ export default function Header(props) {
       key: "npwpPerusahaan",
       sorter: (a, b) => a.npwpPerusahaan.length - b.npwpPerusahaan.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Nama Perusahaan",
@@ -65,6 +74,7 @@ export default function Header(props) {
       key: "namaPerusahaan",
       sorter: (a, b) => a.namaPerusahaan.length - b.namaPerusahaan.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Tanggal Jatuh Tempo",
@@ -72,14 +82,15 @@ export default function Header(props) {
       key: "tanggalJatuhTempo",
       sorter: (a, b) => a.tanggalJatuhTempo.length - b.tanggalJatuhTempo.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Jenis Dok Asal",
       dataIndex: "jenisDokumenAsal",
       key: "jenisDokumenAsal",
-
       sorter: (a, b) => a.jenisDokAsal.length - b.jenisDokAsal.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Nomor Dok Asal",
@@ -88,6 +99,7 @@ export default function Header(props) {
 
       sorter: (a, b) => a.nomorDokAsal.length - b.nomorDokAsal.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Tanggal Dok Asal",
@@ -96,6 +108,7 @@ export default function Header(props) {
 
       sorter: (a, b) => a.tanggalDokAsal.length - b.tanggalDokAsal.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Kantor Penerbit",
@@ -104,6 +117,7 @@ export default function Header(props) {
 
       sorter: (a, b) => a.kantorPenerbit.length - b.kantorPenerbit.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Kantor Monitor",
@@ -112,6 +126,7 @@ export default function Header(props) {
 
       sorter: (a, b) => a.kantorMonitor.length - b.kantorMonitor.length,
       sortDirections: ["descend", "ascend"],
+      render: (text) => <ScrollTo selector={"#detailPiutang"}>{text}</ScrollTo>,
     },
     {
       title: "Aksi",
@@ -124,6 +139,16 @@ export default function Header(props) {
       ),
     },
   ];
+
+  const pilihButton = (record) => {
+    setHideDetail(false);
+    dispatch(allActions.getPungutan(record.idHeader));
+    dispatch(allActions.getHistory(record.idHeader));
+    props.setDataTable(record);
+    if (record.kodeProses === "100") {
+      props.setHideCreateBilling(false);
+    }
+  };
 
   return (
     <>
@@ -140,13 +165,7 @@ export default function Header(props) {
           onRow={(record, rowIndex) => {
             return {
               onClick: (event) => {
-                dispatch(allActions.getPungutan(record.idHeader));
-                dispatch(allActions.getHistory(record.idHeader));
-                props.setDataTable(record);
-                setHideDetail(false);
-                if (record.kodeProses === "100") {
-                  props.setHideCreateBilling(false);
-                }
+                pilihButton(record);
               },
             };
           }}

@@ -10,6 +10,7 @@ import totalDokTagihan from "./totalDokTagihan";
 import totalDokLunas from "./totalDokLunas";
 import headerBilling from "./headerBilling";
 // import listKantor from "./listKantor";
+import dataCreateBilling from "./dataCreateBilling";
 
 const rootReducers = combineReducers({
   headers: headerReducer,
@@ -22,6 +23,7 @@ const rootReducers = combineReducers({
   totalDokTagihan,
   totalDokLunas,
   totalSurat,
+  dataCreateBilling,
   // listKantor,
 });
 

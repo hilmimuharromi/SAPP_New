@@ -19,10 +19,13 @@ import {
   EditFilled,
   moment,
   Spin,
-  Alert,
   Modal,
 } from "../../../libraries/dependencies";
-import RefPerusahaan from "../../../components/RefPerusahaan";
+import {
+  RefPerusahaan,
+  SearchKantor,
+  SelectAkunPungutan,
+} from "../../../components/";
 import { convertToRupiah, convertToAngka } from "../../../libraries/functions";
 import { useDispatch, useSelector } from "react-redux";
 import allActions from "../../../stores/actions";
@@ -47,24 +50,6 @@ const renderItem = (kode, nama) => {
   };
 };
 
-const renderTitle = (kodeKantor, nama) => {
-  return {
-    value: kodeKantor,
-    nama: nama,
-    label: (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        {kodeKantor}
-        <span>{nama}</span>
-      </div>
-    ),
-  };
-};
-
 function RekamDokumenPiutang() {
   const dispatch = useDispatch();
   let error = useSelector((state) => state.rekamManual.errorRekamManual);
@@ -74,12 +59,14 @@ function RekamDokumenPiutang() {
 
   // Sid - Headear
   // ==============================================
-  const [options, setOptions] = useState([]);
-  const [optionsMonitor, setOptionsMonitor] = useState([]);
   const [visibleRefPerusahaan, setVisibleRefPerusahaan] = useState(false);
   const [akun, setAkun] = useState("");
-  const [namaKantorPenerbit, setNamaKantorPenerbit] = useState("");
-  const [namaKantorMonitor, setNamaKantorMonitor] = useState("");
+  const [namaKantorPenerbit, setNamaKantorPenerbit] = useState(
+    "Nama Kantor Penerbit"
+  );
+  const [namaKantorMonitor, setNamaKantorMonitor] = useState(
+    "Nama Kantor Monitor"
+  );
   const [kodeBidang, setKodeBidang] = useState("");
   const [jabatan1, setJabatan1] = useState("");
   const [jabatan2, setJabatan2] = useState("");
@@ -88,6 +75,9 @@ function RekamDokumenPiutang() {
   // ==============================================
 
   const [kategoriJenisDokumen, setKategoriJenisDokumen] = useState("");
+  const [jenisDokumen, setJenisDokumen] = useState("");
+  const [disableJatuhTempo, setDisableJatuhTempo] = useState(true);
+  const [tanggalDokumen, setTanggalDokumen] = useState("");
   const [jenisDokumenAsal, setJenisDokumenAsal] = useState("");
   const [listKodeBidang, setListKodeBidang] = useState([]);
   const [listJabatan, setListJabatan] = useState([]);
@@ -153,11 +143,11 @@ function RekamDokumenPiutang() {
   const listJenisDokumenAsal = useSelector(
     (state) => state.jenisDokumen.jenisDokumenAsal
   );
-  console.log(listJenisDokumen, "list jenis dokumen");
-
+  // console.log(listJenisDokumen, "list jenis dokumen");
   useEffect(() => {
     dispatch(allActions.getJenisDokumen("JENIS DOKUMEN"));
     dispatch(allActions.getJenisDokumen("JENIS DOKUMEN ASAL"));
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -204,17 +194,69 @@ function RekamDokumenPiutang() {
       .finally((_) => {
         // dispatch(SET_LOADING_HISTORY(false));
       });
-  }, []);
+
+    const getJatuhTempo = () => {
+      if (!jenisDokumen || !tanggalDokumen) {
+        return console.log(
+          jenisDokumen,
+          tanggalDokumen,
+          "ditolak get jatuh tempo"
+        );
+      }
+
+      axios
+        .get(
+          `http://10.162.71.119:9090/perbendaharaan/perben/referensi/jatuh-tempo?jenisDokumen=${jenisDokumen}`
+        )
+        .then(({ data }) => {
+          const dataServer = data.data[0];
+          console.log(dataServer, "data server jatuh tempo");
+          const date = tanggalDokumen;
+          let jatuhTempo = moment();
+          if (dataServer) {
+            const bulan = dataServer.jatuhTempoBayar.bulan;
+            const hari = dataServer.jatuhTempoBayar.hari;
+            if (bulan) {
+              console.log(hari, bulan);
+              if (hari === "last") {
+                jatuhTempo = moment(date)
+                  .add(bulan, "M")
+                  .endOf("month")
+                  .format("DD-MM-YYYY");
+              } else {
+                jatuhTempo = moment(date)
+                  .add(bulan, "M")
+                  .set("date", hari)
+                  .format("DD-MM-YYYY");
+              }
+            } else {
+              jatuhTempo = moment(date).add(hari, "d");
+            }
+            console.log(hari, bulan, "hari bulan jatuh tempo");
+            console.log(jatuhTempo, "tanggalJatuh tempo");
+            if (!bulan && !hari) {
+              setDisableJatuhTempo(false);
+            } else {
+              setDisableJatuhTempo(true);
+              form.setFieldsValue({
+                tanggalJatuhTempo: moment(jatuhTempo, "DD-MM-YYYY"),
+              });
+            }
+            // let nama = "saya.ka.mu......jpeg";
+            // let index = nama.substring(nama.lastIndexOf(".") + 1);
+            // let namaFile = nama.substr(0, nama.lastIndexOf("."));
+            // console.log(index, "index");
+            // console.log(namaFile, "nama");
+          }
+        });
+    };
+
+    getJatuhTempo();
+    // eslint-disable-next-line
+  }, [jenisDokumen, tanggalDokumen]);
 
   // Function - Sid - Headear
   // ==============================================
-  if (isLoading) {
-    return (
-      <Spin tip="Loading...">
-        <Alert message="Fetching data ....." />
-      </Spin>
-    );
-  }
 
   // Function - Form Perekaman
   // ==============================================
@@ -477,56 +519,8 @@ function RekamDokumenPiutang() {
     setNamaKantorPenerbit(option.nama);
   };
 
-  const onSearchPenerbit = (searchText) => {
-    if (!searchText) {
-      setOptions([]);
-    } else {
-      axios
-        .get(
-          `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-kantor?search=${searchText}`
-        )
-        .then(({ data }) => {
-          let dataKantor = data.data;
-          let listKantor = [];
-          dataKantor.map((item) => {
-            return listKantor.push({
-              options: [renderTitle(item.kodeKantor, item.namaKantorPendek)],
-            });
-          });
-          setOptions(listKantor);
-        })
-        .catch((err) => {
-          console.log(err, "error get kantor");
-        });
-    }
-  };
-
   const onSelectMonitor = (value, option) => {
     setNamaKantorMonitor(option.nama);
-  };
-
-  const onSearchMonitor = (searchText) => {
-    if (!searchText) {
-      setOptions([]);
-    } else {
-      axios
-        .get(
-          `http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-kantor?search=${searchText}`
-        )
-        .then(({ data }) => {
-          let dataKantor = data.data;
-          let listKantor = [];
-          dataKantor.map((item) => {
-            return listKantor.push({
-              options: [renderTitle(item.kodeKantor, item.namaKantorPendek)],
-            });
-          });
-          setOptionsMonitor(listKantor);
-        })
-        .catch((err) => {
-          console.log(err, "error get kantor");
-        });
-    }
   };
 
   function getKodeBidang(value, option) {
@@ -802,24 +796,31 @@ function RekamDokumenPiutang() {
     setVisibleRefPerusahaan(false);
   };
 
-  const getJatuhTempo = (date, dateString) => {
-    let plusLastBulan = moment(date)
-      .add(1, "M")
-      .endOf("month")
-      .format("YYYY/MM/DD");
-    let addHari = moment(date).add(60, "d");
-    const bulan = moment(date).add(1, "M").set("date", 5).format("YYYY/MM/DD");
-
-    console.log(plusLastBulan, "get jatuh tempo lastday bulan berikutnya");
-    console.log(addHari, "get jatuh tempo 60 hari");
-    console.log(
-      bulan,
-
-      "get jatuh tempo tanggal 5 bulan berikutnya"
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <Spin
+          spinning={isLoading}
+          delay={500}
+          tip="Menunggu Simpan Rekam Manual Piutang ....."
+        />
+      </div>
     );
-    form.setFieldsValue({
-      tanggalJatuhTempo: moment(plusLastBulan, "DD/MM/YYYY"),
-    });
+  }
+
+  const formParent = {
+    marginBottom: "5px",
+    padding: "1px 1px 1px 5px",
+  };
+  const formChild = {
+    marginBottom: "5px",
   };
 
   return (
@@ -829,421 +830,310 @@ function RekamDokumenPiutang() {
           Perekaman Dokumen Piutang
         </h1>
       </Row>
-      <Row>
-        <Col span={24}>
-          <Form
-            form={form}
-            labelCol={{ span: 5 }}
-            labelAlign={"left"}
-            name="record-form"
-            size={"small"}
-            onFinish={handleSimpan}
+
+      <Form
+        form={form}
+        labelCol={{ span: 4 }}
+        labelAlign={"left"}
+        name="record-form"
+        onFinish={handleSimpan}
+      >
+        <Form.Item label="Kantor Penerbit" style={formParent}>
+          <Input.Group compact>
+            <Form.Item name="kantorPenerbit" style={formChild}>
+              <SearchKantor
+                style={{ width: 200 }}
+                onSelect={onSelectPenerbit}
+              />
+            </Form.Item>
+            <h3 style={{ margin: "0 8px" }}>{namaKantorPenerbit}</h3>
+          </Input.Group>
+        </Form.Item>
+
+        <Form.Item label="Kantor Monitor" style={formParent}>
+          <Input.Group compact>
+            <Form.Item name="kantorMonitor" style={formChild}>
+              <SearchKantor style={{ width: 200 }} onSelect={onSelectMonitor} />
+            </Form.Item>
+            <Form.Item style={formChild}>
+              <h3 style={{ margin: "0 8px" }}>{namaKantorMonitor}</h3>
+            </Form.Item>
+          </Input.Group>
+        </Form.Item>
+
+        <Form.Item style={formParent} name="jenisDokumen" label="Jenis Dokumen">
+          <Select
+            placeholder="Jenis Dokumen"
+            style={{
+              width: 400,
+            }}
+            onChange={(val, option) => {
+              setJenisDokumen(val);
+              setKategoriJenisDokumen(option.kategori);
+              // getJatuhTempo();
+              console.log(val, "jenis dokumen");
+            }}
           >
-            <Form.Item
-              label="Kantor Penerbit"
-              style={{
-                // marginBottom: "5px",
-                height: "10px",
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input.Group compact>
-                <Form.Item
-                  name="kantorPenerbit"
-                  // wrapperCol={{ span: 0 }}
-                >
-                  <AutoComplete
-                    dropdownClassName="certain-category-search-dropdown"
-                    dropdownMatchSelectWidth={400}
-                    style={{ width: 200 }}
-                    options={options}
-                    placeholder="kode kantor"
-                    onSearch={onSearchPenerbit}
-                    onSelect={onSelectPenerbit}
-                  />
-                </Form.Item>
-                <h3 style={{ margin: "0 8px" }}>{namaKantorPenerbit}</h3>
-              </Input.Group>
-            </Form.Item>
-
-            <Form.Item
-              label="Kantor Monitor"
-              style={{
-                height: "10px",
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input.Group compact>
-                <Form.Item name="kantorMonitor">
-                  <AutoComplete
-                    dropdownClassName="certain-category-search-dropdown"
-                    dropdownMatchSelectWidth={400}
-                    style={{ width: 200 }}
-                    options={optionsMonitor}
-                    placeholder="kode kantor"
-                    onSearch={onSearchMonitor}
-                    onSelect={onSelectMonitor}
-                  />
-                </Form.Item>
-                <h3 style={{ margin: "0 8px" }}>{namaKantorMonitor}</h3>
-              </Input.Group>
-            </Form.Item>
-
-            <Form.Item
-              style={{
-                marginBottom: "5px",
-                padding: "1px 1px 1px 5px",
-              }}
-              name="jenisDokumen"
-              label="Jenis Dokumen"
-            >
-              <Select
-                placeholder="Jenis Dokumen"
-                style={{
-                  width: "180px",
-                  // borderLeft: "5px solid #eaeaea",
-                }}
-                onChange={(val, option) =>
-                  setKategoriJenisDokumen(option.kategori)
-                }
-                size={"small"}
+            {listJenisDokumen.map((item) => (
+              <Option
+                value={item.kodeDokumen}
+                key={item.kodeDokumen}
+                kategori={item.kategori}
               >
-                {listJenisDokumen.map((item) => (
-                  <Option
-                    value={item.kodeDokumen}
-                    key={item.kodeDokumen}
-                    kategori={item.kategori}
-                  >
+                {item.uraianDokumen}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="nomorDokumen"
+          label="Nomor Dokumen"
+          wrapperCol={{ span: 0 }}
+          style={formParent}
+        >
+          <Input style={{ width: 200 }} />
+        </Form.Item>
+
+        {/* tanggal dok*/}
+
+        <Form.Item
+          name="tanggalDokumen"
+          label="Tanggal Dokumen"
+          wrapperCol={{ span: 4 }}
+          style={formParent}
+        >
+          <DatePicker
+            placeholder=""
+            style={{ width: 200 }}
+            format={"DD/MM/YYYY"}
+            onChange={(date, dateString) => {
+              setTanggalDokumen(date);
+              // getJatuhTempo();
+              console.log(date, dateString, "tanggal;=====================");
+            }}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="dokumen_asal"
+          label="Dokumen Asal"
+          wrapperCol={{ span: 0 }}
+          style={formParent}
+        >
+          <Input.Group compact>
+            {/** Jenis Dokumen Asal */}
+            <Form.Item name="jenisDokumenAsal" style={formChild}>
+              <Select
+                placeholder="Jenis Dokumen Asal"
+                value={jenisDokumenAsal.length === 0 ? null : jenisDokumenAsal}
+                style={{ width: 200 }}
+                onChange={(val) => setJenisDokumenAsal(val)}
+              >
+                {listJenisDokumenAsal.map((item) => (
+                  <Option value={item.kodeDokumen} key={item.kodeDokumen}>
                     {item.uraianDokumen}
                   </Option>
                 ))}
               </Select>
             </Form.Item>
+            <span style={{ margin: "0 5px 5px" }}>/</span>
+            {/** NOMOR */}
+            <Form.Item name="nomorDokumenAsal" style={formChild}>
+              <Input
+                placeholder="Nomor"
+                style={{
+                  width: "180px",
+                }}
+              />
+            </Form.Item>
+            <span style={{ margin: "0 5px 5px" }}>/</span>
+            {/** TANGGAL */}
+            <Form.Item name="tanggalDokumenAsal" style={formChild}>
+              <DatePicker
+                style={{ width: "100%" }}
+                placeholder="Tanggal"
+                format={"DD-MM-YYYY"}
+              />
+            </Form.Item>
 
-            <Form.Item
-              name="nomorDokumen"
-              label="Nomor Dokumen"
-              wrapperCol={{ span: 0 }}
-              style={{
-                marginBottom: "5px",
-                padding: "1px 1px 1px 5px",
-                // borderBottom: "1px solid #eaeaea",
-              }}
-            >
+            <Form.Item style={{ margin: "0 5px 5px" }}>
+              <Button
+                type="info"
+                style={{ width: "100%" }}
+                onClick={() => console.log("tarik button")}
+              >
+                Tarik
+              </Button>
+            </Form.Item>
+            <Form.Item style={{ marginBottom: "5px" }}>
+              <Button type="info" style={{ width: "100%" }}>
+                Lihat
+              </Button>
+            </Form.Item>
+          </Input.Group>
+        </Form.Item>
+        <Form.Item
+          name="tanggalJatuhTempo"
+          label="Tanggal Jatuh Tempo"
+          wrapperCol={{ span: 4 }}
+          style={formParent}
+        >
+          <DatePicker
+            disabled={disableJatuhTempo}
+            placeholder=""
+            style={{
+              width: "200px",
+            }}
+            format={"DD-MM-YYYY"}
+          />
+        </Form.Item>
+
+        <Form.Item label="Id Perusahaan" style={formParent}>
+          <Input.Group compact>
+            <Form.Item name="idPerusahaan" style={formChild}>
               <Input
                 style={{
-                  width: "180px",
+                  width: "200px",
                 }}
               />
             </Form.Item>
+            <Form.Item style={{ margin: "0 5px 5px" }}>
+              <Button onClick={buttonReferensi}>Referensi</Button>
+            </Form.Item>
+          </Input.Group>
+        </Form.Item>
+        <Form.Item
+          name="namaPerusahaan"
+          label="Nama Perusahaan"
+          style={formParent}
+        >
+          <Input style={{ width: 400 }} />
+        </Form.Item>
 
-            {/* tanggal dok*/}
+        <Form.Item
+          name="alamatPerusahaan"
+          label="Alamat Perusahaan"
+          wrapperCol={{ span: 0 }}
+          style={formParent}
+        >
+          <Input style={{ width: 400 }} />
+        </Form.Item>
 
+        <Form.Item
+          name="ppjk"
+          label="PPJK"
+          wrapperCol={{ span: 0 }}
+          style={formParent}
+        >
+          <Input style={{ width: 200 }} />
+        </Form.Item>
+
+        <Form.Item label="Kode Bidang" style={formParent}>
+          <Input.Group compact>
             <Form.Item
-              name="tanggalDokumen"
-              label="Tanggal Dokumen"
-              wrapperCol={{ span: 4 }}
-              style={{
-                marginBottom: "5px",
-                padding: "1px 1px 1px 5px",
-                // borderBottom: "1px solid #eaeaea",
-              }}
+              name="kodeBidang"
+              wrapperCol={{ span: 0 }}
+              style={formChild}
             >
-              <DatePicker
-                placeholder=""
+              {/* <Input /> */}
+              <AutoComplete
+                dropdownClassName="certain-category-search-dropdown"
+                dropdownMatchSelectWidth={500}
+                style={{ width: 200 }}
+                options={listKodeBidang}
+                onSelect={(value, option) => getKodeBidang(value, option)}
+                placeholder="Kode Bidang"
+                filterOption={true}
+              />
+            </Form.Item>
+            <h3 style={{ margin: "0 5px" }}>{kodeBidang}</h3>
+          </Input.Group>
+        </Form.Item>
+
+        <Form.Item
+          name="petugas"
+          label="Petugas"
+          wrapperCol={{ span: 0 }}
+          style={formParent}
+        >
+          <Input style={{ width: 200 }} />
+        </Form.Item>
+
+        <Form.Item
+          label="Status - Jabatan 1"
+          wrapperCol={{ span: 0 }}
+          style={formParent}
+        >
+          <Input.Group compact>
+            <Form.Item style={formChild} name="statusJabatan1">
+              <Select
+                placeholder="Status"
                 style={{
-                  width: "180px",
+                  width: 200,
+                  // borderLeft: "5px solid #eaeaea",
                 }}
-                format={"DD/MM/YYYY"}
-                onChange={getJatuhTempo}
+              >
+                {statusJabatan.map((item) => (
+                  <Option value={item.namaJabatan} key={item.kodeJabatan}>
+                    {item.namaJabatan}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <span style={{ marginRight: 8, marginLeft: 8 }}> - </span>
+            <Form.Item name="jabatan1" style={formChild}>
+              <AutoComplete
+                dropdownClassName="certain-category-search-dropdown"
+                dropdownMatchSelectWidth={500}
+                style={{ width: 200 }}
+                options={listJabatan}
+                onSelect={(value, option) => getJabatan1(value, option)}
+                placeholder="Kode Jabatan"
+                filterOption={true}
               />
             </Form.Item>
+            <h3 style={{ margin: "0 8px" }}>{jabatan1}</h3>
+          </Input.Group>
+        </Form.Item>
 
-            <Form.Item
-              name="dokumen_asal"
-              label="Dokumen Asal"
-              wrapperCol={{ span: 0 }}
-              style={{
-                marginBottom: 0,
-                padding: "1px 1px 1px 5px",
-                // borderBottom: "1px solid #eaeaea",
-              }}
-            >
-              <Input.Group compact>
-                {/** Jenis Dokumen Asal */}
-                <Form.Item
-                  style={{ marginBottom: 0, width: "20%" }}
-                  name="jenisDokumenAsal"
-                >
-                  <Select
-                    placeholder="Jenis Dokumen Asal"
-                    value={
-                      jenisDokumenAsal.length === 0 ? null : jenisDokumenAsal
-                    }
-                    style={{
-                      width: "180px",
-                    }}
-                    onChange={(val) => setJenisDokumenAsal(val)}
-                    size={"small"}
-                  >
-                    {listJenisDokumenAsal.map((item) => (
-                      <Option value={item.kodeDokumen} key={item.kodeDokumen}>
-                        {item.uraianDokumen}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <span style={{ marginRight: 8, marginLeft: 8 }}>/</span>
-                {/** NOMOR */}
-                <Form.Item
-                  name="nomorDokumenAsal"
-                  style={{ marginBottom: 0, width: "20%" }}
-                >
-                  <Input
-                    placeholder="Nomor"
-                    style={{
-                      width: "180px",
-                    }}
-                  />
-                </Form.Item>
-                <span style={{ marginRight: 8, marginLeft: 8 }}>/</span>
-                {/** TANGGAL */}
-                <Form.Item
-                  name="tanggalDokumenAsal"
-                  style={{ marginBottom: 0, width: "20%" }}
-                >
-                  <DatePicker
-                    style={{ width: "100%" }}
-                    placeholder="Tanggal"
-                    format={"DD/MM/YYYY"}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  style={{ marginLeft: 8, marginBottom: 0, width: "12%" }}
-                >
-                  <Button
-                    type="info"
-                    style={{ width: "100%" }}
-                    onClick={() => console.log("tarik button")}
-                  >
-                    Tarik
-                  </Button>
-                </Form.Item>
-                <Form.Item
-                  style={{ marginLeft: 8, marginBottom: 0, width: "12%" }}
-                >
-                  <Button type="info" style={{ width: "100%" }}>
-                    Lihat
-                  </Button>
-                </Form.Item>
-              </Input.Group>
-            </Form.Item>
-            <Form.Item
-              name="tanggalJatuhTempo"
-              label="Tanggal Jatuh Tempo"
-              wrapperCol={{ span: 4 }}
-              style={{
-                marginBottom: "5px",
-                padding: "1px 1px 1px 5px",
-                // borderBottom: "1px solid #eaeaea",
-              }}
-            >
-              <DatePicker
-                disabled
-                placeholder=""
+        <Form.Item
+          label="Status - Jabatan 2"
+          wrapperCol={{ span: 0 }}
+          style={formParent}
+        >
+          <Input.Group compact>
+            <Form.Item style={formChild} name="statusJabatan2">
+              <Select
+                placeholder="Status"
                 style={{
-                  width: "180px",
+                  width: 200,
                 }}
-                format={"DD/MM/YYYY"}
+              >
+                {statusJabatan.map((item) => (
+                  <Option value={item.namaJabatan} key={item.kodeJabatan}>
+                    {item.namaJabatan}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <span style={{ marginRight: 8, marginLeft: 8 }}> - </span>
+            <Form.Item name="jabatan2" style={formChild}>
+              <AutoComplete
+                dropdownClassName="certain-category-search-dropdown"
+                dropdownMatchSelectWidth={500}
+                style={{ width: 200 }}
+                options={listJabatan}
+                onSelect={(value, option) => getJabatan2(value, option)}
+                placeholder="Kode Jabatan"
+                filterOption={true}
               />
             </Form.Item>
-            <Form.Item
-              name="idPerusahaan"
-              label="Id Perusahaan"
-              style={{
-                marginBottom: 5,
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input.Group compact>
-                <Form.Item name="idPerusahaan">
-                  <Input
-                    style={{
-                      width: "180px",
-                    }}
-                    // onChange={(e) => getNamaPerusahaan(e.target.value)}
-                  />
-                </Form.Item>
-                <Form.Item style={{ marginLeft: "5px" }}>
-                  <Button onClick={buttonReferensi}>Referensi</Button>
-                </Form.Item>
-              </Input.Group>
-            </Form.Item>
-            <Form.Item
-              name="namaPerusahaan"
-              label="Nama Perusahaan"
-              style={{
-                marginBottom: 10,
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="alamatPerusahaan"
-              label="Alamat Perusahaan"
-              wrapperCol={{ span: 0 }}
-              style={{
-                marginBottom: 10,
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name="ppjk"
-              label="PPJK"
-              wrapperCol={{ span: 0 }}
-              style={{
-                marginBottom: 10,
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input style={{ width: 180 }} />
-            </Form.Item>
+            <h3 style={{ margin: "0 8px" }}>{jabatan2}</h3>
+          </Input.Group>
+        </Form.Item>
+      </Form>
 
-            <Form.Item
-              label="Kode Bidang"
-              style={{
-                // marginBottom: "5px",
-                height: "10px",
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input.Group compact>
-                <Form.Item
-                  name="kodeBidang"
-                  wrapperCol={{ span: 0 }}
-                  style={{ marginBottom: 10 }}
-                >
-                  {/* <Input /> */}
-                  <AutoComplete
-                    dropdownClassName="certain-category-search-dropdown"
-                    dropdownMatchSelectWidth={500}
-                    style={{ width: 180 }}
-                    options={listKodeBidang}
-                    onSelect={(value, option) => getKodeBidang(value, option)}
-                    placeholder="Kode Bidang"
-                    filterOption={true}
-                  />
-                </Form.Item>
-                <h3 style={{ margin: "0 8px" }}>{kodeBidang}</h3>
-              </Input.Group>
-            </Form.Item>
-
-            <Form.Item
-              name="petugas"
-              label="Petugas"
-              wrapperCol={{ span: 0 }}
-              style={{ marginBottom: 10, padding: "1px 1px 1px 5px" }}
-            >
-              <Input style={{ width: 180 }} />
-            </Form.Item>
-
-            <Form.Item
-              label="Status - Jabatan 1"
-              wrapperCol={{ span: 0 }}
-              style={{
-                marginBottom: "10px",
-                height: "20px",
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input.Group compact>
-                <Form.Item
-                  style={{
-                    width: "20%",
-                  }}
-                  name="statusJabatan1"
-                >
-                  <Select
-                    placeholder="Status"
-                    style={{
-                      width: "100%",
-                      // borderLeft: "5px solid #eaeaea",
-                    }}
-                    size={"small"}
-                  >
-                    {statusJabatan.map((item) => (
-                      <Option value={item.namaJabatan} key={item.kodeJabatan}>
-                        {item.namaJabatan}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <span style={{ marginRight: 8, marginLeft: 8 }}> - </span>
-                <Form.Item name="jabatan1">
-                  <AutoComplete
-                    dropdownClassName="certain-category-search-dropdown"
-                    dropdownMatchSelectWidth={500}
-                    style={{ width: 180 }}
-                    options={listJabatan}
-                    onSelect={(value, option) => getJabatan1(value, option)}
-                    placeholder="Kode Jabatan"
-                    filterOption={true}
-                  />
-                </Form.Item>
-                <h3 style={{ margin: "0 8px" }}>{jabatan1}</h3>
-              </Input.Group>
-            </Form.Item>
-
-            <Form.Item
-              label="Status - Jabatan 2"
-              wrapperCol={{ span: 0 }}
-              style={{
-                marginBottom: 0,
-                height: "10px",
-                padding: "1px 1px 1px 5px",
-              }}
-            >
-              <Input.Group compact>
-                <Form.Item
-                  style={{ marginBottom: 0, width: "20%" }}
-                  name="statusJabatan2"
-                >
-                  <Select
-                    placeholder="Status"
-                    style={{
-                      width: "100%",
-                    }}
-                    size={"small"}
-                  >
-                    {statusJabatan.map((item) => (
-                      <Option value={item.namaJabatan} key={item.kodeJabatan}>
-                        {item.namaJabatan}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <span style={{ marginRight: 8, marginLeft: 8 }}> - </span>
-                <Form.Item name="jabatan2">
-                  <AutoComplete
-                    dropdownClassName="certain-category-search-dropdown"
-                    dropdownMatchSelectWidth={500}
-                    style={{ width: 180 }}
-                    options={listJabatan}
-                    onSelect={(value, option) => getJabatan2(value, option)}
-                    placeholder="Kode Jabatan"
-                    filterOption={true}
-                  />
-                </Form.Item>
-                <h3 style={{ margin: "0 8px" }}>{jabatan2}</h3>
-              </Input.Group>
-            </Form.Item>
-          </Form>
-        </Col>
-      </Row>
       <h1 style={{ fontWeight: "bold", fontSize: 24, marginTop: 14 }}>
         Pungutan
       </h1>

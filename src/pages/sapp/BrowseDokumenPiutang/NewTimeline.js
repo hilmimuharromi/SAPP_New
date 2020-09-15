@@ -16,20 +16,20 @@ export default function NewTimeline({ data }) {
   let hitam = "#292626";
   // let completed = "hari";
   console.log(data, "data timeline");
-  let datePerekaman = data.tanggalDokumen;
-  let dateJatuhTempo = data.tanggalJatuhTempo;
-  const today = Moment().format('"YYYY-MM-DD HH:MM:SS"');
+  let datePerekaman = Moment(data.tanggalDokumen, "DD-MM-YYYY");
+  let dateJatuhTempo = Moment(data.tanggalJatuhTempo, "DD-MM-YYYY");
+  const today = Moment().format('"DD-MM-YYYY"');
   const hariIni = Moment().format("DD-MM-YYYY");
-  const start = Moment(datePerekaman, "YYYY-MM-DD");
-  const end = Moment(dateJatuhTempo, "YYYY-MM-DD");
-  const now = Moment(today, '"YYYY-MM-DD HH:MM:SS"');
+  const start = Moment(datePerekaman, "DD-MM-YYYY");
+  const end = Moment(dateJatuhTempo, "DD-MM-YYYY");
+  const now = Moment(today, '"DD-MM-YYYY"');
   const jarak = moment.range(start, end);
   const rangeToday = moment.range(start, now);
 
   let durasiTagihan = jarak.diff("days");
-  let durasiTeguran = 7;
+  let durasiTeguran = 21;
   let durasiPaksa = 21;
-  let durasiSita = 12;
+  let durasiSita = 21;
   let total = durasiTagihan + durasiTeguran + durasiPaksa + durasiSita;
   let statusKini = rangeToday.diff("days");
   let menujuHari = 0;

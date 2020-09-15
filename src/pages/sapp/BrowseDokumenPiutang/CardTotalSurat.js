@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 export default function CardTotalSurat() {
   let data = useSelector((state) => state.totalSurat.data);
   let totalSurat = useSelector((state) => state.totalSurat.totalSurat);
+  if (!data) data = [];
   const containerOver = {
     overflow: "auto",
     height: "150px",
@@ -22,10 +23,10 @@ export default function CardTotalSurat() {
   };
   return (
     <div className="card-total-surat" style={containerOver}>
-      {data.map((obj) => (
+      {data.map((obj, index) => (
         // <Col>
         <Card
-          key={obj.jenisDokumen}
+          key={index}
           className="card-layout"
           style={{
             margin: "7px",
@@ -36,7 +37,6 @@ export default function CardTotalSurat() {
           }}
         >
           <Statistic
-            key={obj.jenisDokumen}
             title={obj.jenisDokumen}
             value={obj.totalDokumen}
             suffix={"/ " + totalSurat + " surat"}
@@ -44,7 +44,6 @@ export default function CardTotalSurat() {
           />
 
           <Progress
-            key={obj.jenisDokumen}
             percent={(obj.totalDokumen / totalSurat) * 100}
             type="line"
             format={(percent) => ``}

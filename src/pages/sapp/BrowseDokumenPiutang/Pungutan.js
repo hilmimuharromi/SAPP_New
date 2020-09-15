@@ -1,20 +1,25 @@
-import { React, Table, Row, Badge } from "../../../libraries/dependencies";
+import {
+  React,
+  Table,
+  Row,
+  Badge,
+  NumberFormat,
+} from "../../../libraries/dependencies";
 import { useSelector } from "react-redux";
 
 export default function Pungutan() {
   let dataState = useSelector((state) => state.pungutan);
-  let data = dataState.data;
+  // let data = dataState.data;
   let isLoading = dataState.loadingPungutan;
+  console.log(dataState, "======================================");
+  let data = dataState.data;
+  const total = dataState.dataTotal;
 
   function warnaNilai(data) {
-    if (data.kodeAkun !== "Total Nilai") {
-      if (data.lebihBayar === "Y") {
-        return "lightGreen";
-      } else {
-        return "coral";
-      }
+    if (data.lebihBayar === "Y") {
+      return "lightGreen";
     } else {
-      return "";
+      return "coral";
     }
   }
 
@@ -29,13 +34,15 @@ export default function Pungutan() {
       dataIndex: "nilai",
       key: "nilai",
       render: (text, record) => (
-        <p
+        <NumberFormat
+          value={record.nilai}
+          displayType={"text"}
+          thousandSeparator={true}
+          prefix={"Rp "}
           style={{
             backgroundColor: warnaNilai(record),
           }}
-        >
-          {record.nilai}
-        </p>
+        />
       ),
     },
   ];
@@ -50,6 +57,21 @@ export default function Pungutan() {
         showHeader={false}
         columns={columns}
         loading={isLoading}
+        summary={() => (
+          <Table.Summary.Row>
+            <Table.Summary.Cell index={0} colSpan={1}>
+              Total
+            </Table.Summary.Cell>
+            <Table.Summary.Cell index={1} colSpan={2}>
+              <NumberFormat
+                value={total}
+                displayType={"text"}
+                thousandSeparator={true}
+                prefix={"Rp "}
+              />
+            </Table.Summary.Cell>
+          </Table.Summary.Row>
+        )}
       />
       <Row>
         <h4>Keterangan :</h4>

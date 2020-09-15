@@ -26,9 +26,9 @@ export default function BrowseBilling() {
   const [namaKantor, setNamaKantor] = useState("KANWIL JAKARTA");
   const [kodeKantor, setKodeKantor] = useState("040000");
   const [hideDetail, setHideDetail] = useState(true);
-  const dateFormat = "YYYY-MM-DD";
-  const [startDate, setStartDate] = useState(moment());
-  const [endDate, setEndDate] = useState(moment().add(1, "m"));
+  const dateFormat = "DD-MM-YYYY";
+  const [startDate, setStartDate] = useState(moment().format(dateFormat));
+  const [endDate, setEndDate] = useState(moment().format(dateFormat));
   useEffect(() => {
     dispatch(
       allActions.getTotalDokTagihan(kodeKantor, startDate, endDate, "TAGIHAN")
@@ -39,7 +39,7 @@ export default function BrowseBilling() {
     dispatch(
       allActions.getHeaderBilling("ALL", startDate, endDate, kodeKantor)
     );
-  });
+  }, [dispatch, startDate, endDate, kodeKantor]);
 
   const FetchData = () => {
     console.log("=======");
@@ -80,6 +80,7 @@ export default function BrowseBilling() {
               onChange={(date, dateString) => {
                 setStartDate(dateString[0]);
                 setEndDate(dateString[1]);
+
                 FetchData();
               }}
               defaultValue={[

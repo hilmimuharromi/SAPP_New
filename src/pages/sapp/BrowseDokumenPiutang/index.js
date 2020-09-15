@@ -25,7 +25,7 @@ import HeaderTable from "./Header";
 // import TotalSurat from "./TotalSurat";
 import CardTotalSurat from "./CardTotalSurat";
 import ChartTotalSurat from "./ChartTotalSurat";
-import SearchKantor from "../../../components/SearchKantor";
+import { SearchKantor } from "../../../components";
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
@@ -33,9 +33,9 @@ const { RangePicker } = DatePicker;
 export default function BrowseDokumenPiutang() {
   const [namaKantor, setNamaKantor] = useState("KANWIL JAKARTA");
   const [kodeKantor, setKodeKantor] = useState("040000");
-  const dateFormat = "YYYY-MM-DD";
-  const [startDate, setStartDate] = useState(moment());
-  const [endDate, setEndDate] = useState(moment().add(1, "m"));
+  const dateFormat = "DD-MM-YYYY";
+  const [startDate, setStartDate] = useState(moment().format(dateFormat));
+  const [endDate, setEndDate] = useState(moment().format(dateFormat));
   const [togleChart, setTogleChart] = useState(true);
   const [dataTable, setDataTable] = useState("");
   const [hideCreateBilling, setHideCreateBilling] = useState(true);
@@ -53,9 +53,9 @@ export default function BrowseDokumenPiutang() {
   }
   function ChartMode() {
     if (togleChart) {
-      return <ChartTotalSurat />;
-    } else {
       return <CardTotalSurat />;
+    } else {
+      return <ChartTotalSurat />;
     }
   }
 
@@ -128,7 +128,7 @@ export default function BrowseDokumenPiutang() {
         </Col>
       </Row>
 
-      <Row hidden={hideDetail} justify="center">
+      <Row id="detailPiutang" hidden={hideDetail} justify="center">
         <Col span={24} style={{ marginTop: "10px" }}>
           {/* <Timeline /> */}
           <Card className="card-layout">
@@ -170,9 +170,11 @@ export default function BrowseDokumenPiutang() {
         style={{ marginTop: "10px" }}
       >
         <Button
-          onClick={() =>
-            history.push("/rekam-billing", { dataHistory: dataTable })
-          }
+          onClick={() => {
+            dispatch(allActions.setCreateBilling(dataTable));
+            history.push("/rekam-billing");
+            console.log("data table:   ", dataTable);
+          }}
           className="card-layout"
         >
           Create Billing

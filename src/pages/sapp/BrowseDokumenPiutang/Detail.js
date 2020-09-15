@@ -62,7 +62,7 @@ export default function Detail({ dataKlik }) {
   }
 
   function listCetak(data) {
-    if (data.judul === "Dokumen Asal") {
+    if (data.judul === "Dokumen Asal" && data.cetak === "Y") {
       return (
         <p>
           {data.nilai} <Button onClick={() => handleLihat(data)}>Lihat</Button>

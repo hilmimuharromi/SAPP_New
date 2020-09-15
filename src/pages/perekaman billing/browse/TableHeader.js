@@ -1,9 +1,16 @@
-import { React, Table, Space, Button } from "../../../libraries/dependencies";
+import {
+  React,
+  Table,
+  Space,
+  Button,
+  ScrollTo,
+} from "../../../libraries/dependencies";
 import { useSelector } from "react-redux";
-import ScrollTo from "react-scroll-into-view";
+// import ScrollTo from "react-scroll-into-view";
 
 export default function TableHeader(props) {
   let dataHeader = useSelector((state) => state.headerBilling.dataHeader);
+  const loading = useSelector((state) => state.headerBilling.loading);
 
   const { setIdBilling, setGetDetail, setHideDetail } = props;
 
@@ -49,6 +56,7 @@ export default function TableHeader(props) {
       render: (text, record) => (
         <Space size="middle">
           <ScrollTo
+            smooth
             onClick={() => buttonPilih(record)}
             selector={`#detailBilling`}
           >
@@ -66,6 +74,7 @@ export default function TableHeader(props) {
   };
   return (
     <Table
+      loading={loading}
       bordered
       dataSource={dataHeader}
       columns={columns}

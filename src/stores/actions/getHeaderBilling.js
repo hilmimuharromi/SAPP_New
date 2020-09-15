@@ -1,5 +1,6 @@
 import axios from "axios";
 export default function FETCH_HEADER_BILLING(query, start, end, kodeKantor) {
+  console.log(start, end, "get header billing");
   return (dispatch) => {
     dispatch(SET_LOADING_HEADER_BILLING(true));
 
