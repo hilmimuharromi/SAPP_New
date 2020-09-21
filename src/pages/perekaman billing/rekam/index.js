@@ -332,26 +332,26 @@ export default function RekamBilling() {
       nipRekam: "1234",
     };
 
-    // axios({
-    //   method: "post",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   url: `http://10.162.71.119:9090/perbendaharaan/perben/billing/simpan-billing`,
-    //   data: dataBilling,
-    // })
-    //   .then(({ data }) => {
-    //     message.success("Sukses simpan billing");
-    //     console.log(data, "simpan billing");
-    //     setLoadingSimpan(false);
-    //   })
-    //   .catch((err) => {
-    //     message.error("error simpan");
-    //     console.log(err, "error simpan");
-    //   })
-    //   .finally((_) => {
-    //     setLoadingSimpan(false);
-    //   });
+    axios({
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `http://10.162.71.119:9090/perbendaharaan/perben/billing/simpan-billing`,
+      data: dataBilling,
+    })
+      .then(({ data }) => {
+        message.success("Sukses simpan billing");
+        console.log(data, "simpan billing");
+        setLoadingSimpan(false);
+      })
+      .catch((err) => {
+        message.error("error simpan");
+        console.log(err, "error simpan");
+      })
+      .finally((_) => {
+        setLoadingSimpan(false);
+      });
     console.log(dataBilling, "dataBilling");
   };
 
@@ -379,14 +379,6 @@ export default function RekamBilling() {
     });
     setVisibleRef(false);
   };
-
-  // const NotifTarikData = (status) => {
-  //   if (status === "200") {
-  //     message.success("This is a success message");
-  //   } else {
-  //     message.error("data tidak ditemukan");
-  //   }
-  // };
 
   const tarikData = () => {
     if (disableInput) return message.error("tidak bisa tarik data");

@@ -6,6 +6,7 @@ import {
   useState,
   Modal,
   ScrollTo,
+  SearchOutlined,
 } from "../../../libraries/dependencies";
 import { useSelector, useDispatch } from "react-redux";
 import allActions from "../../../stores/actions";

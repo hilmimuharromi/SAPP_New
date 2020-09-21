@@ -8,10 +8,10 @@ import {
 const { Option } = Select;
 
 export default function SelectAkunPungutan(props) {
-  const { onSelect, disabled, defaultValue } = props;
+  const { onSelect, disabled, defaultValue, kategoriJenisDokumen } = props;
   const [listAkun, setListAkun] = useState([]);
   const [loading, setLoading] = useState(false);
-  console.log(defaultValue, "value select");
+  console.log(kategoriJenisDokumen, "kategori akun cukai");
   useEffect(() => {
     function getListAkun() {
       setLoading(true);
@@ -20,12 +20,30 @@ export default function SelectAkunPungutan(props) {
           "http://10.162.71.119:9090/perbendaharaan/perben/referensi/list-pungutan"
         )
         .then(({ data }) => {
-          setListAkun(data.data);
+          if (kategoriJenisDokumen === "AKUNCUKAI") {
+            setListAkun([
+              {
+                kodeAkun: "411511",
+                uraian: "Cukai HT",
+              },
+              {
+                kodeAkun: "411512",
+                uraian: "Cukai EA",
+              },
+              {
+                kodeAkun: "411513",
+                uraian: "Cukai MMEA",
+              },
+            ]);
+          } else {
+            setListAkun(data.data);
+          }
           setLoading(false);
         });
     }
     getListAkun();
-  }, []);
+  }, [kategoriJenisDokumen]);
+
   return (
     <Select
       disabled={disabled}

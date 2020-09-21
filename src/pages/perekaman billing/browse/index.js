@@ -23,9 +23,9 @@ export default function BrowseBilling() {
   const dispatch = useDispatch();
   const [idBilling, setIdBilling] = useState("");
   const [getDetail, setGetDetail] = useState(false);
+  const [hideDetail, setHideDetail] = useState(true);
   const [namaKantor, setNamaKantor] = useState("KANWIL JAKARTA");
   const [kodeKantor, setKodeKantor] = useState("040000");
-  const [hideDetail, setHideDetail] = useState(true);
   const dateFormat = "DD-MM-YYYY";
   const [startDate, setStartDate] = useState(moment().format(dateFormat));
   const [endDate, setEndDate] = useState(moment().format(dateFormat));

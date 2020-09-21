@@ -34,7 +34,9 @@ export default function BrowseDokumenPiutang() {
   const [namaKantor, setNamaKantor] = useState("KANWIL JAKARTA");
   const [kodeKantor, setKodeKantor] = useState("040000");
   const dateFormat = "DD-MM-YYYY";
-  const [startDate, setStartDate] = useState(moment().format(dateFormat));
+  const [startDate, setStartDate] = useState(
+    moment("01-09-2020").format(dateFormat)
+  );
   const [endDate, setEndDate] = useState(moment().format(dateFormat));
   const [togleChart, setTogleChart] = useState(true);
   const [dataTable, setDataTable] = useState("");
@@ -74,7 +76,10 @@ export default function BrowseDokumenPiutang() {
 
   return (
     <Layout style={{ backgroundColor: "#fff" }}>
-      <Row justify="end">
+      <Row justify="space-between">
+        <h1 style={{ fontWeight: "bold", fontSize: 24 }}>
+          Browse Dokumen Piutang
+        </h1>
         <div>
           <Form.Item label="Kantor" style={{ marginBottom: "5px" }}>
             <Input.Group compact>

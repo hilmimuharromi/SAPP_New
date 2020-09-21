@@ -20,6 +20,7 @@ import {
   moment,
   Spin,
   Modal,
+  NumberFormat,
 } from "../../../libraries/dependencies";
 import {
   RefPerusahaan,
@@ -61,6 +62,7 @@ function RekamDokumenPiutang() {
   // ==============================================
   const [visibleRefPerusahaan, setVisibleRefPerusahaan] = useState(false);
   const [akun, setAkun] = useState("");
+  const [namaAkun, setNamaAkun] = useState("");
   const [namaKantorPenerbit, setNamaKantorPenerbit] = useState(
     "Nama Kantor Penerbit"
   );
@@ -89,40 +91,9 @@ function RekamDokumenPiutang() {
   ];
   let [totalNilai, setTotalNilai] = useState(null);
   const [form] = Form.useForm();
+  const [formTambahNilai] = Form.useForm();
   // Pungutan
   // ==============================================
-  const options_akun = [
-    {
-      name: "Bea Masuk",
-      value: "412111",
-      key: "1",
-    },
-    {
-      name: "BM AD",
-      value: "412121",
-      key: "2",
-    },
-    {
-      name: "BM PT",
-      value: "412123",
-      key: "3",
-    },
-    {
-      name: "PPN Impor",
-      value: "411212",
-      key: "4",
-    },
-    {
-      name: "PPH Impor",
-      value: "411123",
-      key: "5",
-    },
-    {
-      name: "Denda Administrasi Cukai",
-      value: "411514",
-      key: "6",
-    },
-  ];
   const [pemberitahuan, setPemberitahuan] = useState(0);
   const [penetapan, setPenetapan] = useState(0);
   const [selisih, setSelisih] = useState("T");
@@ -284,6 +255,20 @@ function RekamDokumenPiutang() {
       message.error("pungutan tidak boleh kosong");
     } else {
       totalPungutan(data_pungutan);
+      const listTdPungutan = [];
+
+      data_pungutan.map((item) => {
+        const pungutan = {
+          kodeAkun: item.kodeAkun,
+          seri: item.seri,
+          lebihBayar: item.lebihBayar,
+          nilaiDiberitahukan: item.nilaiDiberitahukan,
+          nilaiPenetapan: item.nilaiPenetapan,
+          nilai: item.nilai,
+        };
+        return listTdPungutan.push(pungutan);
+      });
+
       const {
         idPerusahaan,
         namaPerusahaan,
@@ -340,7 +325,7 @@ function RekamDokumenPiutang() {
         },
         nipRekam: petugas,
         listTdKeterangan: data_keterangan,
-        listTdPungutan: data_pungutan,
+        listTdPungutan,
       };
       console.log(payload, "payload data submit");
       // // post rekam
@@ -363,13 +348,10 @@ function RekamDokumenPiutang() {
 
   // Function - Pungutan
   // ==============================================
-  const handleAkun = (val) => {
-    setAkun(val);
-  };
 
-  const handleNilai = (e) => {
-    setNilai(e.target.value);
-  };
+  // const handleNilai = (e) => {
+  //   setNilai(value);
+  // };
 
   const EditPungutan = (item) => {
     function saveEdit() {
@@ -445,7 +427,13 @@ function RekamDokumenPiutang() {
     }
   };
 
-  const handleSubmitPungutan = () => {
+  const handleSubmitPungutan = (values) => {
+    console.log(values, "submit pungutan");
+    console.log("akun : ", akun);
+    console.log("pemberitahuan : ", pemberitahuan);
+    console.log("penetapan : ", penetapan);
+    console.log("nilai : ", nilai);
+    console.log("selisih : ", selisih);
     function findSeri() {
       let getSeri = data_pungutan.filter((item) => {
         return item.kodeAkun === akun;
@@ -461,6 +449,7 @@ function RekamDokumenPiutang() {
       const check = pemberitahuan - penetapan;
       let ObjData = {
         kodeAkun: akun,
+        namaAkun,
         seri: findSeri(),
         lebihBayar: parseInt(pemberitahuan) < parseInt(penetapan) ? "T" : "Y",
         nilaiDiberitahukan: parseInt(pemberitahuan),
@@ -470,6 +459,8 @@ function RekamDokumenPiutang() {
             ? Number(String(check).replace("-", ""))
             : check,
       };
+      console.log("objek data if: ", ObjData);
+
       if (!akun) {
         message.error("Mohon pilih akun");
       } else if (!pemberitahuan) {
@@ -483,17 +474,20 @@ function RekamDokumenPiutang() {
         setAkun("");
         setPemberitahuan(0);
         setPenetapan(0);
+        formTambahNilai.resetFields();
         return message.success("Sukses di Tambahkan!");
       }
     } else {
       let ObjData = {
         kodeAkun: akun,
+        namaAkun,
         seri: findSeri(),
         lebihBayar: selisih,
         nilaiDiberitahukan: 0,
         nilaiPenetapan: 0,
         nilai: parseInt(nilai),
       };
+      console.log("objek data else: ", ObjData);
       if (!akun) {
         message.error("Mohon pilih akun");
       } else if (!selisih) {
@@ -505,9 +499,10 @@ function RekamDokumenPiutang() {
         const newData = [...data_pungutan, ObjData];
         setData_pungutan(newData);
         totalPungutan(newData);
-        setAkun("");
+        // setAkun("");
         setSelisih("T");
-        setNilai(0);
+        // setNilai(0);
+        formTambahNilai.resetFields();
         return message.success("Sukses di Tambahkan!");
       }
     }
@@ -615,139 +610,6 @@ function RekamDokumenPiutang() {
     }
   };
 
-  const uraianAkun = (kodeAkun) => {
-    const data = [
-      {
-        kodeAkun: "411122",
-        uraian: "PPh Pasal 22 Ekspor",
-      },
-      {
-        kodeAkun: "411123",
-        uraian: "PPH Impor",
-      },
-      {
-        kodeAkun: "411211",
-        uraian: "PPN HT / DN",
-      },
-      {
-        kodeAkun: "411212",
-        uraian: "PPN Impor",
-      },
-      {
-        kodeAkun: "411511",
-        uraian: "Cukai HT",
-      },
-      {
-        kodeAkun: "411512",
-        uraian: "Cukai EA",
-      },
-      {
-        kodeAkun: "411513",
-        uraian: "Cukai MMEA",
-      },
-      {
-        kodeAkun: "411514",
-        uraian: "Denda Administrasi Cukai",
-      },
-      {
-        kodeAkun: "411519",
-        uraian: "Pendapatan Cukai Lainnya",
-      },
-      {
-        kodeAkun: "411622",
-        uraian: "Bunga Penagihan PPN",
-      },
-      {
-        kodeAkun: "412111",
-        uraian: "Bea Masuk",
-      },
-      {
-        kodeAkun: "412112",
-        uraian: "Bea Masuk ditanggung Pemerintah atas Hibah (SPM) Nihil",
-      },
-      {
-        kodeAkun: "412113",
-        uraian: "Denda Administrasi Pabean",
-      },
-      {
-        kodeAkun: "412114",
-        uraian: "Bea Masuk KITE",
-      },
-      {
-        kodeAkun: "412115",
-        uraian: "Denda administrasi atas pengangkutan barang tertentu",
-      },
-      {
-        kodeAkun: "412116",
-        uraian: "Pendapatan Bea Masuk Ditanggung Pemerintah (BM-DTP)",
-      },
-      {
-        kodeAkun: "412119",
-        uraian: "Pendapatan Pabean Lainnya",
-      },
-      {
-        kodeAkun: "412121",
-        uraian: "Bea Masuk Anti Dumping (BMAD)",
-      },
-      {
-        kodeAkun: "412122",
-        uraian: "Bea Masuk Imbalan (BMI)",
-      },
-      {
-        kodeAkun: "412123",
-        uraian: "Bea Masuk Tindakan Pengamanan (BMTP)",
-      },
-      {
-        kodeAkun: "412211",
-        uraian: "Bea Keluar",
-      },
-      {
-        kodeAkun: "412212",
-        uraian: "Denda Administrasi Bea Keluar",
-      },
-      {
-        kodeAkun: "412213",
-        uraian: "Bunga Bea Keluar",
-      },
-      {
-        kodeAkun: "423216",
-        uraian: "-",
-      },
-      {
-        kodeAkun: "424138",
-        uraian: "Dana Sawit",
-      },
-      {
-        kodeAkun: "425151",
-        uraian:
-          "Pendapatan dari Penggunaan Sarana dan Prasarana Sesuai dengan Tusi",
-      },
-      {
-        kodeAkun: "425289",
-        uraian:
-          "Pendapatan Pengujian, Sertifikasi, Kalibrasi dan Standarisasi Lainnya",
-      },
-      {
-        kodeAkun: "425699",
-        uraian: "Pendapatan Jasa Lainnya",
-      },
-      {
-        kodeAkun: "425781",
-        uraian: "Pendapatan Biaya Penagihan Pajak Negara dengan Surat Paksa",
-      },
-      {
-        kodeAkun: "425839",
-        uraian: "Pendapatan Denda lainnya",
-      },
-      {
-        kodeAkun: "817711",
-        uraian: "Pajak Rokok",
-      },
-    ];
-    const result = data.filter((item) => item.kodeAkun === kodeAkun);
-    return result[0].uraian;
-  };
-
   const handleSubmitKeterangan = () => {
     function findSeri(res) {
       let getSeri = data_keterangan.filter((item) => {
@@ -821,6 +683,67 @@ function RekamDokumenPiutang() {
   };
   const formChild = {
     marginBottom: "5px",
+  };
+
+  const FormPungutan = () => {
+    if (kategoriJenisDokumen === "PENETAPAN") {
+      return (
+        <>
+          <Form.Item label="Pemberitahuan" name="pemberitahuan">
+            <NumberFormat
+              customInput={Input}
+              thousandSeparator={true}
+              prefix={"Rp "}
+              inputmode="numeric"
+              defaultValue={0}
+              value={pemberitahuan}
+              allowEmptyFormatting
+              onValueChange={(values) => setPemberitahuan(values.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Penetapan" name="penetapan">
+            <NumberFormat
+              customInput={Input}
+              thousandSeparator={true}
+              prefix={"Rp "}
+              inputmode="numeric"
+              // value={penetapan}
+              defaultValue={0}
+              allowEmptyFormatting
+              onValueChange={(values) => setPenetapan(values.value)}
+            />
+          </Form.Item>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Form.Item label="selisih" name="selisih" style={{ margin: "0 5px" }}>
+            <Select
+              value={selisih.length === 0 ? null : selisih}
+              defaultValue={"T"}
+              onChange={(val) => setSelisih(val)}
+            >
+              <Option value="Y">Lebih Bayar</Option>
+              <Option value="T">Kurang Bayar</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Nilai" name="nilai">
+            <NumberFormat
+              customInput={Input}
+              thousandSeparator={true}
+              prefix={"Rp "}
+              inputmode="numeric"
+              // value={nilai}
+              // defaultValue={}
+              allowEmptyFormatting
+              onValueChange={(values) => setNilai(values.value)}
+            />
+            {/* <Input value={nilai} onChange={handleNilai} /> */}
+          </Form.Item>
+        </>
+      );
+    }
   };
 
   return (
@@ -1138,163 +1061,66 @@ function RekamDokumenPiutang() {
         Pungutan
       </h1>
       <Row>
-        <Col span={16}>
-          {kategoriJenisDokumen === "PENETAPAN" ? (
-            <Row style={{ marginBottom: 8 }}>
-              <Col span={5} style={{ display: "flex" }}>
-                <h4 style={{ marginRight: 10, marginBottom: 0 }}>Akun :</h4>
-                <Select
-                  value={akun.length === 0 ? null : akun}
-                  style={{ width: "60%" }}
-                  onChange={handleAkun}
-                  size={"small"}
-                >
-                  {kategoriJenisDokumen === "AKUNCUKAI" ? (
-                    <>
-                      <Option value="411511">Cukai HT</Option>
-                      <Option value="411513">Cukai MMEA</Option>
-                      <Option value="411512">Cukai EA</Option>
-                    </>
-                  ) : (
-                    options_akun.map((item) => (
-                      <Option key={item.key} value={item.value}>
-                        {item.name}
-                      </Option>
-                    ))
-                  )}
-                </Select>
-              </Col>
-              <Col span={7} style={{ display: "flex" }}>
-                <h4 style={{ marginRight: 10, marginBottom: 0 }}>
-                  Pemberitahuan :
-                </h4>
-                <Input
-                  style={{ width: "40%", height: "24px" }}
-                  value={pemberitahuan}
-                  onChange={(e) => setPemberitahuan(e.target.value)}
-                />
-              </Col>
-              <Col span={6} style={{ display: "flex" }}>
-                <h4 style={{ marginRight: 10, marginBottom: 0 }}>
-                  Penetapan :
-                </h4>
-                <Input
-                  style={{ width: "45%", height: "24px" }}
-                  value={penetapan}
-                  onChange={(e) => setPenetapan(e.target.value)}
-                />
-              </Col>
-              <Col span={6}>
-                <Button
-                  type="primary"
-                  size="small"
-                  style={{ width: "100%" }}
-                  onClick={handleSubmitPungutan}
-                >
-                  Tambah Akun
-                </Button>
-              </Col>
-            </Row>
-          ) : (
-            <Row style={{ marginBottom: 8 }}>
-              <Col span={6} style={{ display: "flex" }}>
-                <h4 style={{ marginRight: 10, marginBottom: 0 }}>Akun :</h4>
-                <Select
-                  value={akun.length === 0 ? null : akun}
-                  style={{ width: "65%" }}
-                  onChange={handleAkun}
-                  size={"small"}
-                >
-                  {kategoriJenisDokumen === "AKUNCUKAI" ? (
-                    <>
-                      <Option value="411511">Cukai HT</Option>
-                      <Option value="411513">Cukai MMEA</Option>
-                      <Option value="411512">Cukai EA</Option>
-                    </>
-                  ) : (
-                    options_akun.map((item) => (
-                      <Option key={item.key} value={item.value}>
-                        {item.name}
-                      </Option>
-                    ))
-                  )}
-                </Select>
-              </Col>
-              <Col span={6} style={{ display: "flex" }}>
-                <h4 style={{ marginRight: 10, marginBottom: 0 }}>Selisih :</h4>
-                <Select
-                  value={selisih.length === 0 ? null : selisih}
-                  style={{ width: "65%" }}
-                  onChange={(val) => setSelisih(val)}
-                  size={"small"}
-                >
-                  <Option value="Y">Lebih Bayar</Option>
-                  <Option value="T">Kurang Bayar</Option>
-                </Select>
-              </Col>
-              <Col span={6} style={{ display: "flex" }}>
-                <h4 style={{ marginRight: 10, marginBottom: 0 }}>Nilai :</h4>
-                <Input
-                  style={{ width: "65%", height: "24px" }}
-                  value={nilai}
-                  onChange={handleNilai}
-                />
-              </Col>
-              <Col span={6}>
-                <Button
-                  type="primary"
-                  size="small"
-                  style={{ width: "100%" }}
-                  onClick={handleSubmitPungutan}
-                >
-                  Tambah Akun
-                </Button>
-              </Col>
-            </Row>
-          )}
-          <Row justify="space-between">
-            <Col span={24}>
-              <List
-                size="small"
-                bordered
-                itemLayout="horizontal"
-                dataSource={data_pungutan}
-                renderItem={(item) => (
-                  <List.Item
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <div
-                      style={{
-                        minWidth: "150px",
-                        maxWidth: "550px",
-                      }}
-                    >
-                      {uraianAkun(item.kodeAkun)}
-                    </div>
-                    <div
-                      style={{
-                        minWidth: "200px",
-                        maxWidth: "550px",
-                        padding: 4,
-                        backgroundColor:
-                          item.lebihBayar === "Y" ? "lightGreen" : "coral",
-                        color: "black",
-                        fontWeight: "bolder",
-                      }}
-                    >
-                      {FormEditPungutan(item)}
-                    </div>
-                    <div>{EditPungutan(item)}</div>
-                  </List.Item>
-                )}
+        <Form form={formTambahNilai} onFinish={handleSubmitPungutan}>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <Form.Item label="akun" name="akun">
+              <SelectAkunPungutan
+                onSelect={(value, option) => {
+                  setAkun(value);
+                  setNamaAkun(option.namaAkun);
+                }}
+                kategoriJenisDokumen={kategoriJenisDokumen}
               />
-            </Col>
-          </Row>
+            </Form.Item>
+            <FormPungutan />
+            <Form.Item style={{ marginLeft: "5px" }}>
+              <Button type="primary" htmlType="submit">
+                Tambah Akun
+              </Button>
+            </Form.Item>
+          </div>
+        </Form>
+      </Row>
+      <Row>
+        <Col span={18}>
+          <List
+            bordered
+            itemLayout="horizontal"
+            dataSource={data_pungutan}
+            renderItem={(item) => (
+              <List.Item
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div
+                  style={{
+                    minWidth: "150px",
+                    maxWidth: "550px",
+                  }}
+                >
+                  {item.namaAkun}
+                </div>
+                <div
+                  style={{
+                    minWidth: "200px",
+                    maxWidth: "550px",
+                    padding: 4,
+                    backgroundColor:
+                      item.lebihBayar === "Y" ? "lightGreen" : "coral",
+                    color: "black",
+                    fontWeight: "bolder",
+                  }}
+                >
+                  {FormEditPungutan(item)}
+                </div>
+                <div>{EditPungutan(item)}</div>
+              </List.Item>
+            )}
+          />
         </Col>
-        <Col span={6} offset={2}>
+        <Col span={3} offset={1}>
           <h4>Keterangan :</h4>
           <Badge color="lightGreen" text="Lebih Bayar" />
           <br />
