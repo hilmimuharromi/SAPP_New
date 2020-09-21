@@ -72,6 +72,8 @@ function RekamDokumenPiutang() {
   const [kodeBidang, setKodeBidang] = useState("");
   const [jabatan1, setJabatan1] = useState("");
   const [jabatan2, setJabatan2] = useState("");
+  const [kodeKantorMonitor, setKodeKantorMonitor] = useState("")
+  const [kodeKantorPenerbit, setKodeKantorPenerbit] = useState("")
 
   // Form Perekaman
   // ==============================================
@@ -295,14 +297,15 @@ function RekamDokumenPiutang() {
         billingManual: false,
         flagManual: "Y",
         tdHeader: {
+          kodeIdPerusahaan: "5",
           alamatPerusahaan: alamatPerusahaan,
           idPerusahaan: idPerusahaan,
           idPpjk: ppjk,
           jenisDokumen: jenisDokumen,
           jenisDokumenAsal: jenisDokumenAsal,
           kodeBidang: kodeBidang,
-          kodeKantorMonitor: kantorMonitor,
-          kodeKantorPenerbit: kantorPenerbit,
+          setKodeKantorMonitor,
+          kodeKantorPenerbit,
           kodeProses: "100",
           namaPerusahaan: namaPerusahaan,
           namaPpjk: ppjk,
@@ -329,7 +332,7 @@ function RekamDokumenPiutang() {
       };
       console.log(payload, "payload data submit");
       // // post rekam
-      // dispatch(allActions.addRekamManual(payload));
+      dispatch(allActions.addRekamManual(payload));
       // form.resetFields();
     }
   };
@@ -511,10 +514,12 @@ function RekamDokumenPiutang() {
   //function get nama kantor
 
   const onSelectPenerbit = (value, option) => {
+    setKodeKantorPenerbit(value)
     setNamaKantorPenerbit(option.nama);
   };
 
   const onSelectMonitor = (value, option) => {
+    setKodeKantorMonitor(value)
     setNamaKantorMonitor(option.nama);
   };
 
